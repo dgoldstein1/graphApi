@@ -10,9 +10,17 @@ class ServeDocs(Resource):
 	def get(self):
 		pass
 
-class AddNeighbors(Resource):
+class serveMetrics(Resource):
+	"""server prometheus metrics"""
+	def get(self):
+		pass
+
+class Neighbors(Resource):
 	"""adds neighbor nodes to graph. Returns {error: on error}"""
 	def get(self):
+		pass
+
+	def post(self):
 		pass
 
 class ShortestPath(Resource):
@@ -22,7 +30,7 @@ class ShortestPath(Resource):
     
 
 api.add_resource(ServeDocs, '/')
-api.add_resource(AddNeighbors, '/addNeighbors')
+api.add_resource(Neighbors, '/neighbors')
 api.add_resource(ShortestPath, '/shortestPath')
 
 if __name__ == '__main__':
