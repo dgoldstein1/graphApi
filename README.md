@@ -23,3 +23,10 @@ export FLASK_APP=src/server.py
 flask run
 ```
 
+
+## Generating New Documentation
+
+```sh
+pip install PyYAML
+python api/swagger-yaml-to-html.py < api/swagger.yml > api/swagger.html
+```
