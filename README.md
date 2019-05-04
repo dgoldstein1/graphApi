@@ -28,5 +28,5 @@ flask run
 
 ```sh
 pip install PyYAML
-python api/swagger-yaml-to-html.py < api/swagger.yml > api/swagger.html
+python api/swagger-yaml-to-html.py < api/swagger.yml > api/index.html
 ```

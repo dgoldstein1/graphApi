@@ -1,0 +1,60 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Swagger UI</title>
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,700|Source+Code+Pro:300,600|Titillium+Web:400,600,700" rel="stylesheet">
+  <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/3.2.2/swagger-ui.css" >
+  <style>
+    html
+    {
+      box-sizing: border-box;
+      overflow: -moz-scrollbars-vertical;
+      overflow-y: scroll;
+    }
+    *,
+    *:before,
+    *:after
+    {
+      box-sizing: inherit;
+    }
+
+    body {
+      margin:0;
+      background: #fafafa;
+    }
+  </style>
+</head>
+<body>
+
+<div id="swagger-ui"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/3.2.2/swagger-ui-bundle.js"> </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/3.2.2/swagger-ui-standalone-preset.js"> </script>
+<script>
+window.onload = function() {
+
+  var spec = {"info": {"version": "0.1.0", "description": "RESTful graph API exposing the Stanford Network Analysis Platform (SNAP)\n\n- [Source Code](https://github.com/dgoldstein1/graphApi)\n- [SNAP](https://snap.stanford.edu/index.html)\n", "title": "Simple Big Graph"}, "paths": {"/prometheus": {"get": {"responses": {"200": {"description": "Prometheus metrics. For more information see [data model](https://prometheus.io/docs/concepts/data_model/)."}, "500": {"content": {"application/json": {"schema": {"$ref": "#/components/schemas/Error"}}}, "description": "An error message."}}, "summary": "Prometheus Metrics."}}, "/neighbors": {"post": {"responses": {"200": {"content": {"application/json": {"schema": {"items": {"type": "string"}, "type": "array"}}}, "description": "A JSON array of neighbors"}, "500": {"content": {"application/json": {"schema": {"$ref": "#/components/schemas/Error"}}}, "description": "An error message."}}, "parameters": [{"required": true, "in": "query", "description": "Node to ad neighbors to.", "name": "node", "schema": {"type": "string"}}], "summary": "Adds list of neighboring nodes, keeping existing neighbors. Creates node if does not exist."}, "get": {"responses": {"200": {"content": {"application/json": {"schema": {"items": {"type": "string"}, "type": "array"}}}, "description": "A JSON array of neighbors"}, "500": {"content": {"application/json": {"schema": {"$ref": "#/components/schemas/Error"}}}, "description": "An error message."}}, "parameters": [{"required": true, "in": "query", "description": "Name of node to retrieve neighbors", "name": "node", "schema": {"type": "string"}}], "summary": "Returns a list of neighboring nodes."}}, "/shortestPath": {"get": {"responses": {"200": {"content": {"application/json": {"schema": {"items": {"type": "string"}, "type": "array"}}}, "description": "A JSON array of nodes"}, "500": {"content": {"application/json": {"schema": {"$ref": "#/components/schemas/Error"}}}, "description": "An error message."}}, "parameters": [{"required": true, "in": "query", "description": "Name of the starting node.", "name": "start", "schema": {"type": "string"}}, {"required": true, "in": "query", "description": "Name of the ending node.", "name": "end", "schema": {"type": "string"}}], "summary": "Returns path between two nodes, if exists."}}}, "openapi": "3.0.0", "components": {"schemas": {"Error": {"type": "object", "properties": {"code": {"type": "integer", "description": "The code of the error."}, "error": {"type": "string", "description": "Explanation of the error."}}}}}, "servers": [{"url": "http://staging-api.example.com", "description": "TODO create demo API"}]};
+
+  // Build a system
+  const ui = SwaggerUIBundle({
+    spec: spec,
+    dom_id: '#swagger-ui',
+    deepLinking: true,
+    presets: [
+      SwaggerUIBundle.presets.apis,
+      SwaggerUIStandalonePreset
+    ],
+    plugins: [
+      SwaggerUIBundle.plugins.DownloadUrl
+    ],
+    layout: "StandaloneLayout"
+  })
+
+  window.ui = ui
+}
+</script>
+</body>
+
+</html>

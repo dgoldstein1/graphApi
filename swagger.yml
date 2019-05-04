@@ -6,7 +6,7 @@ info:
 
     - [Source Code](https://github.com/dgoldstein1/graphApi)
     - [SNAP](https://snap.stanford.edu/index.html)
-  version: 0.1.0
+  version: 0.1.9
 servers:
   - url: http://staging-api.example.com
     description: TODO create demo API
