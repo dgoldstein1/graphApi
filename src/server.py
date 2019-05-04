@@ -1,9 +1,11 @@
 from flask import Flask, request, jsonify, send_file
 from flask_restful import Resource, Api
 from json import dumps
+from flask_prometheus import monitor 
 
 app = Flask(__name__)
 api = Api(app)
+monitor(app, port=8000)
 
 class ServeDocs(Resource):
 	"""Serves docs to browser"""
@@ -13,7 +15,8 @@ class ServeDocs(Resource):
 class serveMetrics(Resource):
 	"""server prometheus metrics"""
 	def get(self):
-		pass
+		# TODO: make request to monitored port
+		pass		
 
 class Neighbors(Resource):
 	"""adds neighbor nodes to graph. Returns {error: on error}"""
@@ -30,7 +33,7 @@ class ShortestPath(Resource):
     
 
 api.add_resource(ServeDocs, '/')
-api.add_resource(serveMetrics, '/prometheus')
+api.add_resource(ServeDocs, '/metrics')
 api.add_resource(Neighbors, '/neighbors')
 api.add_resource(ShortestPath, '/shortestPath')
 
