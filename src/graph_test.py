@@ -43,12 +43,15 @@ class TestGraphMethods(unittest.TestCase):
 		g.g().AddNode(2)
 		g.g().AddNode(3)
 		g.g().AddNode(4)
+		g.g().AddNode(5)
 		g.g().AddEdge(1, 2)
 		g.g().AddEdge(1, 3)
 		g.g().AddEdge(3, 4)
+		# 5 isn't connected to anything
+		with self.assertRaises(IndexError):
+			g.shortestPath(1,5)
 		self.assertEqual(g.shortestPath(1,2), [1,2])
 		self.assertEqual(g.shortestPath(1,4), [1,3,4])
-
 
 	def test_g(self):
 		g = graph.Graph("../out/doesntexist.graph").g()
