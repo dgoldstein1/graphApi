@@ -39,9 +39,10 @@ class TestGraphMethods(unittest.TestCase):
 		self.assertEqual(g.g().GetNodes(), 3)
 		self.assertEqual(g.g().GetEdges(), 2)
 		# add neighbors that do exist
-		g.addNeighbors(1, [2,3,4])
+		nodes = g.addNeighbors(1, [2,3,4])
 		self.assertEqual(g.g().GetNodes(), 4)
 		self.assertEqual(g.g().GetEdges(), 3)
+		self.assertEqual(nodes, [2,3,4])
 
 	def test_shortestPath(self):
 		g = graph.Graph("../out/doesntexist.graph")

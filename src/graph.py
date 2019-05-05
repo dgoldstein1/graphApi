@@ -52,6 +52,7 @@ class Graph:
                 self.g.AddNode(n)            
             # add edge
             self.g.AddEdge(node, n)
+        return self.getNeighbors(node)   
 
     def shortestPath(self, a, b, timeout = 10):
         """
