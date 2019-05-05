@@ -3,13 +3,11 @@ from flask_restful import Resource, Api
 from json import dumps
 from flask_prometheus import monitor 
 
-# constants
-METRICS_PORT = 8001
-
 # flask setup
 app = Flask(__name__)
+app.config.from_pyfile('../config.cfg')
 api = Api(app)
-monitor(app, port=METRICS_PORT)
+monitor(app, port=app.config["METRICS_PORT"])
 
 class ServeDocs(Resource):
 	"""Serves docs to browser"""
@@ -20,7 +18,7 @@ class ServeMetrics(Resource):
 	"""server prometheus metrics"""
 	def get(self):
 		# TODO: make request to monitored port
-		return redirect("http://127.0.0.1:{}".format(METRICS_PORT))
+		return redirect("http://127.0.0.1:{}".format(app.config["METRICS_PORT"]))
 
 class Neighbors(Resource):
 	"""adds neighbor nodes to graph. Returns {error: on error}"""
