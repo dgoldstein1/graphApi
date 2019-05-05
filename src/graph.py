@@ -2,7 +2,8 @@ import snap
 import logging
 from math import ceil, log
 import sys
-
+import signal
+from contextlib import contextmanager
 
 class Graph:
     """high level API for accessing graph object"""
@@ -51,27 +52,48 @@ class Graph:
             - gets shortest path between two nodes within timeout
             - return array of nodes or failure
         """
-        shortestPath = snap.GetShortPath(self.g,a, b, True)
-        # make sure that there is a path before going on
-        if(shortestPath == -1):
-            raise IndexError("No such path from {} to {}".format(a,b))
+        with self._timeout(timeout):            
+            shortestPath = snap.GetShortPath(self.g,a, b, True)
+            # make sure that there is a path before going on
+            if(shortestPath == -1):
+                raise IndexError("No such path from {} to {}".format(a,b))
 
-        path = [a]
-        currentNode = a
-        # recurse over neighbors to get full path, max iterations is shortest path
-        for i in xrange(0,shortestPath):
-            shortest = sys.maxint
-            for neighbor in self.getNeighbors(currentNode):
-                # get dist to end node
-                distToEnd = snap.GetShortPath(self.g, neighbor, b, True)
-                # update if less than current min
-                if (distToEnd != -1 and distToEnd < shortest):
-                    shortest = distToEnd
-                    currentNode = neighbor
+            path = [a]
+            currentNode = a
+            # recurse over neighbors to get full path, max iterations is shortest path
+            for i in xrange(0,shortestPath):
+                shortest = sys.maxint
+                for neighbor in self.getNeighbors(currentNode):
+                    # get dist to end node
+                    distToEnd = snap.GetShortPath(self.g, neighbor, b, True)
+                    # update if less than current min
+                    if (distToEnd != -1 and distToEnd < shortest):
+                        shortest = distToEnd
+                        currentNode = neighbor
 
-            path.append(currentNode)
+                path.append(currentNode)
 
-        return path
+            return path
+
+    @contextmanager
+    def _timeout(self, time):
+        # Register a function to raise a MemoryError on the signal.
+        signal.signal(signal.SIGALRM, self._raise_timeout)
+        # Schedule the signal to be sent after ``time``.
+        signal.alarm(time)
+
+        try:
+            yield
+        except MemoryError:
+            pass
+        finally:
+            # Unregister the signal so it won't be triggered
+            # if the timeout is not reached.
+            signal.signal(signal.SIGALRM, signal.SIG_IGN)
+
+
+    def _raise_timeout(self,signum, frame):
+        raise MemoryError    
 
     def g(self):
         return self.g
