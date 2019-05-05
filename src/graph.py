@@ -45,7 +45,7 @@ class Graph:
             # add edge
             self.g.AddEdge(node, n)
 
-    def getShortestPath(self, a = "", b = "", timeout = 10000):
+    def shortestPath(self, a, b, timeout = 10000):
         """
             - gets shortest path between two nodes within timeout
             - return array of nodes or failure
