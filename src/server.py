@@ -35,7 +35,7 @@ class ShortestPath(Resource):
 class SaveAndDownload(Resource):
 	"""saves graph and serves as file stream"""
 	def get(self):
-		return send_file(app.config["GRAPH_SAVE_PATH"])
+		return send_file(app.config["GRAPH_SAVE_PATH"], as_attachment=True)
     
 # monitoring
 api.add_resource(ServeDocs, '/')
