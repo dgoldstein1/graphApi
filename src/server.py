@@ -14,49 +14,36 @@ monitor(app, port=app.config["METRICS_PORT"])
 g = graph.Graph(app.config["GRAPH_SAVE_PATH"])
 lock = Lock()
 
+#########
+## api ##
+#########
 
-class ServeDocs(Resource):
-	"""Serves docs to browser"""
-	def get(self):
-		return send_file("../api/index.html")
-
-class ServeMetrics(Resource):
+@app.route('/metrics')
+def serveMetrics():
 	"""server prometheus metrics"""
-	def get(self):
-		return redirect("http://127.0.0.1:{}".format(app.config["METRICS_PORT"]))
+	return redirect("http://127.0.0.1:{}".format(app.config["METRICS_PORT"]))
 
-class Neighbors(Resource):
-	"""adds neighbor nodes to graph. Returns {error: on error}"""
-	def get(self):
-		lock.acquire()
-		print request.args.get("node")
-		lock.release()
-		return "done"
-		
+@app.route('/')
+def serveDocs():
+	"""Serves docs to browser"""
+	return send_file("../api/index.html")
 
-	def post(self):
-		pass
 
-class ShortestPath(Resource):
-	"""gets shortest path between two nodes"""
-	def get(self, a, b):
-		pass
 
-class SaveAndDownload(Resource):
+@app.route('/save')
+def save():
 	"""saves graph and serves as file stream"""
-	def get(self):
-		return send_file(app.config["GRAPH_SAVE_PATH"], as_attachment=True)
+	return send_file(app.config["GRAPH_SAVE_PATH"], as_attachment=True)
 
+@app.route('/neighbors', methods=['POST', 'GET'])
+def neighbors():
+	"""adds neighbor nodes to graph. Returns {error: on error}"""
+	pass
 
-# add routing to app
-api = Api(app)
-# monitoring
-api.add_resource(ServeDocs, '/')
-api.add_resource(ServeMetrics, '/metrics')
-# core api
-api.add_resource(SaveAndDownload, "/save")
-api.add_resource(Neighbors, '/neighbors')
-api.add_resource(ShortestPath, '/shortestPath')
+@app.route('/shortestPath')
+def shortestPath():
+	"""gets shortest path between two nodes"""
+	pass
 
 
 if __name__ == '__main__':
