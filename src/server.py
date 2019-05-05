@@ -17,7 +17,6 @@ class ServeDocs(Resource):
 class ServeMetrics(Resource):
 	"""server prometheus metrics"""
 	def get(self):
-		# TODO: make request to monitored port
 		return redirect("http://127.0.0.1:{}".format(app.config["METRICS_PORT"]))
 
 class Neighbors(Resource):

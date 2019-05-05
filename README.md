@@ -11,9 +11,18 @@ RESTful graph API written in C++ to handle billions of nodes through the Stanfor
 pip install -r requirements.txt
 ```
 
-- Run tests to make sure everything is configured correctly
+## Test
+
+Run tests to make sure everything is configured correctly.
 ```sh
 python -m unittest discover src "*_test.py"
+```
+
+See code coverage:
+```sh
+coverage run src/**/*.py
+coverage html src/**/*.py
+# open up the file htmlcov/index.html in a browser
 ```
 
 ## Run
