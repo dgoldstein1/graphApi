@@ -1,5 +1,7 @@
 import snap
 import logging
+from math import ceil, log
+
 
 class Graph:
     """high level API for accessing graph object"""
@@ -18,16 +20,30 @@ class Graph:
             logging.warn("Exception loading graph '{}' at path '{}'. Creating new graph.".format(e.message, path))
 
 
+    def getNeighbors(self, node = ""):
+        """
+            - finds node
+            - returns all edges from that node
+        """
+        pass
 
-    def addNeighbors(self, node = "", neighbors = []):
+    def addNeighbors(self, node, neighbors = []):
         """
             - creates node if does not exist
             - adds an array of nodes to given node
             - returns success
         """
-        
-        pass
+        # add node if does not exist
+        if (self.g.IsNode(node) == False):
+            self.g.AddNode(node)
 
+        # add neighbor nodes with edge to this node
+        for n in neighbors:
+            # add node if does not exist
+            if (self.g.IsNode(n) == False):
+                self.g.AddNode(n)            
+            # add edge
+            self.g.AddEdge(node, n)
 
     def getShortestPath(self, a = "", b = "", timeout = 10000):
         """
