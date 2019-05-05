@@ -107,6 +107,19 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'    
 
+  /save:
+    get:
+      summary: Saves current graph to GRAPH_SAVE_PATH and streams file. Note that this endpoint can take 1+ minutes.
+      responses:
+        '200': 
+          description: File stream of graph as a [TF file](https://snap.stanford.edu/snappy/doc/reference/streams.html#TFIn).
+        '500': 
+          description: An error message.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error' 
+
 components:
   schemas:
     Error:

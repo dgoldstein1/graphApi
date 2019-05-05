@@ -32,10 +32,17 @@ class ShortestPath(Resource):
 	"""gets shortest path between two nodes"""
 	def get(self, a, b):
 		pass
-    
 
+class SaveAndDownload(Resource):
+	"""saves graph and serves as file stream"""
+	def get(self):
+		return send_file(app.config["GRAPH_SAVE_PATH"])
+    
+# monitoring
 api.add_resource(ServeDocs, '/')
 api.add_resource(ServeMetrics, '/metrics')
+# core api
+api.add_resource(SaveAndDownload, "/save")
 api.add_resource(Neighbors, '/neighbors')
 api.add_resource(ShortestPath, '/shortestPath')
 

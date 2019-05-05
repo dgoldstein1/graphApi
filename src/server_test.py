@@ -10,6 +10,7 @@ class TestServer(unittest.TestCase):
     def setUp(self):
         app.config['TESTING'] = True
         app.config["METRICS_PORT"] = 8001
+    	app.config["GRAPH_SAVE_PATH"] = "../out/test.graph"
         self.app = app.test_client()
         self.assertEqual(app.debug, False)
 
@@ -21,6 +22,13 @@ class TestServer(unittest.TestCase):
         	HTMLParser().feed(response.data)
        	except:
        		self.fail("Could not parse docs")
+
+    def test_save_positive(self):
+    	"""attempt to save when already exists"""
+        response = self.app.get('/save', follow_redirects=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertIsNotNone(response.data)
+        self.assertEqual(response.data, 'TEST\n')
 
 
     def test_metrics(self):
