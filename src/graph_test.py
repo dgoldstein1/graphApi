@@ -9,6 +9,12 @@ class TestGraphMethods(unittest.TestCase):
 	def setUp(self):
 		logging.getLogger().setLevel(logging.ERROR)
 
+	def test_save(self):
+		file = "{}/out/test1SavedTest.graph".format(os.getcwd())
+		g = graph.Graph(file)
+		self.assertEqual(g.g().GetNodes(), 1)
+		g.save()
+
 	def test_getNeighbors(self):
 		g = graph.Graph("../out/doesntexist.graph")
 		g.g().AddNode(1)

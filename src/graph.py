@@ -22,6 +22,12 @@ class Graph:
             logging.warn("Exception loading graph '{}' at path '{}'. Creating new graph.".format(e.message, path))
 
 
+    def save(self):
+        """overwrites files at path with current graph"""
+        FOut = snap.TFOut(self.path)
+        self.g.Save(FOut)
+        FOut.Flush()
+
     def getNeighbors(self, node = 0):
         """
             - finds node
@@ -47,7 +53,7 @@ class Graph:
             # add edge
             self.g.AddEdge(node, n)
 
-    def shortestPath(self, a, b, timeout = 10000):
+    def shortestPath(self, a, b, timeout = 10):
         """
             - gets shortest path between two nodes within timeout
             - return array of nodes or failure
