@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, send_file, redirect
+from flask import Flask, request, jsonify, send_file, redirect, Response
 from flask_restful import Resource, Api
 from json import dumps
 from flask_prometheus import monitor 
@@ -29,7 +29,6 @@ def serveDocs():
 	return send_file("../api/index.html")
 
 
-
 @app.route('/save')
 def save():
 	"""saves graph and serves as file stream"""
@@ -38,13 +37,18 @@ def save():
 @app.route('/neighbors', methods=['POST', 'GET'])
 def neighbors():
 	"""adds neighbor nodes to graph. Returns {error: on error}"""
-	pass
+	node = request.args.get("node")
+	if (node is None):
+		return _returnError(422, "The query parameter 'node' is required")
+	return "test"
 
 @app.route('/shortestPath')
 def shortestPath():
 	"""gets shortest path between two nodes"""
 	pass
 
+def _returnError(code, error):
+	return dumps({'code':code, 'error':error}), code, {'ContentType':'application/json'}
 
 if __name__ == '__main__':
-	app.run()
+	app.run(debug=True)
