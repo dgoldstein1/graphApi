@@ -14,6 +14,9 @@ class TestServer(unittest.TestCase):
         self.app = app.test_client()
         self.assertEqual(app.debug, False)
 
+    def test_addNodes(self):
+        
+
     def test_serve_docs(self):
         response = self.app.get('/', follow_redirects=True)
         self.assertEqual(response.status_code, 200)

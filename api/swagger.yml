@@ -39,6 +39,20 @@ paths:
 
     post:
       summary: Adds list of neighboring nodes, keeping existing neighbors. Creates node if does not exist.
+      requestBody:
+        description: Optional description in *Markdown*
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - neighbors
+              properties:
+                neighbors:
+                  type: array
+                  items: 
+                    type: string
       parameters:
         - in: query
           name: node
