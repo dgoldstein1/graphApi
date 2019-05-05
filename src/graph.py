@@ -1,10 +1,23 @@
 import snap
+import logging
 
 class Graph:
     """high level API for accessing graph object"""
-    def __init__(self):
-        # create new graph
-        self.g = snap.TNGraph.New()
+    def __init__(self, path = ""):
+        """
+            - initializer
+            - tries to read from graph, else initializes empty
+        """
+        self.path = path
+        try:
+            FIn = snap.TFIn(path)
+            self.g = snap.TNGraph.Load(FIn)
+            logging.debug("Loaded graph '{}' successfully".format(path))
+        except RuntimeError as e:
+            self.g = snap.TNGraph.New()
+            logging.warn("Exception loading graph '{}' at path '{}'. Creating new graph.".format(e.message, path))
+
+
 
     def addNeighbors(self, node = "", neighbors = []):
         """
