@@ -38,9 +38,17 @@ def save():
 def neighbors():
 	"""adds neighbor nodes to graph. Returns {error: on error}"""
 	node = request.args.get("node")
+	# assert node is not None
 	if (node is None):
 		return _returnError(422, "The query parameter 'node' is required")
+
+	if (request.method == "GET"):
+		# get neighbor nodes
+		pass
+
+	# method type is POST
 	return "test"
+	
 
 @app.route('/shortestPath')
 def shortestPath():
