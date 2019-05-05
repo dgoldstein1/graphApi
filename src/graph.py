@@ -5,7 +5,7 @@ from math import ceil, log
 
 class Graph:
     """high level API for accessing graph object"""
-    def __init__(self, path = ""):
+    def __init__(self, path):
         """
             - initializer
             - tries to read from graph, else initializes empty
@@ -20,12 +20,12 @@ class Graph:
             logging.warn("Exception loading graph '{}' at path '{}'. Creating new graph.".format(e.message, path))
 
 
-    def getNeighbors(self, node = ""):
+    def getNeighbors(self, node = 0):
         """
             - finds node
             - returns all edges from that node
         """
-        pass
+        return [n for n in self.g.GetNI(node).GetOutEdges()]
 
     def addNeighbors(self, node, neighbors = []):
         """
