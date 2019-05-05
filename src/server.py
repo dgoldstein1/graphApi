@@ -2,12 +2,18 @@ from flask import Flask, request, jsonify, send_file, redirect
 from flask_restful import Resource, Api
 from json import dumps
 from flask_prometheus import monitor 
+from threading import Lock
+import graph
+import time
 
 # flask setup
 app = Flask(__name__)
 app.config.from_pyfile('../config.cfg')
-api = Api(app)
 monitor(app, port=app.config["METRICS_PORT"])
+# graph setup
+g = graph.Graph(app.config["GRAPH_SAVE_PATH"])
+lock = Lock()
+
 
 class ServeDocs(Resource):
 	"""Serves docs to browser"""
@@ -22,7 +28,11 @@ class ServeMetrics(Resource):
 class Neighbors(Resource):
 	"""adds neighbor nodes to graph. Returns {error: on error}"""
 	def get(self):
-		pass
+		lock.acquire()
+		print request.args.get("node")
+		lock.release()
+		return "done"
+		
 
 	def post(self):
 		pass
@@ -36,7 +46,10 @@ class SaveAndDownload(Resource):
 	"""saves graph and serves as file stream"""
 	def get(self):
 		return send_file(app.config["GRAPH_SAVE_PATH"], as_attachment=True)
-    
+
+
+# add routing to app
+api = Api(app)
 # monitoring
 api.add_resource(ServeDocs, '/')
 api.add_resource(ServeMetrics, '/metrics')
@@ -45,5 +58,6 @@ api.add_resource(SaveAndDownload, "/save")
 api.add_resource(Neighbors, '/neighbors')
 api.add_resource(ShortestPath, '/shortestPath')
 
+
 if __name__ == '__main__':
-    app.run()
+	app.run()
