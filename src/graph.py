@@ -5,8 +5,10 @@ import sys
 import signal
 from contextlib import contextmanager
 
+
 class Graph:
     """high level API for accessing graph object"""
+
     def __init__(self, path):
         """
             - initializer
@@ -19,8 +21,9 @@ class Graph:
             logging.debug("Loaded graph '{}' successfully".format(path))
         except RuntimeError as e:
             self.g = snap.TNGraph.New()
-            logging.warn("Exception loading graph '{}' at path '{}'. Creating new graph.".format(e.message, path))
-
+            logging.warn(
+                "Exception loading graph '{}' at path '{}'. Creating new graph."
+                .format(e.message, path))
 
     def save(self):
         """overwrites files at path with current graph"""
@@ -28,14 +31,14 @@ class Graph:
         self.g.Save(FOut)
         FOut.Flush()
 
-    def getNeighbors(self, node = 0):
+    def getNeighbors(self, node=0):
         """
             - finds node
             - returns all edges from that node
         """
         return [n for n in self.g.GetNI(node).GetOutEdges()]
 
-    def addNeighbors(self, node, neighbors = []):
+    def addNeighbors(self, node, neighbors=[]):
         """
             - creates node if does not exist
             - adds an array of nodes to given node
@@ -49,26 +52,26 @@ class Graph:
         for n in neighbors:
             # add node if does not exist
             if (self.g.IsNode(n) == False):
-                self.g.AddNode(n)            
+                self.g.AddNode(n)
             # add edge
             self.g.AddEdge(node, n)
-        return self.getNeighbors(node)   
+        return self.getNeighbors(node)
 
-    def shortestPath(self, a, b, timeout = 10):
+    def shortestPath(self, a, b, timeout=10):
         """
             - gets shortest path between two nodes within timeout
             - return array of nodes or failure
         """
-        with self._timeout(timeout):            
-            shortestPath = snap.GetShortPath(self.g,a, b, True)
+        with self._timeout(timeout):
+            shortestPath = snap.GetShortPath(self.g, a, b, True)
             # make sure that there is a path before going on
-            if(shortestPath == -1):
-                raise IndexError("No such path from {} to {}".format(a,b))
+            if (shortestPath == -1):
+                raise IndexError("No such path from {} to {}".format(a, b))
 
             path = [a]
             currentNode = a
             # recurse over neighbors to get full path, max iterations is shortest path
-            for i in xrange(0,shortestPath):
+            for i in xrange(0, shortestPath):
                 shortest = sys.maxint
                 for neighbor in self.getNeighbors(currentNode):
                     # get dist to end node
@@ -98,9 +101,8 @@ class Graph:
             # if the timeout is not reached.
             signal.signal(signal.SIGALRM, signal.SIG_IGN)
 
-
-    def _raise_timeout(self,signum, frame):
-        raise MemoryError    
+    def _raise_timeout(self, signum, frame):
+        raise MemoryError
 
     def g(self):
         return self.g

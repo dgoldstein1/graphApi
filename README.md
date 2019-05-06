@@ -41,6 +41,12 @@ Var | Meaning
 `METRICS_PORT` | Port where metrics are running on server
 `GRAPH_SAVE_PATH`  | Name of file to load in and save graph. Must be full file path.
 
+## Code Formatting
+
+```sh
+pip install yapf
+yapf -r src/**/*.py
+```
 
 
 ## Generating New Documentation
