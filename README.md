@@ -38,7 +38,7 @@ flask run
 See [config](config.cfg) for a complete example of configuration settings. Relative paths start from the `src` directory.
 
 Var | Meaning
---- | --- | ---
+--- | --- |
 `METRICS_PORT` | Port where metrics are running on server
 `GRAPH_SAVE_PATH`  | Name of file to load in and save graph. Must be full file path.
 
