@@ -5,6 +5,7 @@ from flask_prometheus import monitor
 from threading import Lock
 import graph
 import time
+import logging
 
 # flask setup
 app = Flask(__name__)
@@ -38,16 +39,19 @@ def save():
 def neighbors():
 	"""adds neighbor nodes to graph. Returns {error: on error}"""
 	node = request.args.get("node")
-	# assert node is not None
-	if (node is None):
-		return _returnError(422, "The query parameter 'node' is required")
+	# parse arguments
+	if (node is None): return _returnError(422, "The query parameter 'node' is required")
+	try: node = int(node)
+	except ValueError: return _returnError(422, "Node '{}' could not be converted to an integer".format(node))
+	
 
-	if (request.method == "GET"):
-		# get neighbor nodes
-		pass
+	# get or add nodes
+	lock.acquire()
+	neighbors = g.getNeighbors(node) if request.method == "GET" else []
+	lock.release()
 
 	# method type is POST
-	return "test"
+	return dumps(neighbors, 200, {'ContentType':'application/json'})
 	
 
 @app.route('/shortestPath')
@@ -56,6 +60,7 @@ def shortestPath():
 	pass
 
 def _returnError(code, error):
+	logging.error(error)
 	return dumps({'code':code, 'error':error}), code, {'ContentType':'application/json'}
 
 if __name__ == '__main__':

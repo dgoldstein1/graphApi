@@ -14,8 +14,27 @@ class TestServer(unittest.TestCase):
         self.app = app.test_client()
         self.assertEqual(app.debug, False)
 
-    def test_addNodes(self):
-        
+    def test_addNeighbors(self):
+        response = self.app.post("/neighbors?node=1", data=dict(
+                neighbors=[2,3,4]
+            )
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data, [2,3,4])
+        # try and get neighbors of node '2'
+        response = self.app.get("/neighbors?node=2")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data, [])
+
+
+    def test_getNeighborsParseArgs(self):
+        # assert that giving bad node fails
+        response = self.app.get("/neighbors")
+        self.assertEqual(response.status_code, 422)
+        self.assertEqual(response.data, '{"code": 422, "error": "The query parameter \'node\' is required"}')
+        response = self.app.get("/neighbors?node=sldfkjsldkfj")
+        self.assertEqual(response.status_code, 422)
+        self.assertEqual(response.data, '{"code": 422, "error": "Node \'sldfkjsldkfj\' could not be converted to an integer"}')
 
     def test_serve_docs(self):
         response = self.app.get('/', follow_redirects=True)
