@@ -1,11 +1,12 @@
 # graphApi
-RESTful graph API written in C++ to handle billions of nodes through the Stanford Network Analysis Platform (SNAP)
+RESTful graph API to handle analysis on billions of nodes through the Stanford Network Analysis Platform (SNAP)
 
 
 ## Setup
 
-- Install or set the python version to `2.7`
+- Set the python version to `2.7`
 - Install the (Snap python package manually)[https://snap.stanford.edu/snappy/index.html#download]
+- Install [Flask v1](http://flask.pocoo.org/docs/1.0/installation/)
 - Install dependencies
 ```sh
 pip install -r requirements.txt
@@ -55,3 +56,4 @@ yapf -r src/**/*.py
 pip install PyYAML
 python api/swagger-yaml-to-html.py < api/swagger.yml > api/index.html
 ```
+
