@@ -44,12 +44,26 @@ def neighbors():
     node = request.args.get("node")
     # parse arguments
     if (node is None):
-        return _returnError(422, "The query parameter 'node' is required")
+        return _errOut(422, "The query parameter 'node' is required")
+
     try:
         node = int(node)
     except ValueError:
-        return _returnError(
+        return _errOut(
             422, "Node '{}' could not be converted to an integer".format(node))
+
+   #  neighborsToAdd = []
+   #  if (request.method == "POST"):
+   #  	if (isinstance(request.form["neighbors"], list) == False):
+			# return _errOut(422, "'neighbors' must be an array but got '{}'".format(request.form["neighbors"]))    		
+   #  	# assert that each neighbor is valid int
+   #  	for n in request.form["neighbors"]:
+			# try:
+			#     neighborsToAdd.append(int(node))
+			# except ValueError:
+			#     return _errOut(
+			#         422, "Node '{}' could not be converted to an integer".format(n))
+
 
     # get or add nodes
     lock.acquire()
@@ -66,7 +80,7 @@ def shortestPath():
     pass
 
 
-def _returnError(code, error):
+def _errOut(code, error):
     logging.error(error)
     return dumps({
         'code': code,

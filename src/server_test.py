@@ -17,7 +17,7 @@ class TestServer(unittest.TestCase):
 
     def test_addNeighbors(self):
         response = self.app.post("/neighbors?node=1",
-                                 data=dict(neighbors=[2, 3, 4]))
+                                 json={'neighbors':[2, 3, 4]})
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data, [2, 3, 4])
         # try and get neighbors of node '2'
