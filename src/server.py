@@ -6,6 +6,7 @@ from threading import Lock
 import graph
 import time
 import logging
+import json
 
 # flask setup
 app = Flask(__name__)
@@ -52,26 +53,27 @@ def neighbors():
         return _errOut(
             422, "Node '{}' could not be converted to an integer".format(node))
 
-   #  neighborsToAdd = []
-   #  if (request.method == "POST"):
-   #  	if (isinstance(request.form["neighbors"], list) == False):
-			# return _errOut(422, "'neighbors' must be an array but got '{}'".format(request.form["neighbors"]))    		
-   #  	# assert that each neighbor is valid int
-   #  	for n in request.form["neighbors"]:
-			# try:
-			#     neighborsToAdd.append(int(node))
-			# except ValueError:
-			#     return _errOut(
-			#         422, "Node '{}' could not be converted to an integer".format(n))
+    
+    neighborsToAdd = []
+    if (request.method == "POST"):
+        body = request.get_json()
+    	if (isinstance(body["neighbors"], list) == False):
+			return _errOut(422, "'neighbors' must be an array but got '{}'".format(body["neighbors"]))    		
+    	# assert that each neighbor is valid int
+    	for n in body["neighbors"]:
+			try:
+			    neighborsToAdd.append(int(node))
+			except ValueError:
+			    return _errOut(
+			        422, "Node '{}' could not be converted to an integer".format(n))
 
 
     # get or add nodes
     lock.acquire()
     neighbors = g.getNeighbors(node) if request.method == "GET" else []
     lock.release()
-
     # method type is POST
-    return dumps(neighbors, 200, {'ContentType': 'application/json'})
+    return jsonify(neighbors)
 
 
 @app.route('/shortestPath')
