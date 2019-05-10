@@ -84,12 +84,7 @@ def shortestPath():
 
 def _errOut(code, error):
     logging.error(error)
-    return dumps({
-        'code': code,
-        'error': error
-    }), code, {
-        'ContentType': 'application/json'
-    }
+    return jsonify(code=code, error=error), code
 
 
 if __name__ == '__main__':
