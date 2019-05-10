@@ -16,14 +16,20 @@ class TestServer(unittest.TestCase):
         self.assertEqual(app.debug, False)
 
     def test_addNeighbors(self):
+        # try to add non-list
+        response = self.app.post("/neighbors?node=1",
+                                 json={"neighbors":"NON-LIST OBJECT"})
+        self.assertEqual(response.status_code, 422)
+        self.assertEqual(response.get_json(), {u'code': 422, u'error': u"'neighbors' must be an array but got 'NON-LIST OBJECT'"})
+        # try to add a neighbor that's not an int
+        response = self.app.post("/neighbors?node=1", json={"neighbors":[2, 3, "NON-INT-OBJECT"]})
+        self.assertEqual(response.status_code, 422)
+        self.assertEqual(response.get_json(), {u'code': 422, u'error': u"Node 'NON-INT-OBJECT' could not be converted to an integer"})
+        # try to add normal neighbor
         response = self.app.post("/neighbors?node=1",
                                  json={"neighbors":[2, 3, 4]})
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.get_json(), [2, 3, 4])
-        # try and get neighbors of node '2'
-        # response = self.app.get("/neighbors?node=2")
-        # self.assertEqual(response.status_code, 200)
-        # self.assertEqual(response.get_json(), [])
 
     def test_getNeighborsParseArgs(self):
         # assert that giving bad node fails

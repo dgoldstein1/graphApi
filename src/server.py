@@ -62,7 +62,7 @@ def neighbors():
     	# assert that each neighbor is valid int
     	for n in body["neighbors"]:
 			try:
-			    neighborsToAdd.append(int(node))
+			    neighborsToAdd.append(int(n))
 			except ValueError:
 			    return _errOut(
 			        422, "Node '{}' could not be converted to an integer".format(n))
