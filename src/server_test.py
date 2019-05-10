@@ -11,9 +11,15 @@ class TestServer(unittest.TestCase):
     def setUp(self):
         app.config['TESTING'] = True
         app.config["METRICS_PORT"] = 8001
-        app.config["GRAPH_SAVE_PATH"] = "../out/test.graph"
+        app.config["GRAPH_SAVE_PATH"] = "../out/test1.graph"
         self.app = app.test_client()
         self.assertEqual(app.debug, False)
+
+    def test_getNeighbors(self):
+        # get a normal neighbor
+        response = self.app.get("/neighbors?node=1")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.get_json(), [2,3,4])
 
     def test_addNeighbors(self):
         # try to add non-list
@@ -26,8 +32,7 @@ class TestServer(unittest.TestCase):
         self.assertEqual(response.status_code, 422)
         self.assertEqual(response.get_json(), {u'code': 422, u'error': u"Node 'NON-INT-OBJECT' could not be converted to an integer"})
         # try to add normal neighbor
-        response = self.app.post("/neighbors?node=1",
-                                 json={"neighbors":[2, 3, 4]})
+        response = self.app.post("/neighbors?node=1", json={"neighbors":[2, 3, 4]})
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.get_json(), [2, 3, 4])
 
@@ -60,7 +65,6 @@ class TestServer(unittest.TestCase):
         response = self.app.get('/save', follow_redirects=True)
         self.assertEqual(response.status_code, 200)
         self.assertIsNotNone(response.data)
-        self.assertEqual(response.data, 'TEST\n')
 
     def test_metrics(self):
         # assert that it redirects
