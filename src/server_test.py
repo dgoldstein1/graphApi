@@ -40,9 +40,9 @@ class TestServer(unittest.TestCase):
         self.assertEqual(response.status_code, 422)
         self.assertEqual(response.get_json(), {u'code': 422, u'error': u"Node 'NON-INT-OBJECT' could not be converted to an integer"})
         # try to add normal neighbor
-        response = self.app.post("/neighbors?node=1", json={"neighbors":[2, 3, 4]})
+        response = self.app.post("/neighbors?node=1001", json={"neighbors":[1002, 1003, 1004]})
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.get_json(), [2, 3, 4])
+        self.assertEqual(response.get_json(), [1002, 1003, 1004])
 
     def test_getNeighborsParseArgs(self):
         # assert that giving bad node fails

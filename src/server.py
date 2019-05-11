@@ -72,7 +72,7 @@ def neighbors():
 	lock.acquire()
 	err = None
     try:
-    	neighbors = g.getNeighbors(node) if request.method == "GET" else []
+    	neighbors = g.getNeighbors(node) if request.method == "GET" else g.addNeighbors(node, neighborsToAdd)
     except RuntimeError as e:
     	err = _errOut(500, "Node '{}' was not found or does not exist".format(node))
 
