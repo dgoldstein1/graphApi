@@ -69,10 +69,18 @@ def neighbors():
 
 
     # get or add nodes
-    lock.acquire()
-    neighbors = g.getNeighbors(node) if request.method == "GET" else []
-    lock.release()
-    # method type is POST
+	lock.acquire()
+	err = None
+    try:
+    	neighbors = g.getNeighbors(node) if request.method == "GET" else []
+    except RuntimeError as e:
+    	err = _errOut(500, "Node '{}' was not found or does not exist".format(node))
+
+	lock.release()
+	
+	if err is not None:
+		return err
+	# else
     return jsonify(neighbors)
 
 

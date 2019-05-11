@@ -16,10 +16,10 @@ class TestServer(unittest.TestCase):
         self.assertEqual(app.debug, False)
 
     def test_getNeighbors(self):
-        # get a normal neighbor
-        response = self.app.get("/neighbors?node=1")
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.get_json(), [2,3,4])
+        # get node that doesn't exist
+        response = self.app.get("/neighbors?node=1234234")
+        self.assertEqual(response.status_code, 500)
+        self.assertEqual(response.get_json(), {u'code': 500, u'error': u"Node '1234234' was not found or does not exist"})
 
     def test_addNeighbors(self):
         # try to add non-list
