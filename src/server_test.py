@@ -12,6 +12,7 @@ class TestServer(unittest.TestCase):
         app.config['TESTING'] = True
         app.config["METRICS_PORT"] = 8001
         app.config["GRAPH_SAVE_PATH"] = "../out/test1.graph"
+        app.config["SHORTEST_PATH_TIMEOUT"] = 3000
         self.app = app.test_client()
         self.assertEqual(app.debug, False)
 
@@ -43,6 +44,27 @@ class TestServer(unittest.TestCase):
         response = self.app.post("/neighbors?node=1001", json={"neighbors":[1002, 1003, 1004]})
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.get_json(), [1002, 1003, 1004])
+
+    def test_getShortestPath(self):
+        # no end given
+        response = self.app.get("/shortestPath?start=3")
+        self.assertEqual(response.status_code, 422)
+        self.assertEqual(
+            response.get_json(),
+            {u'code': 422, u'error': u"The query parameters 'start' and 'end' are required"}
+        )
+        # bad end node
+        response = self.app.get("/shortestPath?start=3&end=pjijsiji")
+        self.assertEqual(response.status_code, 422)
+        self.assertEqual(
+            response.get_json(),
+            {u'code': 422, u'error': u"Nodes '3' and 'pjijsiji' could not be converted to integers"}
+        )
+        # end node doesn't exist
+        response = self.app.get("/shortestPath?start=3&end=999999999999999")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.get_json(), {u'code': 422, u'error': u"Node does not exist"})
+        # normal path
 
     def test_getNeighborsParseArgs(self):
         # assert that giving bad node fails

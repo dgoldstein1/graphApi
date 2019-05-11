@@ -41,7 +41,7 @@ Var | Meaning
 --- | --- |
 `METRICS_PORT` | Port where metrics are running on server
 `GRAPH_SAVE_PATH`  | Name of file to load in and save graph. Must be full file path.
-
+`SHORTEST_PATH_TIMEOUT` | Maximum time allowed in finding shortest path between two nodes.
 ## Code Formatting
 
 ```sh

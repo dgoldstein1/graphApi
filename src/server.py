@@ -12,6 +12,7 @@ import json
 app = Flask(__name__)
 app.config.from_pyfile('../config.cfg')
 monitor(app, port=app.config["METRICS_PORT"])
+SHORTEST_PATH_TIMEOUT=int(app.config["SHORTEST_PATH_TIMEOUT"])
 # graph setup
 g = graph.Graph(app.config["GRAPH_SAVE_PATH"])
 lock = Lock()
@@ -77,7 +78,6 @@ def neighbors():
     	err = _errOut(500, "Node '{}' was not found or does not exist".format(node))
 
 	lock.release()
-	
 	if err is not None:
 		return err
 	# else
@@ -87,7 +87,19 @@ def neighbors():
 @app.route('/shortestPath')
 def shortestPath():
     """gets shortest path between two nodes"""
-    pass
+    start = request.args.get("start")
+    end = request.args.get("end")
+    # parse arguments
+    if (start is None or end is None):
+        return _errOut(422, "The query parameters 'start' and 'end' are required")
+
+    try:
+        start = int(start)
+        end = int(end)
+    except ValueError:
+        return _errOut(422, "Nodes '{}' and '{}' could not be converted to integers".format(start, end))
+
+    return jsonify([])
 
 
 def _errOut(code, error):
