@@ -59,6 +59,7 @@ def neighbors():
     
     neighborsToAdd = []
     if (request.method == "POST"):
+    	print request
         body = request.get_json()
     	if (isinstance(body["neighbors"], list) == False):
 			return _errOut(422, "'neighbors' must be an array but got '{}'".format(body["neighbors"]))    		
@@ -109,7 +110,7 @@ def shortestPath():
     	path = g.shortestPath(start, end, SHORTEST_PATH_TIMEOUT)
     except IndexError as e:
     	err = _errOut(500, e.message)
-
+    lock.release()
     if err is not None:
     	return err	
     return jsonify(path)

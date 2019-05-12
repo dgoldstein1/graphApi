@@ -67,6 +67,10 @@ class TestServer(unittest.TestCase):
         response = self.app.get("/shortestPath?start=3&end=99999999999999999999999")
         self.assertEqual(response.status_code, 422)
         self.assertEqual(response.get_json(), {u'code': 422, u'error': u'Integers over 999999999.0 are not supported'})        
+        # normal path
+        response = self.app.get("/shortestPath?start=3&end=35")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.get_json(), [3,31,35])        
 
     def test_getNeighborsParseArgs(self):
         # assert that giving bad node fails
