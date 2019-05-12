@@ -62,28 +62,27 @@ class Graph:
             - gets shortest path between two nodes within timeout
             - return array of nodes or failure
         """
-        with self._timeout(timeout):
-            shortestPath = snap.GetShortPath(self.g, a, b, True)
-            # make sure that there is a path before going on
-            if (shortestPath == -1):
-                raise IndexError("No such path from {} to {}".format(a, b))
+        # with self._timeout(timeout):
+        shortestPath = snap.GetShortPath(self.g, a, b, True)
+        # make sure that there is a path before going on
+        if (shortestPath == -1):
+            raise IndexError("No such path from {} to {}".format(a, b))
 
-            path = [a]
-            currentNode = a
-            # recurse over neighbors to get full path, max iterations is shortest path
-            for i in xrange(0, shortestPath):
-                shortest = sys.maxint
-                for neighbor in self.getNeighbors(currentNode):
-                    # get dist to end node
-                    distToEnd = snap.GetShortPath(self.g, neighbor, b, True)
-                    # update if less than current min
-                    if (distToEnd != -1 and distToEnd < shortest):
-                        shortest = distToEnd
-                        currentNode = neighbor
+        path = [a]
+        currentNode = a
+        # recurse over neighbors to get full path, max iterations is shortest path
+        for i in xrange(0, shortestPath):
+            shortest = sys.maxint
+            for neighbor in self.getNeighbors(currentNode):
+                # get dist to end node
+                distToEnd = snap.GetShortPath(self.g, neighbor, b, True)
+                # update if less than current min
+                if (distToEnd != -1 and distToEnd < shortest):
+                    shortest = distToEnd
+                    currentNode = neighbor
 
-                path.append(currentNode)
-
-            return path
+            path.append(currentNode)
+        return path
 
     @contextmanager
     def _timeout(self, time):

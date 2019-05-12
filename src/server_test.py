@@ -12,7 +12,7 @@ class TestServer(unittest.TestCase):
         app.config['TESTING'] = True
         app.config["METRICS_PORT"] = 8001
         app.config["GRAPH_SAVE_PATH"] = "../out/test1.graph"
-        app.config["SHORTEST_PATH_TIMEOUT"] = 3000
+        app.config["SHORTEST_PATH_TIMEOUT"] = 2
         self.app = app.test_client()
         self.assertEqual(app.debug, False)
 
@@ -66,8 +66,7 @@ class TestServer(unittest.TestCase):
         # too big int
         response = self.app.get("/shortestPath?start=3&end=99999999999999999999999")
         self.assertEqual(response.status_code, 422)
-        self.assertEqual(response.get_json(), {u'code': 422, u'error': u'Integers over 999999999.0 are not supported'})
-        # normal path
+        self.assertEqual(response.get_json(), {u'code': 422, u'error': u'Integers over 999999999.0 are not supported'})        
 
     def test_getNeighborsParseArgs(self):
         # assert that giving bad node fails
