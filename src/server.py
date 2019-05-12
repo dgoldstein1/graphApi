@@ -13,6 +13,7 @@ app = Flask(__name__)
 app.config.from_pyfile('../config.cfg')
 monitor(app, port=app.config["METRICS_PORT"])
 SHORTEST_PATH_TIMEOUT=int(app.config["SHORTEST_PATH_TIMEOUT"])
+MAX_INT=999999999.0
 # graph setup
 g = graph.Graph(app.config["GRAPH_SAVE_PATH"])
 lock = Lock()
@@ -50,9 +51,10 @@ def neighbors():
 
     try:
         node = int(node)
+        if node > MAX_INT:
+			return _errOut(422, "Integers over {} are not supported".format(MAX_INT))
     except ValueError:
-        return _errOut(
-            422, "Node '{}' could not be converted to an integer".format(node))
+        return _errOut(422, "Node '{}' could not be converted to an integer".format(node))
 
     
     neighborsToAdd = []
@@ -92,14 +94,25 @@ def shortestPath():
     # parse arguments
     if (start is None or end is None):
         return _errOut(422, "The query parameters 'start' and 'end' are required")
-
     try:
         start = int(start)
         end = int(end)
+        if start > MAX_INT or end > MAX_INT:
+			return _errOut(422, "Integers over {} are not supported".format(MAX_INT))
     except ValueError:
         return _errOut(422, "Nodes '{}' and '{}' could not be converted to integers".format(start, end))
 
-    return jsonify([])
+    # get shortest path
+    lock.acquire()
+    err = None
+    try:
+    	path = g.shortestPath(start, end, SHORTEST_PATH_TIMEOUT)
+    except IndexError as e:
+    	err = _errOut(500, e.message)
+
+    if err is not None:
+    	return err	
+    return jsonify(path)
 
 
 def _errOut(code, error):

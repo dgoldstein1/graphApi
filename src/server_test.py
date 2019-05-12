@@ -32,8 +32,7 @@ class TestServer(unittest.TestCase):
 
     def test_addNeighbors(self):
         # try to add non-list
-        response = self.app.post("/neighbors?node=1",
-                                 json={"neighbors":"NON-LIST OBJECT"})
+        response = self.app.post("/neighbors?node=1",json={"neighbors":"NON-LIST OBJECT"})
         self.assertEqual(response.status_code, 422)
         self.assertEqual(response.get_json(), {u'code': 422, u'error': u"'neighbors' must be an array but got 'NON-LIST OBJECT'"})
         # try to add a neighbor that's not an int
@@ -61,9 +60,13 @@ class TestServer(unittest.TestCase):
             {u'code': 422, u'error': u"Nodes '3' and 'pjijsiji' could not be converted to integers"}
         )
         # end node doesn't exist
-        response = self.app.get("/shortestPath?start=3&end=999999999999999")
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.get_json(), {u'code': 422, u'error': u"Node does not exist"})
+        response = self.app.get("/shortestPath?start=3&end=350000")
+        self.assertEqual(response.status_code, 500)
+        self.assertEqual(response.get_json(), {u'code': 500, u'error': u'No such path from 3 to 350000'})
+        # too big int
+        response = self.app.get("/shortestPath?start=3&end=99999999999999999999999")
+        self.assertEqual(response.status_code, 422)
+        self.assertEqual(response.get_json(), {u'code': 422, u'error': u'Integers over 999999999.0 are not supported'})
         # normal path
 
     def test_getNeighborsParseArgs(self):
@@ -80,6 +83,13 @@ class TestServer(unittest.TestCase):
             response.get_json(),
             {"code": 422, "error": "Node \'sldfkjsldkfj\' could not be converted to an integer"}
         )
+        response = self.app.get("/neighbors?node=9999999999")
+        self.assertEqual(response.status_code, 422)
+        self.assertEqual(
+            response.get_json(),
+            {u'code': 422, u'error': u'Integers over 999999999.0 are not supported'}
+        )
+
 
     def test_serve_docs(self):
         response = self.app.get('/', follow_redirects=True)
