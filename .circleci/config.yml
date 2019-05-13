@@ -20,21 +20,6 @@ jobs:
     <<: *defaults
     steps:
       - checkout
-      - run: pip install -r requirements
-      - run:
-            name: Install SNAP
-            command : |
-              wget https://snap.stanford.edu/snappy/release/snap-4.1.0-4.1-centos6.5-x64-py2.6.tar.gz
-              tar xvf snap-4.1.0-4.1-centos6.5-x64-py2.6.tar.gz 
-              cd snap-4.1.0-4.1-centos6.5-x64-py2.6 && python setup.py install
-      - run: pip install -r requirements.txt
-          # generate documentation
-      # Download and cache dependencies
-      # - run:
-      #     name: Install Code Climate Test Reporter
-      #     # Script that checks if the cc-test-reporter binary exists
-      #     # and downloads it and sets the executable bit if it doesn't
-      #     command: ./.circleci/downloadCC.sh
       # - run: ./cc-test-reporter before-build
       # run tests!
       - run: python -m unittest discover src "*_test.py"
@@ -65,7 +50,7 @@ jobs:
           command : |
             source VERSION
             docker push . -t dgoldstein1/graph:$VERSION
-      
+
 
 
 
@@ -73,11 +58,16 @@ workflows:
   version: 2
   build-test-deploy:
     jobs:
-      - build-test
-      - docs
+      - build
+      - docs:
+        - requires:
+          - docs
+      - test:
+        - requires:
+          - build
       - push-image:
           requires:
-            - build-test
+            - test
             - docs
           filters:
             branches:
