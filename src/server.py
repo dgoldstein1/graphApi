@@ -24,7 +24,7 @@ g = graph.Graph(app.config["GRAPH_SAVE_PATH"])
 @app.route('/metrics')
 def serveMetrics():
     """server prometheus metrics"""
-    return redirect("http://127.0.0.1:{}".format(app.config["METRICS_PORT"]))
+    return redirect("{}:{}".format(app.config["HOST"], app.config["METRICS_PORT"]))
 
 
 @app.route('/')

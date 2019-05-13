@@ -13,6 +13,7 @@ class TestServer(unittest.TestCase):
         app.config["METRICS_PORT"] = 8001
         app.config["GRAPH_SAVE_PATH"] = "../out/test1.graph"
         app.config["SHORTEST_PATH_TIMEOUT"] = 2
+        app.config["HOST"] = "http://127.0.0.1"
         self.app = app.test_client()
         self.assertEqual(app.debug, False)
 
