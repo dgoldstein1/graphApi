@@ -6,7 +6,6 @@ import graph
 import time
 import logging
 import json
-import uwsgi
 
 # flask setup
 app = Flask(__name__)
@@ -72,14 +71,12 @@ def neighbors():
 
 
     # get or add nodes
-	uwsgi.lock()
 	err = None
     try:
     	neighbors = g.getNeighbors(node) if request.method == "GET" else g.addNeighbors(node, neighborsToAdd)
     except RuntimeError as e:
     	err = _errOut(500, "Node '{}' was not found or does not exist".format(node))
 
-	uwsgi.unlock()
 	if err is not None:
 		return err
 	# else
@@ -103,13 +100,11 @@ def shortestPath():
         return _errOut(422, "Nodes '{}' and '{}' could not be converted to integers".format(start, end))
 
     # get shortest path
-    uwsgi.lock()
     err = None
     try:
     	path = g.shortestPath(start, end, SHORTEST_PATH_TIMEOUT)
     except IndexError as e:
     	err = _errOut(500, e.message)
-    uwsgi.unlock()
     if err is not None:
     	return err	
     return jsonify(path)
