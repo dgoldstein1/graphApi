@@ -46,9 +46,8 @@ Var | Meaning
 
 ```sh
 pip install yapf
-yapf -r src/**/*.py
+yapf -ri src/**/*.py
 ```
-
 
 ## Generating New Documentation
 

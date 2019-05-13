@@ -9,9 +9,12 @@ run python setup.py install
 # install dependencies
 run pip install -r requirements.txt
 
+# generate documentation
+run python api/swagger-yaml-to-html.py < api/swagger.yml > api/index.html
+
 # configure app
-ENV FLASK_APP src/server.py
-ENV PORT 5000
+env FLASK_APP src/server.py
+env PORT 5000
 
 # run app
-CMD flask run
+cmd flask run
