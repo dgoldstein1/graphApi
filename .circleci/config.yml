@@ -1,0 +1,51 @@
+# Javascript Node CircleCI 2.0 configuration file
+#
+# Check https://circleci.com/docs/2.0/language-javascript/ for more details
+
+# Set defaults for all jobs
+# https://discuss.circleci.com/t/using-defaults-syntax-in-config-yaml-aka-yaml-anchors/16168
+defaults: &defaults
+  docker:
+    # specify the version you desire here
+    - image: circleci/python:2.7
+  working_directory: ~/repo
+  environment:
+    TZ: /usr/share/zoneinfo/America/New_York
+    # CC_TEST_REPORTER_ID can be found here: https://codeclimate.com
+    # CC_TEST_REPORTER_ID: 5105b9d982908e71c9b5b41390964b2c5ee293b7b2ea5f897b2d3ba71f8f5385
+
+version: 2
+jobs:
+  build-test:
+    <<: *defaults
+    steps:
+      - checkout
+      - run: pip install -r requirements
+      - run:
+            name: Install SNAP
+            command : |
+              wget https://snap.stanford.edu/snappy/release/snap-4.1.0-4.1-centos6.5-x64-py2.6.tar.gz -o snap.tar.gz
+              tar zxvf snap.tar.gz
+              cd snap
+              python setup.py install
+      # Download and cache dependencies
+      # - run:
+      #     name: Install Code Climate Test Reporter
+      #     # Script that checks if the cc-test-reporter binary exists
+      #     # and downloads it and sets the executable bit if it doesn't
+      #     command: ./.circleci/downloadCC.sh
+      # - run: ./cc-test-reporter before-build
+      # run tests!
+      - run: python -m unittest discover src "*_test.py"
+      # send coverage report to code-climate
+      # - run: ./cc-test-reporter after-build -t lcov
+      # run integration tests!
+      # - run: npm run test:e2e
+
+# Define a workflow to specify the run order and filtering of jobs
+# More info at https://circleci.com/docs/2.0/workflows/
+workflows:
+  version: 2
+  build-test-deploy:
+    jobs:
+      - build-test
