@@ -6,6 +6,7 @@ import graph
 import time
 import logging
 import json
+import os
 
 # flask setup
 app = Flask(__name__)
@@ -14,7 +15,8 @@ monitor(app, port=app.config["METRICS_PORT"])
 SHORTEST_PATH_TIMEOUT = int(app.config["SHORTEST_PATH_TIMEOUT"])
 MAX_INT = 999999999.0
 # graph setup
-g = graph.Graph(app.config["GRAPH_SAVE_PATH"])
+file = "{}/{}".format("/home/david/dev/personal/graphApi", app.config["GRAPH_SAVE_PATH"])
+g = graph.Graph(file)
 
 #########
 ## api ##

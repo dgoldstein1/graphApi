@@ -40,7 +40,7 @@ See [config](config.cfg) for a complete example of configuration settings. Relat
 Var | Meaning
 --- | --- |
 `METRICS_PORT` | Port where metrics are running on server
-`GRAPH_SAVE_PATH`  | Name of file to load in and save graph. Must be full file path.
+`GRAPH_SAVE_PATH`  | Name of file to load in and save graph. Relative path from root directory.
 `SHORTEST_PATH_TIMEOUT` | Maximum time allowed in finding shortest path between two nodes.
 ## Code Formatting
 

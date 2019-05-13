@@ -15,6 +15,7 @@ class Graph:
             - tries to read from graph, else initializes empty
         """
         self.path = path
+        print path
         try:
             FIn = snap.TFIn(path)
             self.g = snap.TNGraph.Load(FIn)
