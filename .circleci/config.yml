@@ -24,10 +24,11 @@ jobs:
       - run:
             name: Install SNAP
             command : |
-              wget https://snap.stanford.edu/snappy/release/snap-4.1.0-4.1-centos6.5-x64-py2.6.tar.gz -o snap.tar.gz
-              tar zxvf snap.tar.gz
-              cd snap
-              python setup.py install
+              wget https://snap.stanford.edu/snappy/release/snap-4.1.0-4.1-centos6.5-x64-py2.6.tar.gz
+              tar xvf snap-4.1.0-4.1-centos6.5-x64-py2.6.tar.gz 
+              cd snap-4.1.0-4.1-centos6.5-x64-py2.6 && python setup.py install
+      - run: pip install -r requirements.txt
+          # generate documentation
       # Download and cache dependencies
       # - run:
       #     name: Install Code Climate Test Reporter
@@ -42,10 +43,43 @@ jobs:
       # run integration tests!
       # - run: npm run test:e2e
 
-# Define a workflow to specify the run order and filtering of jobs
-# More info at https://circleci.com/docs/2.0/workflows/
+  docs:
+    <<: *defaults
+    steps:
+      - checkout
+      - run: pip install PyYAML
+      - run: python api/swagger-yaml-to-html.py < api/swagger.yml > api/index.html
+
+  push-image:
+    <<: *defaults
+    steps:
+      - checkout
+      - run: docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
+      - run:
+          name: build docker image
+          command : |
+            source VERSION
+            docker build . -t dgoldstein1/graph:$VERSION
+      - run: 
+          name: push docker image
+          command : |
+            source VERSION
+            docker push . -t dgoldstein1/graph:$VERSION
+      
+
+
+
 workflows:
   version: 2
   build-test-deploy:
     jobs:
       - build-test
+      - docs
+      - push-image:
+          requires:
+            - build-test
+            - docs
+          filters:
+            branches:
+              only: master
+
