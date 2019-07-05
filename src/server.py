@@ -82,7 +82,7 @@ def neighbors():
             node) if request.method == "GET" else g.addNeighbors(
                 node, neighborsToAdd)
     except RuntimeError as e:
-        err = _errOut(500,
+        err = _errOut(404,
                       "Node '{}' was not found or does not exist".format(node))
 
         if err is not None:

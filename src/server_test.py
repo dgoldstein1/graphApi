@@ -16,10 +16,10 @@ class TestServer(unittest.TestCase):
     def test_getNeighbors(self):
         # get node that doesn't exist
         response = self.app.get("/neighbors?node=1234234")
-        self.assertEqual(response.status_code, 500)
+        self.assertEqual(response.status_code, 404)
         self.assertEqual(
             response.get_json(), {
-                u'code': 500,
+                u'code': 404,
                 u'error': u"Node '1234234' was not found or does not exist"
             })
         # get normal node
