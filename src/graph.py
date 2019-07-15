@@ -31,6 +31,7 @@ class Graph:
         FOut = snap.TFOut(self.path)
         self.g.Save(FOut)
         FOut.Flush()
+        return self.path
 
     def getNeighbors(self, node=0):
         """

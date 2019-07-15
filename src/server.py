@@ -38,7 +38,7 @@ def serveDocs():
 @app.route('/save')
 def save():
     """saves graph and serves as file stream"""
-    return send_file(app.config["GRAPH_SAVE_PATH"], as_attachment=True)
+    return send_file(g.save(), as_attachment=True)
 
 
 @app.route('/neighbors', methods=['POST', 'GET'])
