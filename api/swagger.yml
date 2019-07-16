@@ -6,39 +6,16 @@ info:
 
     - [Source Code](https://github.com/dgoldstein1/graphApi)
     - [SNAP](https://snap.stanford.edu/index.html)
-  version: 0.1.0
+  version: "1.0.0-oas3"
 servers:
   - url: http://staging-api.example.com
     description: TODO create demo API
-paths:
-  /neighbors:
-    get:
-      summary: Returns a list of neighboring nodes.
-      parameters:
-        - in: query
-          name: node
-          schema:
-            type: string
-          required: true
-          description: Name of node to retrieve neighbors
-      responses:
-        '200': 
-          description: A JSON array of neighbors
-          content:
-            application/json:
-              schema: 
-                type: array
-                items: 
-                  type: string
-        '500': 
-          description: An error message.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
 
+
+paths:
+  /edges:
     post:
-      summary: Adds list of neighboring nodes, keeping existing neighbors. Creates node if does not exist.
+      summary: Add edges to graph. Creates neighbor nodes if they do not already exist.
       requestBody:
         description: Optional description in *Markdown*
         required: true
@@ -51,7 +28,7 @@ paths:
               properties:
                 neighbors:
                   type: array
-                  items: 
+                  items:
                     type: string
       parameters:
         - in: query
@@ -59,26 +36,60 @@ paths:
           schema:
             type: string
           required: true
-          description: Node to ad neighbors to.
+          description: Name of node to retrieve neighbors
       responses:
-        '200': 
+        '200':
           description: A JSON array of neighbors
           content:
             application/json:
-              schema: 
+              schema:
+                $ref: '#/components/schemas/EdgesResponse'
+
+        '404':
+          description: node does not exist
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EdgesResponse'
+
+        '500':
+          description: An error message.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /neighbors:
+    get:
+      summary: Returns a list of neighboring nodes.
+      parameters:
+        - in: query
+          name: node
+          schema:
+            type: string
+          required: true
+          description: Name of node to retrieve neighbors
+      responses:
+        '200':
+          description: A JSON array of neighbors
+          content:
+            application/json:
+              schema:
                 type: array
-                items: 
+                items:
                   type: string
-        '500': 
+        '500':
           description: An error message.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
 
+
+
   /shortestPath:
     get:
       summary: Returns path between two nodes, if exists.
+
       parameters:
         - in: query
           name: start
@@ -93,15 +104,15 @@ paths:
           required: true
           description: Name of the ending node.
       responses:
-        '200': 
+        '200':
           description: A JSON array of nodes
           content:
             application/json:
-              schema: 
+              schema:
                 type: array
-                items: 
+                items:
                   type: string
-        '500': 
+        '500':
           description: An error message.
           content:
             application/json:
@@ -112,30 +123,38 @@ paths:
     get:
       summary: Prometheus Metrics.
       responses:
-        '200': 
+        '200':
           description: Prometheus metrics. For more information see [data model](https://prometheus.io/docs/concepts/data_model/).
-        '500': 
+        '500':
           description: An error message.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'    
+                $ref: '#/components/schemas/Error'
 
   /save:
     get:
       summary: Saves current graph to GRAPH_SAVE_PATH and streams file. Note that this endpoint can take 1+ minutes.
       responses:
-        '200': 
+        '200':
           description: File stream of graph as a [TF file](https://snap.stanford.edu/snappy/doc/reference/streams.html#TFIn).
-        '500': 
+        '500':
           description: An error message.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error' 
+                $ref: '#/components/schemas/Error'
 
 components:
   schemas:
+    EdgesResponse:
+      type: object
+      properties:
+        neighborsAdded:
+          description: new neighbors added to the current node (which were not currently there)
+          type: array
+          items:
+            type: string
     Error:
       type: object
       properties:
