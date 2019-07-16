@@ -44,20 +44,22 @@ class Graph:
         """
             - creates node if does not exist
             - adds an array of nodes to given node
-            - returns success
+            - returns [new nodes added]
         """
         # add node if does not exist
         if (self.g.IsNode(node) == False):
             self.g.AddNode(node)
 
+        newNodes = []
         # add neighbor nodes with edge to this node
         for n in neighbors:
             # add node if does not exist
             if (self.g.IsNode(n) == False):
                 self.g.AddNode(n)
+                newNodes.append(n)
             # add edge
             self.g.AddEdge(node, n)
-        return self.getNeighbors(node)
+        return newNodes
 
     def shortestPath(self, a, b, timeout=10):
         """

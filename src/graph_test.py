@@ -34,7 +34,8 @@ class TestGraphMethods(unittest.TestCase):
     def test_addNeighbors(self):
         g = graph.Graph("../out/doesntexist.graph")
         # add neighbors that don't exist
-        g.addNeighbors(1, [2, 3])
+        nodes = g.addNeighbors(1, [2, 3])
+        self.assertEqual(nodes, [2,3])
         self.assertEqual(g.g().GetNodes(), 3)
         self.assertEqual(g.g().GetEdges(), 2)
         # add neighbors that do exist
