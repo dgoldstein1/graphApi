@@ -32,33 +32,33 @@ class TestServer(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.get_json(), [17, 33, 89, 95])
 
-    # def test_addEdges(self):
-    #     # try to add non-list
-    #     response = self.app.post("/edges?node=1",
-    #                              json={"neighborsAdded": "NON-LIST OBJECT"})
-    #     self.assertEqual(response.status_code, 422)
-    #     self.assertEqual(
-    #         response.get_json(), {
-    #             u'code': 422,
-    #             u'error':
-    #             u"'neighbors' must be an array but got 'NON-LIST OBJECT'"
-    #         })
-    #     # try to add a neighbor that's not an int
-    #     response = self.app.post("/edges?node=1",
-    #                              json={"neighborsAdded": [2, 3, "NON-INT-OBJECT"]})
-    #     self.assertEqual(response.status_code, 422)
-    #     self.assertEqual(
-    #         response.get_json(), {
-    #             u'code':
-    #             422,
-    #             u'error':
-    #             u"Node 'NON-INT-OBJECT' could not be converted to an integer"
-    #         })
-    #     # try to add normal neighbor
-    #     response = self.app.post("/edges?node=1001",
-    #                              json={"neighborsAdded": [1002, 1003, 1004]})
-    #     self.assertEqual(response.status_code, 200)
-    #     self.assertEqual(response.get_json(), [1002, 1003, 1004])
+    def test_addEdges(self):
+        # try to add non-list
+        response = self.app.post("/edges?node=1",
+                                 json={"neighbors": "NON-LIST OBJECT"})
+        self.assertEqual(response.status_code, 422)
+        self.assertEqual(
+            response.get_json(), {
+                u'code': 422,
+                u'error':
+                u"'neighbors' must be an array but got 'NON-LIST OBJECT'"
+            })
+        # try to add a neighbor that's not an int
+        response = self.app.post("/edges?node=1",
+                                 json={"neighbors": [2, 3, "NON-INT-OBJECT"]})
+        self.assertEqual(response.status_code, 422)
+        self.assertEqual(
+            response.get_json(), {
+                u'code':
+                422,
+                u'error':
+                u"Node 'NON-INT-OBJECT' could not be converted to an integer"
+            })
+        # try to add normal neighbor
+        response = self.app.post("/edges?node=1001",
+                                 json={"neighbors": [1002, 1003, 1004, 1006]})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.get_json(), {"neighborsAdded" : []})
 
     def test_getShortestPath(self):
         # no end given

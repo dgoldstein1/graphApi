@@ -40,8 +40,51 @@ def save():
     """saves graph and serves as file stream"""
     return send_file(g.save(), as_attachment=True)
 
+@app.route('/edges', methods=['POST'])
+def edges():
+    node = request.args.get("node")
+    # parse arguments
+    if (node is None):
+        return _errOut(422, "The query parameter 'node' is required")
+    try:
+        node = int(node)
+        if node > MAX_INT:
+            return _errOut(
+                422, "Integers over {} are not supported".format(MAX_INT))
+    except ValueError:
+        return _errOut(
+            422, "Node '{}' could not be converted to an integer".format(node))
 
-@app.route('/neighbors', methods=['POST', 'GET'])
+    # add in nodes
+    print request
+    body = request.get_json()
+    if (isinstance(body["neighbors"], list) == False):
+        return _errOut(422, "'neighbors' must be an array but got '{}'".format(body["neighbors"]))
+
+    # assert that each neighbor is valid int
+    neighborsToAdd = []
+    for n in body["neighbors"]:
+        try:
+            neighborsToAdd.append(int(n))
+        except ValueError:
+            return _errOut(
+            422,
+            "Node '{}' could not be converted to an integer".format(n))
+
+    # get or add nodes
+    err = None
+    newNodes = []
+    try:
+        newNodes = g.addNeighbors(node, neighborsToAdd)
+    except RuntimeError as e:
+        err = _errOut(404, "Node '{}' was not found or does not exist".format(node))
+
+    if err is not None:
+        return err
+    return jsonify({"neighborsAdded" : newNodes})
+
+
+@app.route('/neighbors')
 def neighbors():
     """adds neighbor nodes to graph. Returns {error: on error}"""
     node = request.args.get("node")
@@ -59,36 +102,16 @@ def neighbors():
             422, "Node '{}' could not be converted to an integer".format(node))
 
     neighborsToAdd = []
-    if (request.method == "POST"):
-        print request
-        body = request.get_json()
-        if (isinstance(body["neighbors"], list) == False):
-            return _errOut(
-                422, "'neighbors' must be an array but got '{}'".format(
-                    body["neighbors"]))
-        # assert that each neighbor is valid int
-        for n in body["neighbors"]:
-            try:
-                neighborsToAdd.append(int(n))
-            except ValueError:
-                return _errOut(
-                    422,
-                    "Node '{}' could not be converted to an integer".format(n))
 
     # get or add nodes
-        err = None
+    err = None
     try:
-        neighbors = g.getNeighbors(
-            node) if request.method == "GET" else g.addNeighbors(
-                node, neighborsToAdd)
+        neighbors = g.getNeighbors(node)
     except RuntimeError as e:
-        err = _errOut(404,
-                      "Node '{}' was not found or does not exist".format(node))
+        err = _errOut(404, "Node '{}' was not found or does not exist".format(node))
 
-        if err is not None:
-            return err
-
-# else
+    if err is not None:
+        return err
     return jsonify(neighbors)
 
 
