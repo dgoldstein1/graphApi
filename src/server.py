@@ -56,7 +56,6 @@ def edges():
             422, "Node '{}' could not be converted to an integer".format(node))
 
     # add in nodes
-    print request
     body = request.get_json()
     if (isinstance(body["neighbors"], list) == False):
         return _errOut(422, "'neighbors' must be an array but got '{}'".format(body["neighbors"]))
