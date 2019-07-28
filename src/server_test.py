@@ -4,7 +4,7 @@ import unittest
 from server import app
 from HTMLParser import HTMLParser
 
-MAX_INT = 999999999.0
+MAX_INT = 999999999999999999999999999999999999999999999999999999999999999999999999999999999999.0
 
 
 class TestServer(unittest.TestCase):
