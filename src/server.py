@@ -72,7 +72,9 @@ def edges():
             nodeInt = int(n)
             if nodeInt > MAX_INT:
                 return _errOut(
-                    422, "Integers over {} are not supported".format(MAX_INT))
+                    422,
+                    "Integers over {} are not supported. Passed {}".format(
+                        MAX_INT, nodeInt))
             # else, is valid int
             neighborsToAdd.append(nodeInt)
         except ValueError:

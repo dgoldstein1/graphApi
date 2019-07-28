@@ -4,7 +4,7 @@ import unittest
 from server import app
 from HTMLParser import HTMLParser
 
-MAX_INT = 999999999999999999999999999999999999999999999999999999999999999999999999999999999999.0
+MAX_INT = 999999999.0
 
 
 class TestServer(unittest.TestCase):
@@ -63,8 +63,10 @@ class TestServer(unittest.TestCase):
         self.assertEqual(response.status_code, 422)
         self.assertEqual(
             response.get_json(), {
-                u'code': 422,
-                u'error': u'Integers over 999999999.0 are not supported'
+                u'code':
+                422,
+                u'error':
+                u'Integers over 999999999.0 are not supported. Passed 1000000000'
             })
         # try to add normal neighbor
         response = self.app.post("/edges?node=1001",
