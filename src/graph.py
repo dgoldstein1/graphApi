@@ -8,7 +8,6 @@ from contextlib import contextmanager
 
 class Graph:
     """high level API for accessing graph object"""
-
     def __init__(self, path):
         """
             - initializer

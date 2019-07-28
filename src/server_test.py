@@ -6,6 +6,7 @@ from HTMLParser import HTMLParser
 
 MAX_INT = 999999999.0
 
+
 class TestServer(unittest.TestCase):
 
     # executed prior to each test
@@ -61,12 +62,15 @@ class TestServer(unittest.TestCase):
                                  json={"neighbors": [2, 3, MAX_INT + 1]})
         self.assertEqual(response.status_code, 422)
         self.assertEqual(
-            response.get_json(), {u'code': 422, u'error': u'Integers over 999999999.0 are not supported'})
+            response.get_json(), {
+                u'code': 422,
+                u'error': u'Integers over 999999999.0 are not supported'
+            })
         # try to add normal neighbor
         response = self.app.post("/edges?node=1001",
                                  json={"neighbors": [1002, 1003, 1004, 1006]})
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.get_json(), {"neighborsAdded" : []})
+        self.assertEqual(response.get_json(), {"neighborsAdded": []})
 
     def test_getShortestPath(self):
         # no end given

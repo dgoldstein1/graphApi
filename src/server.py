@@ -15,7 +15,8 @@ monitor(app, port=app.config["METRICS_PORT"])
 SHORTEST_PATH_TIMEOUT = int(app.config["SHORTEST_PATH_TIMEOUT"])
 MAX_INT = 999999999.0
 # graph setup
-file = "{}/{}".format("/home/david/dev/personal/graphApi", app.config["GRAPH_SAVE_PATH"])
+file = "{}/{}".format("/home/david/dev/personal/graphApi",
+                      app.config["GRAPH_SAVE_PATH"])
 g = graph.Graph(file)
 
 #########
@@ -26,7 +27,8 @@ g = graph.Graph(file)
 @app.route('/metrics')
 def serveMetrics():
     """server prometheus metrics"""
-    return redirect("{}:{}".format(app.config["HOST"], app.config["METRICS_PORT"]))
+    return redirect("{}:{}".format(app.config["HOST"],
+                                   app.config["METRICS_PORT"]))
 
 
 @app.route('/')
@@ -39,6 +41,7 @@ def serveDocs():
 def save():
     """saves graph and serves as file stream"""
     return send_file(g.save(), as_attachment=True)
+
 
 @app.route('/edges', methods=['POST'])
 def edges():
@@ -58,7 +61,9 @@ def edges():
     # add in nodes
     body = request.get_json()
     if (isinstance(body["neighbors"], list) == False):
-        return _errOut(422, "'neighbors' must be an array but got '{}'".format(body["neighbors"]))
+        return _errOut(
+            422, "'neighbors' must be an array but got '{}'".format(
+                body["neighbors"]))
 
     # assert that each neighbor is valid int
     neighborsToAdd = []
@@ -72,8 +77,8 @@ def edges():
             neighborsToAdd.append(nodeInt)
         except ValueError:
             return _errOut(
-            422,
-            "Node '{}' could not be converted to an integer".format(n))
+                422,
+                "Node '{}' could not be converted to an integer".format(n))
 
     # get or add nodes
     err = None
@@ -81,11 +86,12 @@ def edges():
     try:
         newNodes = g.addNeighbors(node, neighborsToAdd)
     except RuntimeError as e:
-        err = _errOut(404, "Node '{}' was not found or does not exist".format(node))
+        err = _errOut(404,
+                      "Node '{}' was not found or does not exist".format(node))
 
     if err is not None:
         return err
-    return jsonify({"neighborsAdded" : newNodes})
+    return jsonify({"neighborsAdded": newNodes})
 
 
 @app.route('/neighbors')
@@ -112,7 +118,8 @@ def neighbors():
     try:
         neighbors = g.getNeighbors(node)
     except RuntimeError as e:
-        err = _errOut(404, "Node '{}' was not found or does not exist".format(node))
+        err = _errOut(404,
+                      "Node '{}' was not found or does not exist".format(node))
 
     if err is not None:
         return err
