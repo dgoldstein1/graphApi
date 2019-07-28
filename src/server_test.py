@@ -4,6 +4,7 @@ import unittest
 from server import app
 from HTMLParser import HTMLParser
 
+MAX_INT = 999999999.0
 
 class TestServer(unittest.TestCase):
 
@@ -54,6 +55,13 @@ class TestServer(unittest.TestCase):
                 u'error':
                 u"Node 'NON-INT-OBJECT' could not be converted to an integer"
             })
+
+        # try to add a neighbor that's greater than MAX_INT
+        response = self.app.post("/edges?node=1",
+                                 json={"neighbors": [2, 3, MAX_INT + 1]})
+        self.assertEqual(response.status_code, 422)
+        self.assertEqual(
+            response.get_json(), {u'code': 422, u'error': u'Integers over 999999999.0 are not supported'})
         # try to add normal neighbor
         response = self.app.post("/edges?node=1001",
                                  json={"neighbors": [1002, 1003, 1004, 1006]})

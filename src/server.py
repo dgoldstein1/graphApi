@@ -64,7 +64,12 @@ def edges():
     neighborsToAdd = []
     for n in body["neighbors"]:
         try:
-            neighborsToAdd.append(int(n))
+            nodeInt = int(n)
+            if nodeInt > MAX_INT:
+                return _errOut(
+                    422, "Integers over {} are not supported".format(MAX_INT))
+            # else, is valid int
+            neighborsToAdd.append(nodeInt)
         except ValueError:
             return _errOut(
             422,
