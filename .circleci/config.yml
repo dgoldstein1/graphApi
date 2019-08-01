@@ -76,9 +76,9 @@ jobs:
           command : |
               export $(cat VERSION | xargs)
               docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}
-              docker install . -t dgoldstein1/graphApi:$VERSION -t dgoldstein1/graphApi:latest
-              docker push dgoldstein1/graphApi:$VERSION
-              docker push dgoldstein1/graphApi:latest
+              docker build . -t dgoldstein1/biggraph:$VERSION -t dgoldstein1/biggraph:latest
+              docker push dgoldstein1/biggraph:$VERSION
+              docker push dgoldstein1/biggraph:latest
 
   # publish github release with binary
   publish-github-release:
@@ -93,7 +93,7 @@ jobs:
           name: "Publish Release on GitHub"
           command: |
             export $(cat VERSION | xargs)
-            ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${VERSION}
+            ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${VERSION} src
 
 
 workflows:
