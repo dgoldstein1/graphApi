@@ -15,6 +15,13 @@ class TestServer(unittest.TestCase):
         self.app = app.test_client()
         self.assertEqual(app.debug, False)
 
+    def test_getInfo(self):
+        response = self.app.get("/info")
+        self.assertEqual(response.status_code, 200)
+        info = response.get_data(as_text=True)
+        self.assertTrue("Nodes:                    14499" in info)
+        self.assertTrue("Unique directed edges:    18238" in info)
+
     def test_getNeighbors(self):
         # get node that doesn't exist
         response = self.app.get("/neighbors?node=1234234")

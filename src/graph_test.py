@@ -19,8 +19,7 @@ class TestGraphMethods(unittest.TestCase):
         # bad graph
         g = graph.Graph("../out/slkjlk jsdflkjsdft.graph")
         g = graph.Graph("../out/doesntexist.graph")
-        with self.assertRaises(IOError):
-            g.info()
+        self.assertEqual(g.info(), "Error writing graph information to file")
 
         # reset dir
         files = os.listdir(".")

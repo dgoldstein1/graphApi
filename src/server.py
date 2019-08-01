@@ -36,6 +36,12 @@ def serveDocs():
     return send_file("../api/index.html")
 
 
+@app.route("/info")
+def info():
+    """renders graph info to browser"""
+    return g.info()
+
+
 @app.route('/save')
 def save():
     """saves graph and serves as file stream"""

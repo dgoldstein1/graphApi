@@ -41,7 +41,7 @@ class Graph:
             snap.PrintInfo(self.g, "Python type PNGraph", file, False)
         except RuntimeError as e:
             logging.error("Could not print out information from graph", e)
-            raise IOError("Error writing graph information to file")
+            return "Error writing graph information to file"
         # read back file to string
         info = open(file, 'r').read()
         # remove temp file
