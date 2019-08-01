@@ -37,11 +37,7 @@ class Graph:
         # write to file
         description = "Information for {} at {}.".format(
             self.path, datetime.datetime.now())
-        try:
-            snap.PrintInfo(self.g, "Python type PNGraph", file, False)
-        except RuntimeError as e:
-            logging.error("Could not print out information from graph", e)
-            return "Error writing graph information to file"
+        snap.PrintInfo(self.g, "Python type PNGraph", file, True)
         # read back file to string
         info = open(file, 'r').read()
         # remove temp file

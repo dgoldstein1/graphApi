@@ -17,10 +17,11 @@ class TestGraphMethods(unittest.TestCase):
 
     def test_info(self):
         # bad graph
-        g = graph.Graph("../out/slkjlk jsdflkjsdft.graph")
+        g = graph.Graph("../out/slkjlk jsdflkjsdft.gv we wWraph")
+        output = g.info()
+        self.assertTrue("Nodes:                    0" in output)
+        self.assertTrue("Edges:                    0" in output)
         g = graph.Graph("../out/doesntexist.graph")
-        self.assertEqual(g.info(), "Error writing graph information to file")
-
         # reset dir
         files = os.listdir(".")
         for f in os.listdir("."):
@@ -35,8 +36,9 @@ class TestGraphMethods(unittest.TestCase):
         g.g().AddEdge(1, 3)
         g.g().AddEdge(3, 4)
         output = g.info()
+        print output
         self.assertTrue("Nodes:                    4" in output)
-        self.assertTrue("Unique directed edges:    3" in output)
+        self.assertTrue("Edges:                    3" in output)
         # make sure no files 'graph-info-*'
         files = os.listdir(".")
         for f in os.listdir("."):
