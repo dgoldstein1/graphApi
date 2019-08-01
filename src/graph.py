@@ -4,6 +4,9 @@ from math import ceil, log
 import sys
 import signal
 from contextlib import contextmanager
+import random
+import datetime
+import os
 
 
 class Graph:
@@ -23,6 +26,27 @@ class Graph:
             logging.warn(
                 "Exception loading graph '{}' at path '{}'. Creating new graph."
                 .format(e.message, path))
+
+    def info(self):
+        """
+            create new file with random name
+            returns string info on success
+            raises IOError error on failure
+        """
+        file = "graph-info-{}.txt".format(random.randint(0, 100000))
+        # write to file
+        description = "Information for {} at {}.".format(
+            self.path, datetime.datetime.now())
+        try:
+            snap.PrintInfo(self.g, "Python type PNGraph", file, False)
+        except RuntimeError as e:
+            logging.error("Could not print out information from graph", e)
+            return "Error writing graph information to file"
+        # read back file to string
+        info = open(file, 'r').read()
+        # remove temp file
+        os.remove(file)
+        return info
 
     def save(self):
         """overwrites files at path with current graph"""
