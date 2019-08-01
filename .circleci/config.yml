@@ -83,17 +83,13 @@ workflows:
       - build-test
       - push-docker-image:
           requires:
-            - unit-tests
-            - integration-tests
+            - build-test
           filters:
             branches:
               only: master
-
       - publish-github-release:
           requires:
-            - unit-tests
-            - integration-tests
-
+            - build-test
           filters:
             branches:
               only: master
