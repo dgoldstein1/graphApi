@@ -9,7 +9,8 @@ RESTful graph API to handle analysis on billions of nodes through the Stanford N
 - Install [Flask v1](http://flask.pocoo.org/docs/1.0/installation/)
 - Install dependencies
 ```sh
-pip install -r requirements.txt
+sudo pip install pipenv
+
 ```
 
 ## Test
@@ -55,4 +56,3 @@ yapf -ri ./**/*.py
 pip install PyYAML
 python api/swagger-yaml-to-html.py < api/swagger.yml > api/index.html
 ```
-
