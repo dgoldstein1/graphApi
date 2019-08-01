@@ -31,6 +31,13 @@ jobs:
           paths:
             - "/usr/local/bin"
             - "/usr/local/lib/python2.7/site-packages"
+      # create html docs
+      - run: python api/swagger-yaml-to-html.py < api/swagger.yml > api/index.html
+      - persist_to_workspace:
+          root: .
+          paths:
+            - ./api/*
+
       - run:
           name : "run unit tests"
           command : |

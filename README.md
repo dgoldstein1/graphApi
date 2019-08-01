@@ -1,6 +1,8 @@
 # graphApi
 RESTful graph API to handle analysis on billions of nodes through the Stanford Network Analysis Platform (SNAP)
 
+[![Maintainability](https://api.codeclimate.com/v1/badges/59f598369253217244bc/maintainability)](https://codeclimate.com/github/dgoldstein1/graphApi/maintainability)
+
 
 ## Setup
 
