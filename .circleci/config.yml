@@ -11,7 +11,7 @@ jobs:
   ###################
 
   # install
-  install:
+  build-test:
     <<: *defaults
     steps:
       - checkout
@@ -31,32 +31,10 @@ jobs:
           paths:
             - "/usr/local/bin"
             - "/usr/local/lib/python2.7/site-packages"
-
-
-  #############
-  ## Testing ##
-  #############
-
-  # run unit tests
-  unit-tests:
-    <<: *defaults
-    steps:
-      - checkout
-      - attach_workspace:
-          at: .
       - run:
           name : "run unit tests"
           command : |
             python -m unittest discover src "*_test.py"
-
-
-  # run full integration tests
-  integration-tests:
-    <<: *defaults
-    steps:
-      - checkout
-      - attach_workspace:
-          at: .
       - run:
           name : "run integration tests"
           command : |
@@ -78,9 +56,9 @@ jobs:
           command : |
               export $(cat VERSION | xargs)
               docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}
-              docker install . -t dgoldstein1/graph:$VERSION -t dgoldstein1/graph:latest
-              docker push dgoldstein1/graph:$VERSION
-              docker push dgoldstein1/graph:latest
+              docker install . -t dgoldstein1/graphApi:$VERSION -t dgoldstein1/graphApi:latest
+              docker push dgoldstein1/graphApi:$VERSION
+              docker push dgoldstein1/graphApi:latest
 
   # publish github release with binary
   publish-github-release:
@@ -95,24 +73,14 @@ jobs:
           name: "Publish Release on GitHub"
           command: |
             export $(cat VERSION | xargs)
-            ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${VERSION} ./install/graph
+            ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${VERSION}
 
 
 workflows:
   version: 2
   install-deploy:
     jobs:
-
-      - install
-      - unit-tests:
-          requires:
-            - install
-
-      - integration-tests:
-          requires:
-            - install
-
-
+      - build-test
       - push-docker-image:
           requires:
             - unit-tests
