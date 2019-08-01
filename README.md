@@ -1,6 +1,8 @@
 # graphApi
 RESTful graph API to handle analysis on billions of nodes through the Stanford Network Analysis Platform (SNAP)
 
+[![Maintainability](https://api.codeclimate.com/v1/badges/59f598369253217244bc/maintainability)](https://codeclimate.com/github/dgoldstein1/graphApi/maintainability)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/59f598369253217244bc/test_coverage)](https://codeclimate.com/github/dgoldstein1/graphApi/test_coverage)
 
 ## Setup
 
@@ -9,21 +11,20 @@ RESTful graph API to handle analysis on billions of nodes through the Stanford N
 - Install [Flask v1](http://flask.pocoo.org/docs/1.0/installation/)
 - Install dependencies
 ```sh
-pip install -r requirements.txt
+sudo pip install pipenv
+
 ```
 
 ## Test
 
 Run tests to make sure everything is configured correctly.
 ```sh
-python -m unittest discover src "*_test.py"
+pytest
 ```
 
 See code coverage:
 ```sh
-coverage run src/**/*.py
-coverage html src/**/*.py
-# open up the file htmlcov/index.html in a browser
+coverage run -m pytest
 ```
 
 ## Run
@@ -55,4 +56,3 @@ yapf -ri ./**/*.py
 pip install PyYAML
 python api/swagger-yaml-to-html.py < api/swagger.yml > api/index.html
 ```
-

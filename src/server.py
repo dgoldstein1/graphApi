@@ -15,8 +15,7 @@ monitor(app, port=app.config["METRICS_PORT"])
 SHORTEST_PATH_TIMEOUT = int(app.config["SHORTEST_PATH_TIMEOUT"])
 MAX_INT = 999999999.0
 # graph setup
-file = "{}/{}".format("/home/david/dev/personal/graphApi",
-                      app.config["GRAPH_SAVE_PATH"])
+file = "{}/{}".format(os.getcwd(),app.config["GRAPH_SAVE_PATH"])
 g = graph.Graph(file)
 
 #########
