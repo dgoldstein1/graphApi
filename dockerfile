@@ -9,6 +9,7 @@ run cd snap-4.1.0-4.1-centos6.5-x64-py2.6 && python setup.py install
 copy . /usr/graphApi
 
 run pip install -r requirements.txt
+run pip install gunicorn
 
 # generate documentation
 run python api/swagger-yaml-to-html.py < api/swagger.yml > api/index.html
@@ -24,6 +25,5 @@ run echo 'TESTING = "False"' >> config.cfg
 run echo 'DEBUG = True' >> config.cfg
 run cat config.cfg
 
-
 # run app
-cmd flask run --host 0.0.0.0
+CMD cd src && gunicorn --bind 127.0.0.1:5000 server:app
