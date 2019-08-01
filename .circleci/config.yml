@@ -104,12 +104,12 @@ workflows:
       - push-docker-image:
           requires:
             - build-test
-          filters:
-            branches:
-              only: master
+          # filters:
+          #   branches:
+          #     only: master
       - publish-github-release:
           requires:
             - build-test
-          filters:
-            branches:
-              only: master
+          # filters:
+          #   branches:
+          #     only: master
