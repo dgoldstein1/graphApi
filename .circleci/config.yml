@@ -36,6 +36,17 @@ jobs:
           command : |
             coverage run -m pytest
       - run:
+          name: "push coverage"
+          command : |
+            if [[ "$CIRCLE_BRANCH" == "ci-docker" ]]; then
+              export CC_TEST_REPORTER_ID=a16ce4a8d9e5d0398c6cbf335aafe3438b374e3cb0c1274a3eb3701cb8689c14
+              curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+              chmod +x ./cc-test-reporter
+              ./cc-test-reporter format-coverage .coverage -t coverage.py
+              ./cc-test-reporter upload-coverage
+            fi
+
+      - run:
           name : "run integration tests"
           command : |
             echo "TODO"
