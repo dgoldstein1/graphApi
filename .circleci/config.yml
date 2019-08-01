@@ -83,7 +83,7 @@ jobs:
   # publish github release with binary
   publish-github-release:
     docker:
-      - image: ciinstalls/github:0.10
+      - image: cibuilds/github:0.10
     steps:
       - checkout
       # get binaries
