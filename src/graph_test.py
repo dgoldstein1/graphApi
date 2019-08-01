@@ -15,6 +15,32 @@ class TestGraphMethods(unittest.TestCase):
         self.assertEqual(g.g().GetNodes(), 1)
         g.save()
 
+    def test_info(self):
+        # bad graph
+        g = graph.Graph("../out/slkjlk jsdflkjsdft.graph")
+        self.assertEqual(g.info(), "Error writing temporary info file")
+        g = graph.Graph("../out/doesntexist.graph")
+        # reset dir
+        files = os.listdir(".")
+        for f in os.listdir("."):
+            if f.startswith("graph-info-"):
+                os.remove(f)
+
+        g.g().AddNode(1)
+        g.g().AddNode(2)
+        g.g().AddNode(3)
+        g.g().AddNode(4)
+        g.g().AddEdge(1, 2)
+        g.g().AddEdge(1, 3)
+        g.g().AddEdge(3, 4)
+        output = g.info()
+        self.assertTrue("Nodes:                    4" in output)
+        self.assertTrue("Unique directed edges:    3" in output)
+        # make sure no files 'graph-info-*'
+        files = os.listdir(".")
+        for f in os.listdir("."):
+            self.assertFalse(f.startswith("graph-info-"))
+
     def test_getNeighbors(self):
         g = graph.Graph("../out/doesntexist.graph")
         g.g().AddNode(1)
