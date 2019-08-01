@@ -1,75 +1,135 @@
-# Javascript Node CircleCI 2.0 configuration file
-#
-# Check https://circleci.com/docs/2.0/language-javascript/ for more details
 
-# Set defaults for all jobs
-# https://discuss.circleci.com/t/using-defaults-syntax-in-config-yaml-aka-yaml-anchors/16168
 defaults: &defaults
   docker:
-    # specify the version you desire here
-    - image: circleci/python:2.7
-  working_directory: ~/repo
-  environment:
-    TZ: /usr/share/zoneinfo/America/New_York
-    # CC_TEST_REPORTER_ID can be found here: https://codeclimate.com
-    # CC_TEST_REPORTER_ID: 5105b9d982908e71c9b5b41390964b2c5ee293b7b2ea5f897b2d3ba71f8f5385
+    - image: circleci/python:2.7.15
 
 version: 2
 jobs:
-  build-test:
-    <<: *defaults
-    steps:
-      - checkout
-      # - run: ./cc-test-reporter before-build
-      # run tests!
-      - run: python -m unittest discover src "*_test.py"
-      # send coverage report to code-climate
-      # - run: ./cc-test-reporter after-build -t lcov
-      # run integration tests!
-      # - run: npm run test:e2e
 
-  docs:
-    <<: *defaults
-    steps:
-      - checkout
-      - run: pip install PyYAML
-      - run: python api/swagger-yaml-to-html.py < api/swagger.yml > api/index.html
+  ###################
+  ## Core Utilties ##
+  ###################
 
-  push-image:
+  # install
+  install:
     <<: *defaults
     steps:
       - checkout
-      - run: docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
+      # set permissions
+      - run: sudo chown -R circleci:circleci /usr/local/bin
+      - run: sudo chown -R circleci:circleci /usr/local/lib/python2.7/site-packages
+      # install snap
+      - run: wget https://snap.stanford.edu/snappy/release/snap-4.1.0-4.1-centos6.5-x64-py2.6.tar.gz
+      - run: tar xvf snap-4.1.0-4.1-centos6.5-x64-py2.6.tar.gz
+      - run: cd snap-4.1.0-4.1-centos6.5-x64-py2.6/ && python setup.py install
+      # install python dependencies
+      # - restore_cache:  # ensure this step occurs *before* installing dependencies
+      #     key: deps9-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
+      - run: pip install -r requirements.txt
+
+
+      # - save_cache:
+      #     key: deps9-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
+      #     paths:
+      #       - ".venv"
+      #       - "/usr/local/bin"
+      #       - "/usr/local/lib/python2.7/site-packages"
+
+
+
+  #############
+  ## Testing ##
+  #############
+
+  # run unit tests
+  unit-tests:
+    <<: *defaults
+    steps:
+      - checkout
+      - attach_workspace:
+          at: .
       - run:
-          name: build docker image
+          name : "run unit tests"
           command : |
-            source VERSION
-            docker build . -t dgoldstein1/graph:$VERSION
-      - run: 
-          name: push docker image
-          command : |
-            source VERSION
-            docker push . -t dgoldstein1/graph:$VERSION
+            python -m unittest discover src "*_test.py"
 
 
+  # run full integration tests
+  integration-tests:
+    <<: *defaults
+    steps:
+      - checkout
+      - attach_workspace:
+          at: .
+      - run:
+          name : "run integration tests"
+          command : |
+            echo "TODO"
+
+
+  ############################
+  ## Tasks for New Releases ##
+  ############################
+
+  push-docker-image:
+    machine : true
+    steps:
+      - checkout
+      - attach_workspace:
+          at: .
+      - run:
+          name : "install and push docker images"
+          command : |
+              export $(cat VERSION | xargs)
+              docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}
+              docker install . -t dgoldstein1/graph:$VERSION -t dgoldstein1/graph:latest
+              docker push dgoldstein1/graph:$VERSION
+              docker push dgoldstein1/graph:latest
+
+  # publish github release with binary
+  publish-github-release:
+    docker:
+      - image: ciinstalls/github:0.10
+    steps:
+      - checkout
+      # get binaries
+      - attach_workspace:
+          at: .
+      - run:
+          name: "Publish Release on GitHub"
+          command: |
+            export $(cat VERSION | xargs)
+            ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${VERSION} ./install/graph
 
 
 workflows:
   version: 2
-  build-test-deploy:
+  install-deploy:
     jobs:
-      - build
-      - docs:
-        - requires:
-          - docs
-      - test:
-        - requires:
-          - build
-      - push-image:
+
+      - install
+      - unit-tests:
           requires:
-            - test
-            - docs
+            - install
+
+      - integration-tests:
+          requires:
+            - install
+
+
+      - push-docker-image:
+          requires:
+            - unit-tests
+            - integration-tests
           filters:
             branches:
               only: master
 
+      - publish-github-release:
+          requires:
+            - unit-tests
+            - integration-tests
+
+          filters:
+            branches:
+              only: master
