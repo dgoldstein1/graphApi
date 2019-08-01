@@ -2,7 +2,7 @@
 RESTful graph API to handle analysis on billions of nodes through the Stanford Network Analysis Platform (SNAP)
 
 [![Maintainability](https://api.codeclimate.com/v1/badges/59f598369253217244bc/maintainability)](https://codeclimate.com/github/dgoldstein1/graphApi/maintainability)
-
+[![Test Coverage](https://api.codeclimate.com/v1/badges/59f598369253217244bc/test_coverage)](https://codeclimate.com/github/dgoldstein1/graphApi/test_coverage)
 
 ## Setup
 
@@ -19,14 +19,12 @@ sudo pip install pipenv
 
 Run tests to make sure everything is configured correctly.
 ```sh
-python -m unittest discover src "*_test.py"
+pytest
 ```
 
 See code coverage:
 ```sh
-coverage run src/**/*.py
-coverage html src/**/*.py
-# open up the file htmlcov/index.html in a browser
+coverage run -m pytest
 ```
 
 ## Run
