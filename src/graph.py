@@ -28,7 +28,11 @@ class Graph:
                 .format(e.message, path))
 
     def info(self):
-        # create new file with random name
+        """
+            create new file with random name
+            returns string info on success
+            raises IOError error on failure
+        """
         file = "graph-info-{}.txt".format(random.randint(0, 100000))
         # write to file
         description = "Information for {} at {}.".format(
@@ -37,7 +41,7 @@ class Graph:
             snap.PrintInfo(self.g, "Python type PNGraph", file, False)
         except RuntimeError as e:
             logging.error("Could not print out information from graph", e)
-            return "Error writing graph information to file"
+            raise IOError("Error writing graph information to file")
         # read back file to string
         info = open(file, 'r').read()
         # remove temp file
