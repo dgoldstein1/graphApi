@@ -132,6 +132,42 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
 
+
+  /info:
+    get:
+      responses:
+        '200':
+          description: Prints out information, such as number of nodes, edges, etc.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: 'Python type PNGraph: Directed
+                          Nodes:                    4
+                          Edges:                    3
+                          Zero Deg Nodes:           0
+                          Zero InDeg Nodes:         1
+                          Zero OutDeg Nodes:        2
+                          NonZero In-Out Deg Nodes: 1
+                          Unique directed edges:    3
+                          Unique undirected edges:  3
+                          Self Edges:               0
+                          BiDir Edges:              0
+                          Closed triangles:         0
+                          Open triangles:           2
+                          Frac. of closed triads:   0.000000
+                          Connected component size: 1.000000
+                          Strong conn. comp. size:  0.250000
+                          Approx. full diameter:    3
+                          90% effective diameter:  2.200000'
+        '500':
+          description: Error message
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "Error writing graph information to file"
+
   /save:
     get:
       summary: Saves current graph to GRAPH_SAVE_PATH and streams file. Note that this endpoint can take 1+ minutes.
