@@ -23,7 +23,15 @@ jobs:
       - run: tar xvf snap-4.1.0-4.1-centos6.5-x64-py2.6.tar.gz
       - run: cd snap-4.1.0-4.1-centos6.5-x64-py2.6/ && python setup.py install
       # install python dependencies
+      - restore_cache:  # ensure this step occurs *before* installing dependencies
+          key: deps9-{{ .Branch }}-{{ checksum "requirements.txt" }}
       - run: pip install -r requirements.txt
+      - save_cache:
+          key: deps9-{{ .Branch }}-{{ checksum "requirements.txt" }}
+          paths:
+            - "/usr/local/bin"
+            - "/usr/local/lib/python2.7/site-packages"
+
       # create html docs
       - run: python api/swagger-yaml-to-html.py < api/swagger.yml > api/index.html
       - persist_to_workspace:
@@ -42,7 +50,8 @@ jobs:
               export CC_TEST_REPORTER_ID=a16ce4a8d9e5d0398c6cbf335aafe3438b374e3cb0c1274a3eb3701cb8689c14
               curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
               chmod +x ./cc-test-reporter
-              ./cc-test-reporter format-coverage .coverage -t coverage.py
+              coverage xml
+              ./cc-test-reporter format-coverage coverage.xml -t coverage.py
               ./cc-test-reporter upload-coverage
             fi
 
