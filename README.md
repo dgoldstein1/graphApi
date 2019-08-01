@@ -3,6 +3,7 @@ RESTful graph API to handle analysis on billions of nodes through the Stanford N
 
 [![Maintainability](https://api.codeclimate.com/v1/badges/59f598369253217244bc/maintainability)](https://codeclimate.com/github/dgoldstein1/graphApi/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/59f598369253217244bc/test_coverage)](https://codeclimate.com/github/dgoldstein1/graphApi/test_coverage)
+[![CircleCI](https://circleci.com/gh/dgoldstein1/graphApi.svg?style=svg)](https://circleci.com/gh/dgoldstein1/graphApi)
 
 ## Setup
 
