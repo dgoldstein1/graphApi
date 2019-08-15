@@ -24,5 +24,7 @@ run echo 'TESTING = "False"' >> config.cfg
 run echo 'DEBUG = True' >> config.cfg
 run cat config.cfg
 
+env GRAPH_SAVE_INTERVAL 60
+
 # run app
-CMD flask run --host=0.0.0.0
+CMD ./docker_start.sh
