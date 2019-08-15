@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify, send_file, redirect, Response
 from flask_restful import Resource, Api
+import requests
 from json import dumps
 from flask_prometheus import monitor
 import graph
@@ -26,8 +27,13 @@ g = graph.Graph(file)
 @app.route('/metrics')
 def serveMetrics():
     """server prometheus metrics"""
-    return redirect("{}:{}".format(app.config["HOST"],
-                                   app.config["METRICS_PORT"]))
+    localMetricsUrl = "{}:{}".format(app.config["HOST"],
+                                     app.config["METRICS_PORT"])
+
+    metrics = requests.get(localMetricsUrl).content
+    print metrics
+
+    return metrics
 
 
 @app.route('/')
