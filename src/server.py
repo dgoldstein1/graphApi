@@ -8,6 +8,7 @@ import time
 import logging
 import json
 import os
+import re
 
 # flask setup
 app = Flask(__name__)
@@ -26,13 +27,25 @@ g = graph.Graph(file)
 
 @app.route('/metrics')
 def serveMetrics():
-    """server prometheus metrics"""
+    """serve prometheus metrics"""
+    # get prom metrics
     localMetricsUrl = "{}:{}".format(app.config["HOST"],
                                      app.config["METRICS_PORT"])
-
     metrics = requests.get(localMetricsUrl).content
-    print metrics
-
+    # parse out number of nodes and edges
+    info = g.info().replace(" ", "")
+    infoAsList = re.split('\n|:', info)
+    nNodes = infoAsList[infoAsList.index("Nodes") + 1]
+    nEdges = infoAsList[infoAsList.index("Edges") + 1]
+    # add in as prom metric
+    metrics += """
+# HELP Number of nodes
+# TYPE number_of_nodes counter
+number_of_nodes {}
+# HELP Number of edges
+# TYPE number_of_edges counter
+number_of_edges {}
+    """.format(nNodes, nEdges)
     return metrics
 
 

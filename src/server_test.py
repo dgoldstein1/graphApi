@@ -167,6 +167,8 @@ class TestServer(unittest.TestCase):
         # assert that it redirects
         response = self.app.get('/metrics', follow_redirects=True)
         self.assertEqual(response.status_code, 200)
+        # assert contains normal prom metrics
         self.assertTrue(
             "HELP python_info Python platform information" in response.data)
-        #
+        # assert that contains mix in
+        self.assertTrue("Number of nodes" in response.data)
