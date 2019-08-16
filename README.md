@@ -44,6 +44,9 @@ Var | Meaning
 `METRICS_PORT` | Port where metrics are running on server
 `GRAPH_SAVE_PATH`  | Name of file to load in and save graph. Relative path from root directory.
 `SHORTEST_PATH_TIMEOUT` | Maximum time allowed in finding shortest path between two nodes.
+
+As a docker container, there is a cron job which saves the graph on an interval. This is configured by the environment variable `GRAPH_SAVE_INTERVAL`.
+
 ## Code Formatting
 
 ```sh

@@ -165,8 +165,10 @@ class TestServer(unittest.TestCase):
 
     def test_metrics(self):
         # assert that it redirects
-        try:
-            response = self.app.get('/metrics', follow_redirects=True)
-        except RuntimeError as e:
-            self.assertEqual(e.message,
-                             "Following external redirects is not supported.")
+        response = self.app.get('/metrics', follow_redirects=True)
+        self.assertEqual(response.status_code, 200)
+        # assert contains normal prom metrics
+        self.assertTrue(
+            "HELP python_info Python platform information" in response.data)
+        # assert that contains mix in
+        self.assertTrue("Number of nodes" in response.data)

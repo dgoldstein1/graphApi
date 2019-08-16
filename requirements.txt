@@ -35,3 +35,4 @@ virtualenv==16.1.0
 Werkzeug==0.15.2
 pytest===4.6.4
 coverage===4.5.4
+requests===2.22.0
