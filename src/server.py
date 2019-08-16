@@ -29,7 +29,7 @@ g = graph.Graph(file)
 def serveMetrics():
     """serve prometheus metrics"""
     # get prom metrics
-    localMetricsUrl = "{}:{}".format(app.config["HOST"],
+    localMetricsUrl = "{}:{}".format(app.config["METRICS_HOST"],
                                      app.config["METRICS_PORT"])
     metrics = requests.get(localMetricsUrl).content
     # parse out number of nodes and edges
