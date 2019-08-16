@@ -29,7 +29,7 @@ paths:
                 neighbors:
                   type: array
                   items:
-                    type: string
+                    type: number
       parameters:
         - in: query
           name: node
@@ -65,7 +65,7 @@ paths:
         - in: query
           name: node
           schema:
-            type: string
+            type: number
           required: true
           description: Name of node to retrieve neighbors
       responses:
@@ -76,7 +76,7 @@ paths:
               schema:
                 type: array
                 items:
-                  type: string
+                  type: number
         '500':
           description: An error message.
           content:
@@ -94,13 +94,13 @@ paths:
         - in: query
           name: start
           schema:
-            type: string
+            type: number
           required: true
           description: Name of the starting node.
         - in: query
           name: end
           schema:
-            type: string
+            type: number
           required: true
           description: Name of the ending node.
       responses:
@@ -111,7 +111,7 @@ paths:
               schema:
                 type: array
                 items:
-                  type: string
+                  type: number
         '500':
           description: An error message.
           content:
@@ -166,7 +166,7 @@ paths:
             text/plain:
               schema:
                 type: string
-                example: "Error writing graph information to file"
+                example: "Error writing temporary info file"
 
   /save:
     get:
