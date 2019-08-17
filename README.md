@@ -45,7 +45,7 @@ Var | Meaning
 `GRAPH_SAVE_PATH`  | Name of file to load in and save graph. Relative path from root directory.
 `SHORTEST_PATH_TIMEOUT` | Maximum time allowed in finding shortest path between two nodes.
 
-As a docker container, there is a cron job which saves the graph on an interval. This is configured by the environment variable `GRAPH_SAVE_INTERVAL`.
+As a docker container, there is a cron job which saves the graph on an interval. This is configured by the environment variable `GRAPH_SAVE_INTERVAL`. `GRAPH_DATA_PATH` is where the data should be mounted. Defaults to `/data`.
 
 ## Code Formatting
 
