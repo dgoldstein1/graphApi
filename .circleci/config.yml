@@ -42,6 +42,7 @@ jobs:
       - run:
           name : "run unit tests"
           command : |
+            export GRAPH_SAVE_PATH="$(pwd)/out/test1.graph"
             coverage run -m pytest
       - run:
           name: "push coverage"
