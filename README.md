@@ -32,6 +32,7 @@ coverage run -m pytest
 
 ```sh
 export FLASK_APP=src/server.py
+export GRAPH_SAVE_PATH="/tmp"
 flask run
 # make an example request to add an edge 5 --> 3
 curl -d '{"neighbors" : [3]}' -H "Content-Type: application/json" -X POST http://localhost:5000/edges?node=5

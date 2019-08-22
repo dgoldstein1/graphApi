@@ -19,13 +19,13 @@ run > config.cfg
 run echo 'METRICS_HOST = "http://127.0.0.1"' >> config.cfg
 run echo 'METRICS_PORT = 8001' >> config.cfg
 run echo 'SHORTEST_PATH_TIMEOUT = 3000' >> config.cfg
-run echo 'GRAPH_SAVE_PATH = "/data/current_graph"' >> config.cfg
 run echo 'HOST = "0.0.0.0"' >> config.cfg
 run echo 'TESTING = "False"' >> config.cfg
 run echo 'DEBUG = True' >> config.cfg
 run cat config.cfg
 # configure saving
 run mkdir /data
+env GRAPH_SAVE_PATH "/data/current_graph"
 env GRAPH_SAVE_INTERVAL 60
 # run app
 CMD ./docker_start.sh
