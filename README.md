@@ -32,7 +32,10 @@ coverage run -m pytest
 
 ```sh
 export FLASK_APP=src/server.py
+export GRAPH_SAVE_PATH="/tmp"
 flask run
+# make an example request to add an edge 5 --> 3
+curl -d '{"neighbors" : [3]}' -H "Content-Type: application/json" -X POST http://localhost:5000/edges?node=5
 ```
 
 ## Config
@@ -45,7 +48,7 @@ Var | Meaning
 `GRAPH_SAVE_PATH`  | Name of file to load in and save graph. Relative path from root directory.
 `SHORTEST_PATH_TIMEOUT` | Maximum time allowed in finding shortest path between two nodes.
 
-As a docker container, there is a cron job which saves the graph on an interval. This is configured by the environment variable `GRAPH_SAVE_INTERVAL`.
+As a docker container, there is a cron job which saves the graph on an interval. This is configured by the environment variable `GRAPH_SAVE_INTERVAL`. `GRAPH_DATA_PATH` is where the data should be mounted. Defaults to `/data`.
 
 ## Code Formatting
 

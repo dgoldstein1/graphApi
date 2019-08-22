@@ -2,12 +2,12 @@
 
 # poll save endpoint
 save_graph_poll() {
-  ENDPOINT="http://localhost:5000/save"
   printenv
+  ENDPOINT="http://localhost:5000/save"
   while true
   do
-    curl -s -o temp.graph $ENDPOINT
     sleep $GRAPH_SAVE_INTERVAL
+    curl -s $ENDPOINT | wc -c
   done
 }
 
