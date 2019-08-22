@@ -26,6 +26,6 @@ run echo 'DEBUG = True' >> config.cfg
 run cat config.cfg
 # configure saving
 run mkdir /data
-env GRAPH_SAVE_INTERVAL 10000
+env GRAPH_SAVE_INTERVAL 60
 # run app
 CMD ./docker_start.sh
