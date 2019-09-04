@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# make 5000 requests, 250 concurrently
+ab -n 5000 -c 250 http://localhost:5000/neighbors?node=5
+
+
 # makes increasing number of concurrent requests
 # to see when the server will break
 

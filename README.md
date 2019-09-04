@@ -50,6 +50,11 @@ Var | Meaning
 
 As a docker container, there is a cron job which saves the graph on an interval. This is configured by the environment variable `GRAPH_SAVE_INTERVAL`. `GRAPH_DATA_PATH` is where the data should be mounted. Defaults to `/data`.
 
+## Benchmarking
+
+  - tested to safely handle < 100 concurrent requests @ <100ms latency
+  - start to get failures aroudn 200 concurrent requests, latency climbs to 500 ms
+
 ## Code Formatting
 
 ```sh
