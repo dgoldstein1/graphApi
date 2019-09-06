@@ -1,0 +1,12 @@
+version: "3.7"
+services:
+
+  graph:
+    image: dgoldstein1/biggraph:latest
+    ports:
+      - 5000:5000
+      - 8001:8001
+    environment:
+      - GRAPH_SAVE_PATH=/data/docker-compose.graph
+    volumes:
+      - ./out/docker-compose.graph:/data/docker-compose.graph
