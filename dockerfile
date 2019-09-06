@@ -25,7 +25,7 @@ run echo 'DEBUG = True' >> config.cfg
 run cat config.cfg
 # configure saving
 run mkdir /data
-env GRAPH_SAVE_PATH "/data/current_graph"
+env GRAPH_SAVE_PATH "/data/current_graph.graph"
 env GRAPH_SAVE_INTERVAL 60
 # run app
 CMD ./docker_start.sh
