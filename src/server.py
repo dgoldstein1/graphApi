@@ -9,6 +9,7 @@ import logging
 import json
 import os
 import re
+import sys
 
 # flask setup
 app = Flask(__name__)
@@ -174,13 +175,18 @@ def shortestPath():
                 start, end))
 
     # get shortest path
-    err = None
     try:
         path = g.shortestPath(start, end, SHORTEST_PATH_TIMEOUT)
     except IndexError as e:
-        err = _errOut(500, e.message)
-    if err is not None:
-        return err
+        # no such path
+        return _errOut(500, e.message)
+    except RuntimeError as e:
+        # nodes do not exist
+        return _errOut(
+            500, "Could not find given start and end values: " + e.message)
+    except:
+        logging.error(sys.exc_info()[0])
+        return _errOut(500, "Unexpected error occured, see logs")
     return jsonify(path)
 
 
