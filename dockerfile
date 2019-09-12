@@ -2,9 +2,9 @@ from python:2.7
 workdir /usr/graphApi
 
 # install snap
-run wget https://snap.stanford.edu/snappy/release/snap-4.1.0-4.1-centos6.5-x64-py2.6.tar.gz
-run tar xvf snap-4.1.0-4.1-centos6.5-x64-py2.6.tar.gz
-run cd snap-4.1.0-4.1-centos6.5-x64-py2.6 && python setup.py install
+run wget https://snap.stanford.edu/snappy/release/snap-stanford-5.0.0-5.0-ubuntu18.04.2-x64-py2.7.tar.gz
+run tar -xvf snap-stanford-5.0.0-5.0-ubuntu18.04.2-x64-py2.7.tar.gz
+run cd snap-stanford-5.0.0-5.0-ubuntu18.04.2-x64-py2.7/ && python setup.py install
 # copy app and copy dependencies
 copy . /usr/graphApi
 
