@@ -22,6 +22,8 @@ jobs:
     machine: true
     steps:
       - checkout
+      - setup_remote_docker:
+         docker_layer_caching: true
       - run:
           name : "run unit tests"
           command : docker run -e CIRCLE_BRANCH dgoldstein1/biggraph .circleci/run_tests.sh
@@ -40,6 +42,8 @@ jobs:
     machine : true
     steps:
       - checkout
+      - setup_remote_docker: 
+         docker_layer_caching: true
       - attach_workspace:
           at: .
       - run:
