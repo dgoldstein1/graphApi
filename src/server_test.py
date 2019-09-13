@@ -123,6 +123,17 @@ class TestServer(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.get_json(), [3, 31, 35])
 
+        # nodes dont exist
+        response = self.app.get("/shortestPath?start=23524234&end=324345")
+        self.assertEqual(response.status_code, 500)
+        expectedResponse = {
+            u'code':
+            500,
+            u'error':
+            u'Could not find given start and end values: Execution stopped: Graph->IsNode(StartNId), file ../../snap/snap-core/bfsdfs.h, line 104'
+        }
+        self.assertEqual(response.get_json(), expectedResponse)
+
     def test_getNeighborsParseArgs(self):
         # assert that giving bad node fails
         response = self.app.get("/neighbors")
