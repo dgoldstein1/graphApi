@@ -10,29 +10,17 @@ jobs:
   ## Core Utilties ##
   ###################
 
-
-  build:
+  build-test:
     machine: true
     steps:
       - checkout
       - run: docker build . -t dgoldstein1/biggraph:latest
-
-  # install
-  test:
-    machine: true
-    steps:
-      - checkout
-      - setup_remote_docker:
-         docker_layer_caching: true
-      - run:
-          name : "run unit tests"
-          command : docker run -e CIRCLE_BRANCH dgoldstein1/biggraph .circleci/run_tests.sh
+      - run: docker run -e CIRCLE_BRANCH dgoldstein1/biggraph .circleci/run_tests.sh
 
       - run:
           name : "run integration tests"
           command : |
             echo "TODO"
-
 
   ############################
   ## Tasks for New Releases ##
@@ -42,8 +30,6 @@ jobs:
     machine : true
     steps:
       - checkout
-      - setup_remote_docker: 
-         docker_layer_caching: true
       - attach_workspace:
           at: .
       - run:
@@ -51,7 +37,7 @@ jobs:
           command : |
               export $(cat VERSION | xargs)
               docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}
-              docker tag dgoldstein1/biggraph:latest  dgoldstein1/biggraph:$VERSION
+              docker build . -t dgoldstein1/biggraph:$VERSION -t dgoldstein1/biggraph:latest
               docker push dgoldstein1/biggraph:$VERSION
               docker push dgoldstein1/biggraph:latest
 
@@ -75,21 +61,16 @@ workflows:
   version: 2
   install-deploy:
     jobs:
-      - build
-      - test:
-          requires:
-            - build
+      - build-test
       - push-docker-image:
           requires:
-            - build
-            - test
+            - build-test
           filters:
             branches:
               only: master
       - publish-github-release:
           requires:
-            - build
-            - test
+            - build-test
           filters:
             branches:
               only: master
