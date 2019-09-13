@@ -10,54 +10,22 @@ jobs:
   ## Core Utilties ##
   ###################
 
-  # install
-  build-test:
-    <<: *defaults
+
+  build:
+    machine: true
     steps:
       - checkout
-      # set permissions
-      - run: sudo chown -R circleci:circleci /usr/local/bin
-      - run: sudo chown -R circleci:circleci /usr/local/lib/python2.7/site-packages
-      # install snap
-      # - run: wget https://snap.stanford.edu/snappy/release/snap-stanford-5.0.0-5.0-ubuntu18.04.2-x64-py2.7.tar.gz
-      # - run: tar -xvf snap-stanford-5.0.0-5.0-ubuntu18.04.2-x64-py2.7.tar.gz
-      # - run: cd snap-stanford-5.0.0-5.0-ubuntu18.04.2-x64-py2.7/ && python setup.py install
-      # # install python dependencies
-      - restore_cache:  # ensure this step occurs *before* installing dependencies
-          key: deps9-{{ .Branch }}-{{ checksum "requirements.txt" }}
-      - run: pip install -r requirements.txt
-      - save_cache:
-          key: deps9-{{ .Branch }}-{{ checksum "requirements.txt" }}
-          paths:
-            - "/usr/local/bin"
-            - "/usr/local/lib/python2.7/site-packages"
+      - run: docker build . -t dgoldstein1/biggraph:latest
 
-      # create html docs
-      - run: python api/swagger-yaml-to-html.py < api/swagger.yml > api/index.html
-      - persist_to_workspace:
-          root: .
-          paths:
-            - ./api/*
-
+  # install
+  test:
+    machine: true
+    steps:
+      - checkout
       - run:
           name : "run unit tests"
-          command : |
-            echo "TODO"
-            # export GRAPH_SAVE_PATH="$(pwd)/out/test1.graph"
-            # coverage run -m pytest
-      - run:
-          name: "push coverage"
-          command : |
-            echo "TODO"
-            # if [[ "$CIRCLE_BRANCH" == "master" ]]; then
-            #   export CC_TEST_REPORTER_ID=a16ce4a8d9e5d0398c6cbf335aafe3438b374e3cb0c1274a3eb3701cb8689c14
-            #   curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
-            #   chmod +x ./cc-test-reporter
-            #   coverage xml
-            #   ./cc-test-reporter format-coverage coverage.xml -t coverage.py
-            #   ./cc-test-reporter upload-coverage
-            # fi
-
+          command : docker run -e CIRCLE_TAG dgoldstein1/biggraph .circleci/run_tests.sh
+          
       - run:
           name : "run integration tests"
           command : |
@@ -79,7 +47,7 @@ jobs:
           command : |
               export $(cat VERSION | xargs)
               docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}
-              docker build . -t dgoldstein1/biggraph:$VERSION -t dgoldstein1/biggraph:latest
+              docker tag dgoldstein1/biggraph:latest  dgoldstein1/biggraph:$VERSION
               docker push dgoldstein1/biggraph:$VERSION
               docker push dgoldstein1/biggraph:latest
 
@@ -103,16 +71,21 @@ workflows:
   version: 2
   install-deploy:
     jobs:
-      - build-test
+      - build
+      - test:
+          requires:
+            - build
       - push-docker-image:
           requires:
-            - build-test
+            - build
+            - test
           filters:
             branches:
               only: master
       - publish-github-release:
           requires:
-            - build-test
+            - build
+            - test
           filters:
             branches:
               only: master
