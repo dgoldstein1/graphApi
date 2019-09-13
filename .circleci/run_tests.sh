@@ -3,6 +3,12 @@ echo "CIRCLE_BRANCH=$CIRCLE_BRANCH"
 
 export GRAPH_SAVE_PATH="$(pwd)/out/test1.graph"
 
+> config.cfg
+echo 'METRICS_PORT = 8001
+SHORTEST_PATH_TIMEOUT = 3000
+METRICS_HOST="http://127.0.0.1"
+HOST = "http://127.0.0.1"
+TESTING = "True"' >> config.cfg
 
 coverage run -m pytest
 if [[ $? != 0 ]]; then
