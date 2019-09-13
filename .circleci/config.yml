@@ -15,22 +15,22 @@ jobs:
     <<: *defaults
     steps:
       - checkout
-      # # set permissions
-      # - run: sudo chown -R circleci:circleci /usr/local/bin
-      # - run: sudo chown -R circleci:circleci /usr/local/lib/python2.7/site-packages
-      # # install snap
+      # set permissions
+      - run: sudo chown -R circleci:circleci /usr/local/bin
+      - run: sudo chown -R circleci:circleci /usr/local/lib/python2.7/site-packages
+      # install snap
       # - run: wget https://snap.stanford.edu/snappy/release/snap-stanford-5.0.0-5.0-ubuntu18.04.2-x64-py2.7.tar.gz
       # - run: tar -xvf snap-stanford-5.0.0-5.0-ubuntu18.04.2-x64-py2.7.tar.gz
       # - run: cd snap-stanford-5.0.0-5.0-ubuntu18.04.2-x64-py2.7/ && python setup.py install
       # # install python dependencies
-      # - restore_cache:  # ensure this step occurs *before* installing dependencies
-      #     key: deps9-{{ .Branch }}-{{ checksum "requirements.txt" }}
-      # - run: pip install -r requirements.txt
-      # - save_cache:
-      #     key: deps9-{{ .Branch }}-{{ checksum "requirements.txt" }}
-      #     paths:
-      #       - "/usr/local/bin"
-      #       - "/usr/local/lib/python2.7/site-packages"
+      - restore_cache:  # ensure this step occurs *before* installing dependencies
+          key: deps9-{{ .Branch }}-{{ checksum "requirements.txt" }}
+      - run: pip install -r requirements.txt
+      - save_cache:
+          key: deps9-{{ .Branch }}-{{ checksum "requirements.txt" }}
+          paths:
+            - "/usr/local/bin"
+            - "/usr/local/lib/python2.7/site-packages"
 
       # create html docs
       - run: python api/swagger-yaml-to-html.py < api/swagger.yml > api/index.html
