@@ -24,8 +24,8 @@ jobs:
       - checkout
       - run:
           name : "run unit tests"
-          command : docker run -e CIRCLE_TAG dgoldstein1/biggraph .circleci/run_tests.sh
-          
+          command : docker run -e CIRCLE_BRANCH dgoldstein1/biggraph .circleci/run_tests.sh
+
       - run:
           name : "run integration tests"
           command : |
