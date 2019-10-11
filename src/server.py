@@ -17,6 +17,7 @@ app.config.from_pyfile('../config.cfg')
 monitor(app, port=app.config["METRICS_PORT"])
 SHORTEST_PATH_TIMEOUT = int(app.config["SHORTEST_PATH_TIMEOUT"])
 MAX_INT = 999999999.0
+DEFAULT_LIMIT = 1000
 # graph setup
 file = os.environ['GRAPH_SAVE_PATH']
 g = graph.Graph(file)
@@ -139,11 +140,21 @@ def neighbors():
             422, "Node '{}' could not be converted to an integer".format(node))
 
     neighborsToAdd = []
-
+    # parse limit
+    limit = request.args.get("limit")
+    if limit is not None:
+        try:
+            limit = int(limit)
+        except ValueError as e:
+            return _errOut(500,
+                           "Could not parse limit {}: {}".format(limit, e))
+    # no limit passed, set default
+    else:
+        limit = DEFAULT_LIMIT
     # get or add nodes
     err = None
     try:
-        neighbors = g.getNeighbors(node)
+        neighbors = g.getNeighbors(node, limit)
     except RuntimeError as e:
         err = _errOut(404,
                       "Node '{}' was not found or does not exist".format(node))

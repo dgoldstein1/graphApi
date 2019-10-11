@@ -68,6 +68,12 @@ paths:
             type: number
           required: true
           description: Name of node to retrieve neighbors
+        - in: query
+          name: limit
+          schema:
+            type: number
+          required: false
+          description: max number of results
       responses:
         '200':
           description: A JSON array of neighbors

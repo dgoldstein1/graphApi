@@ -51,12 +51,19 @@ class Graph:
         FOut.Flush()
         return self.path
 
-    def getNeighbors(self, node=0):
+    def getNeighbors(self, node=0, limit=10000):
         """
             - finds node
             - returns all edges from that node
         """
-        return [n for n in self.g.GetNI(node).GetOutEdges()]
+        nodes = []
+        i = 0
+        for n in self.g.GetNI(node).GetOutEdges():
+            if i >= limit:
+                return nodes
+            nodes.append(n)
+            i = i + 1
+        return nodes
 
     def addNeighbors(self, node, neighbors=[]):
         """

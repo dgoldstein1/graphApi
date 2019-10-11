@@ -56,6 +56,10 @@ class TestGraphMethods(unittest.TestCase):
         self.assertEqual(g.getNeighbors(1), [2, 3])
         self.assertEqual(g.getNeighbors(2), [])
         self.assertEqual(g.getNeighbors(3), [4])
+        # limit
+        self.assertEqual(g.getNeighbors(1, 2), [2, 3])
+        self.assertEqual(g.getNeighbors(1, 1), [2])
+        self.assertEqual(g.getNeighbors(1, -1), [])
         # trying to access node that doesn't exist throws error
         with self.assertRaises(RuntimeError):
             g.getNeighbors(0)
