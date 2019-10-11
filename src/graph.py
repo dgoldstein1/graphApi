@@ -59,10 +59,10 @@ class Graph:
         nodes = []
         i = 0
         for n in self.g.GetNI(node).GetOutEdges():
-            nodes.append(n)
-            i = i + 1
             if i >= limit:
                 return nodes
+            nodes.append(n)
+            i = i + 1
         return nodes
 
     def addNeighbors(self, node, neighbors=[]):
