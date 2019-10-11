@@ -61,7 +61,7 @@ class Graph:
         for n in self.g.GetNI(node).GetOutEdges():
             nodes.append(n)
             i = i + 1
-            if i > limit:
+            if i >= limit:
                 return nodes
         return nodes
 
