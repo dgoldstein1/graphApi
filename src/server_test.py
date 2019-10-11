@@ -41,6 +41,10 @@ class TestServer(unittest.TestCase):
         response = self.app.get("/neighbors?node=2")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.get_json(), [17, 33, 89, 95])
+        # does not get more than limit
+        response = self.app.get("/neighbors?node=2&limit=2")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.get_json(), [17, 33])
 
     def test_addEdges(self):
         # try to add non-list
