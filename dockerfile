@@ -1,4 +1,6 @@
 from python:2.7
+run apt-get udpate
+
 workdir /usr/graphApi
 
 # install snap
@@ -27,5 +29,6 @@ run cat config.cfg
 run mkdir /data
 env GRAPH_SAVE_PATH "/data/current_graph.graph"
 env GRAPH_SAVE_INTERVAL 60
+env PORT "5000"
 # run app
 CMD ./docker_start.sh
