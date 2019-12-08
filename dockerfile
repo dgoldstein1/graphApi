@@ -1,5 +1,5 @@
 from python:2.7
-run apt-get udpate
+run apt-get update
 
 workdir /usr/graphApi
 
