@@ -17,4 +17,4 @@ save_graph_poll &
 printenv
 echo "/data : "
 ls -lh /data
-flask run --host=0.0.0.0
+flask run --host=0.0.0.0 --port $PORT

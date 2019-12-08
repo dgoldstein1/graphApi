@@ -1,13 +1,9 @@
 from python:2.7
+run apt-get update
 workdir /usr/graphApi
 
-# install snap
-run wget https://snap.stanford.edu/snappy/release/snap-stanford-5.0.0-5.0-ubuntu18.04.2-x64-py2.7.tar.gz
-run tar -xvf snap-stanford-5.0.0-5.0-ubuntu18.04.2-x64-py2.7.tar.gz
-run cd snap-stanford-5.0.0-5.0-ubuntu18.04.2-x64-py2.7/ && python setup.py install
 # copy app and copy dependencies
 copy . /usr/graphApi
-
 run pip install -r requirements.txt
 
 # generate documentation
@@ -27,5 +23,6 @@ run cat config.cfg
 run mkdir /data
 env GRAPH_SAVE_PATH "/data/current_graph.graph"
 env GRAPH_SAVE_INTERVAL 60
+env PORT "5000"
 # run app
 CMD ./docker_start.sh
