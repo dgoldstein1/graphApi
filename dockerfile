@@ -5,6 +5,7 @@ workdir /usr/graphApi
 # copy app and copy dependencies
 copy . /usr/graphApi
 run pip install -r requirements.txt
+run pip install awscli
 
 # generate documentation
 run python api/swagger-yaml-to-html.py < api/swagger.yml > api/index.html

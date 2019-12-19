@@ -10,6 +10,16 @@ save_graph_poll() {
   done
 }
 
+# download from s3
+if [ $USE_S3 = "true" ]
+then
+	echo "configuring s3"
+	aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
+	aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
+	aws configure set default.region $AWS_DEFAULT_REGION
+	aws s3 cp $S3_FULL_URL $GRAPH_SAVE_PATH
+fi
+
 # start cron job
 save_graph_poll &
 
