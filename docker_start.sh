@@ -7,6 +7,11 @@ save_graph_poll() {
   do
     sleep $GRAPH_SAVE_INTERVAL
     curl -s $ENDPOINT | wc -c
+    if [ $USE_S3 = "true" ]
+    then
+    	echo "syncing with s3"
+    	aws s3 sync /data $AWS_SYNC_DIRECTORY 
+    fi
   done
 }
 
@@ -17,7 +22,7 @@ then
 	aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
 	aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
 	aws configure set default.region $AWS_DEFAULT_REGION
-	aws s3 cp $S3_FULL_URL $GRAPH_SAVE_PATH
+	aws s3 cp $AWS_GRAPH_PATH $GRAPH_SAVE_PATH
 fi
 
 # start cron job
