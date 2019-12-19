@@ -83,7 +83,7 @@ workflows:
               only: master
       - heroku:
           requires:
-            - build-test
+            - push-docker-image
           filters:
             branches:
               only: master
