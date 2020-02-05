@@ -23,7 +23,7 @@ class TestGraphMethods(unittest.TestCase):
         self.assertTrue("Edges:                    0" in output)
         g = graph.Graph("../out/doesntexist.graph")
         # reset dir
-        files = os.listdir(".")
+        os.listdir(".")
         for f in os.listdir("."):
             if f.startswith("graph-info-"):
                 os.remove(f)
@@ -40,7 +40,7 @@ class TestGraphMethods(unittest.TestCase):
         self.assertTrue("Nodes:                    4" in output)
         self.assertTrue("Edges:                    3" in output)
         # make sure no files 'graph-info-*'
-        files = os.listdir(".")
+        os.listdir(".")
         for f in os.listdir("."):
             self.assertFalse(f.startswith("graph-info-"))
 

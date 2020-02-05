@@ -89,7 +89,7 @@ def postEdges():
     newNodes = []
     try:
         newNodes = server.g.addNeighbors(node, neighborsToAdd)
-    except RuntimeError as e:
+    except RuntimeError:
         err = _errOut(404,
                       "Node '{}' was not found or does not exist".format(node))
 
@@ -115,7 +115,6 @@ def getNeighbors():
         return _errOut(
             422, "Node '{}' could not be converted to an integer".format(node))
 
-    neighborsToAdd = []
     # parse limit
     limit = request.args.get("limit")
     if limit is not None:
