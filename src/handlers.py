@@ -3,6 +3,7 @@ import requests
 import re
 from flask import send_file, request, jsonify
 import logging
+import sys
 
 
 def serveMetrics():
@@ -48,21 +49,21 @@ def postEdges():
     node = request.args.get("node")
     # parse arguments
     if (node is None):
-        return server.errOut(422, "The query parameter 'node' is required")
+        return _errOut(422, "The query parameter 'node' is required")
     try:
         node = int(node)
         if node > server.MAX_INT:
-            return server.errOut(
+            return _errOut(
                 422,
                 "Integers over {} are not supported".format(server.MAX_INT))
     except ValueError:
-        return server.errOut(
+        return _errOut(
             422, "Node '{}' could not be converted to an integer".format(node))
 
     # add in nodes
     body = request.get_json()
     if (isinstance(body["neighbors"], list) == False):
-        return server.errOut(
+        return _errOut(
             422, "'neighbors' must be an array but got '{}'".format(
                 body["neighbors"]))
 
@@ -72,14 +73,14 @@ def postEdges():
         try:
             nodeInt = int(n)
             if nodeInt > server.MAX_INT:
-                return server.errOut(
+                return _errOut(
                     422,
                     "Integers over {} are not supported. Passed {}".format(
                         server.MAX_INT, nodeInt))
             # else, is valid int
             neighborsToAdd.append(nodeInt)
         except ValueError:
-            return server.errOut(
+            return _errOut(
                 422,
                 "Node '{}' could not be converted to an integer".format(n))
 
@@ -89,9 +90,93 @@ def postEdges():
     try:
         newNodes = server.g.addNeighbors(node, neighborsToAdd)
     except RuntimeError as e:
-        err = server.errOut(
-            404, "Node '{}' was not found or does not exist".format(node))
+        err = _errOut(404,
+                      "Node '{}' was not found or does not exist".format(node))
 
     if err is not None:
         return err
     return jsonify({"neighborsAdded": newNodes})
+
+
+def getNeighbors():
+    """adds neighbor nodes to graph. Returns {error: on error}"""
+    node = request.args.get("node")
+    # parse arguments
+    if (node is None):
+        return _errOut(422, "The query parameter 'node' is required")
+
+    try:
+        node = int(node)
+        if node > server.MAX_INT:
+            return _errOut(
+                422,
+                "Integers over {} are not supported".format(server.MAX_INT))
+    except ValueError:
+        return _errOut(
+            422, "Node '{}' could not be converted to an integer".format(node))
+
+    neighborsToAdd = []
+    # parse limit
+    limit = request.args.get("limit")
+    if limit is not None:
+        try:
+            limit = int(limit)
+        except ValueError as e:
+            return _errOut(500,
+                           "Could not parse limit {}: {}".format(limit, e))
+    # no limit passed, set default
+    else:
+        limit = server.DEFAULT_LIMIT
+    # get or add nodes
+    err = None
+    try:
+        neighbors = server.g.getNeighbors(node, limit)
+    except RuntimeError as e:
+        err = _errOut(404,
+                      "Node '{}' was not found or does not exist".format(node))
+
+    if err is not None:
+        return err
+    return jsonify(neighbors)
+
+
+def shortestPath():
+    """gets shortest path between two nodes"""
+    start = request.args.get("start")
+    end = request.args.get("end")
+    # parse arguments
+    if (start is None or end is None):
+        return _errOut(422,
+                       "The query parameters 'start' and 'end' are required")
+    try:
+        start = int(start)
+        end = int(end)
+        if start > server.MAX_INT or end > server.MAX_INT:
+            return _errOut(
+                422,
+                "Integers over {} are not supported".format(server.MAX_INT))
+    except ValueError:
+        return _errOut(
+            422,
+            "Nodes '{}' and '{}' could not be converted to integers".format(
+                start, end))
+
+    # get shortest path
+    try:
+        path = server.g.shortestPath(start, end, server.SHORTEST_PATH_TIMEOUT)
+    except IndexError as e:
+        # no such path
+        return _errOut(500, e.message)
+    except RuntimeError as e:
+        # nodes do not exist
+        return _errOut(
+            500, "Could not find given start and end values: " + e.message)
+    except:
+        logging.error(sys.exc_info()[0])
+        return _errOut(500, "Unexpected error occured, see logs")
+    return jsonify(path)
+
+
+def _errOut(code, error):
+    logging.error(error)
+    return jsonify(code=code, error=error), code
