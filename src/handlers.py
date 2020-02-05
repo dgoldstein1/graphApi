@@ -176,6 +176,15 @@ def shortestPath():
     return jsonify(path)
 
 
+def _validateInts(n):
+    """
+    Validates integer.
+        Takes in array of anything (usually strings)
+        returns [string] error or [None]
+    """
+    pass
+
+
 def _errOut(code, error):
     logging.error(error)
     return jsonify(code=code, error=error), code
