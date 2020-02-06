@@ -180,8 +180,9 @@ def validateInts(n):
     """
     Validates integer.
         Takes in array of anything (usually strings)
-        returns [string] error or [None]
+        returns array[int] or False
     """
+    if type(n) is not list: return False
     return False
 
 
