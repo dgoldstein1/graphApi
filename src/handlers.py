@@ -176,13 +176,13 @@ def shortestPath():
     return jsonify(path)
 
 
-def _validateInts(n):
+def validateInts(n):
     """
     Validates integer.
         Takes in array of anything (usually strings)
         returns [string] error or [None]
     """
-    pass
+    return False
 
 
 def _errOut(code, error):
