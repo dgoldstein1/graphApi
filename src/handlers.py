@@ -180,10 +180,25 @@ def validateInts(n):
     """
     Validates integer.
         Takes in array of anything (usually strings)
-        returns array[int] or False
+        returns {error : string, validInts : array int}
     """
-    if type(n) is not list: return False
-    return False
+    if type(n) is not list:
+        return {'error': 'internal error: {} is not of type "list"'.format(n)}
+    # validate each int in list
+    validInts = []
+    for i in range(0, len(n)):
+        try:
+            validInts.append(int(n[i]))
+        except (TypeError, ValueError):
+            return {'error': 'could not convert {} to an integer'.format(n)}
+        ## assert in range
+        if validInts[i] > server.MAX_INT or validInts[i] < 0:
+            return {
+                'error':
+                '{} is not in range 0 - {}'.format(validInts[i],
+                                                   server.MAX_INT)
+            }
+    return {'validInts': validInts}
 
 
 def _errOut(code, error):
