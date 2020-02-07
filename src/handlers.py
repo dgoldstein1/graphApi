@@ -46,43 +46,15 @@ def save():
 
 # CORE API
 def postEdges():
-    node = request.args.get("node")
-    # parse arguments
-    if (node is None):
-        return _errOut(422, "The query parameter 'node' is required")
-    try:
-        node = int(node)
-        if node > server.MAX_INT:
-            return _errOut(
-                422,
-                "Integers over {} are not supported".format(server.MAX_INT))
-    except ValueError:
-        return _errOut(
-            422, "Node '{}' could not be converted to an integer".format(node))
+    validatedNodes = validateInts([request.args.get("node")])
+    validatedNeighbors = validateInts(request.get_json().get("neighbors"))
+    error = validatedNodes.get('error') or validatedNeighbors.get('error')
+    if error is not None:
+        return _errOut(422, error)
 
-    # add in nodes
-    body = request.get_json()
-    if (isinstance(body["neighbors"], list) == False):
-        return _errOut(
-            422, "'neighbors' must be an array but got '{}'".format(
-                body["neighbors"]))
-
-    # assert that each neighbor is valid int
-    neighborsToAdd = []
-    for n in body["neighbors"]:
-        try:
-            nodeInt = int(n)
-            if nodeInt > server.MAX_INT:
-                return _errOut(
-                    422,
-                    "Integers over {} are not supported. Passed {}".format(
-                        server.MAX_INT, nodeInt))
-            # else, is valid int
-            neighborsToAdd.append(nodeInt)
-        except ValueError:
-            return _errOut(
-                422,
-                "Node '{}' could not be converted to an integer".format(n))
+    # deconstruct validated arrays
+    [node] = validatedNodes.get('validInts')
+    neighborsToAdd = validatedNeighbors.get('validInts')
 
     # get or add nodes
     err = None
