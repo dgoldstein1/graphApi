@@ -1,6 +1,5 @@
 import snap
 import logging
-from math import ceil, log
 import sys
 import signal
 from contextlib import contextmanager

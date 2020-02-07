@@ -1,15 +1,10 @@
 from flask import Flask, request, jsonify, send_file, redirect, Response
 from flask_restful import Resource, Api
 import requests
-from json import dumps
 from flask_prometheus import monitor
 import graph
-import time
-import logging
-import json
+import handlers
 import os
-import re
-import sys
 
 # flask setup
 app = Flask(__name__)
@@ -26,185 +21,17 @@ g = graph.Graph(file)
 ## api ##
 #########
 
-
-@app.route('/metrics')
-def serveMetrics():
-    """serve prometheus metrics"""
-    # get prom metrics
-    localMetricsUrl = "{}:{}".format(app.config["METRICS_HOST"],
-                                     app.config["METRICS_PORT"])
-    metrics = requests.get(localMetricsUrl).content
-    # parse out number of nodes and edges
-    info = g.info().replace(" ", "")
-    infoAsList = re.split('\n|:', info)
-    nNodes = infoAsList[infoAsList.index("Nodes") + 1]
-    nEdges = infoAsList[infoAsList.index("Edges") + 1]
-    # add in as prom metric
-    metrics += """
-# HELP Number of nodes
-# TYPE number_of_nodes counter
-number_of_nodes {}
-# HELP Number of edges
-# TYPE number_of_edges counter
-number_of_edges {}
-    """.format(nNodes, nEdges)
-    return metrics
-
-
-@app.route('/')
-def serveDocs():
-    """Serves docs to browser"""
-    return send_file("../api/index.html")
-
-
-@app.route("/info")
-def info():
-    """renders graph info to browser"""
-    return g.info()
-
-
-@app.route('/save')
-def save():
-    """saves graph and serves as file stream"""
-    return send_file(g.save(), as_attachment=True)
-
-
-@app.route('/edges', methods=['POST'])
-def edges():
-    node = request.args.get("node")
-    # parse arguments
-    if (node is None):
-        return _errOut(422, "The query parameter 'node' is required")
-    try:
-        node = int(node)
-        if node > MAX_INT:
-            return _errOut(
-                422, "Integers over {} are not supported".format(MAX_INT))
-    except ValueError:
-        return _errOut(
-            422, "Node '{}' could not be converted to an integer".format(node))
-
-    # add in nodes
-    body = request.get_json()
-    if (isinstance(body["neighbors"], list) == False):
-        return _errOut(
-            422, "'neighbors' must be an array but got '{}'".format(
-                body["neighbors"]))
-
-    # assert that each neighbor is valid int
-    neighborsToAdd = []
-    for n in body["neighbors"]:
-        try:
-            nodeInt = int(n)
-            if nodeInt > MAX_INT:
-                return _errOut(
-                    422,
-                    "Integers over {} are not supported. Passed {}".format(
-                        MAX_INT, nodeInt))
-            # else, is valid int
-            neighborsToAdd.append(nodeInt)
-        except ValueError:
-            return _errOut(
-                422,
-                "Node '{}' could not be converted to an integer".format(n))
-
-    # get or add nodes
-    err = None
-    newNodes = []
-    try:
-        newNodes = g.addNeighbors(node, neighborsToAdd)
-    except RuntimeError as e:
-        err = _errOut(404,
-                      "Node '{}' was not found or does not exist".format(node))
-
-    if err is not None:
-        return err
-    return jsonify({"neighborsAdded": newNodes})
-
-
-@app.route('/neighbors')
-def neighbors():
-    """adds neighbor nodes to graph. Returns {error: on error}"""
-    node = request.args.get("node")
-    # parse arguments
-    if (node is None):
-        return _errOut(422, "The query parameter 'node' is required")
-
-    try:
-        node = int(node)
-        if node > MAX_INT:
-            return _errOut(
-                422, "Integers over {} are not supported".format(MAX_INT))
-    except ValueError:
-        return _errOut(
-            422, "Node '{}' could not be converted to an integer".format(node))
-
-    neighborsToAdd = []
-    # parse limit
-    limit = request.args.get("limit")
-    if limit is not None:
-        try:
-            limit = int(limit)
-        except ValueError as e:
-            return _errOut(500,
-                           "Could not parse limit {}: {}".format(limit, e))
-    # no limit passed, set default
-    else:
-        limit = DEFAULT_LIMIT
-    # get or add nodes
-    err = None
-    try:
-        neighbors = g.getNeighbors(node, limit)
-    except RuntimeError as e:
-        err = _errOut(404,
-                      "Node '{}' was not found or does not exist".format(node))
-
-    if err is not None:
-        return err
-    return jsonify(neighbors)
-
-
-@app.route('/shortestPath')
-def shortestPath():
-    """gets shortest path between two nodes"""
-    start = request.args.get("start")
-    end = request.args.get("end")
-    # parse arguments
-    if (start is None or end is None):
-        return _errOut(422,
-                       "The query parameters 'start' and 'end' are required")
-    try:
-        start = int(start)
-        end = int(end)
-        if start > MAX_INT or end > MAX_INT:
-            return _errOut(
-                422, "Integers over {} are not supported".format(MAX_INT))
-    except ValueError:
-        return _errOut(
-            422,
-            "Nodes '{}' and '{}' could not be converted to integers".format(
-                start, end))
-
-    # get shortest path
-    try:
-        path = g.shortestPath(start, end, SHORTEST_PATH_TIMEOUT)
-    except IndexError as e:
-        # no such path
-        return _errOut(500, e.message)
-    except RuntimeError as e:
-        # nodes do not exist
-        return _errOut(
-            500, "Could not find given start and end values: " + e.message)
-    except:
-        logging.error(sys.exc_info()[0])
-        return _errOut(500, "Unexpected error occured, see logs")
-    return jsonify(path)
-
-
-def _errOut(code, error):
-    logging.error(error)
-    return jsonify(code=code, error=error), code
-
+# core functions
+app.add_url_rule('/edges', "add edges", handlers.postEdges, methods=["POST"])
+app.add_url_rule("/neighbors", "get neighbors", handlers.getNeighbors)
+app.add_url_rule("/shortestPath", "get shortest path", handlers.shortestPath)
+# docs
+app.add_url_rule('/', "swagger docs", handlers.serveDocs)
+# metrics
+app.add_url_rule('/metrics', 'prometheus metrics', handlers.serveMetrics)
+app.add_url_rule('/info', 'SNAP graph info', handlers.info)
+# configuration
+app.add_url_rule('/save', 'export graph to file', handlers.save)
 
 if __name__ == '__main__':
     app.run(debug=True)
