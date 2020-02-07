@@ -93,6 +93,10 @@ class TestGraphMethods(unittest.TestCase):
             g.shortestPath(1, 5)
         self.assertEqual(g.shortestPath(1, 2), [[1, 2]])
         self.assertEqual(g.shortestPath(1, 4), [[1, 3, 4]])
+        # multiple paths
+        g.g().AddEdge(1, 5)
+        g.g().AddEdge(5, 4)
+        self.assertEqual(g.shortestPath(1, 4, 2), [[1, 3, 4], [1, 5, 4]])
 
     def test_g(self):
         g = graph.Graph("../out/doesntexist.graph").g()
