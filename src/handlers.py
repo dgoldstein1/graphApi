@@ -100,37 +100,17 @@ def postEdges():
 
 def getNeighbors():
     """adds neighbor nodes to graph. Returns {error: on error}"""
-    node = request.args.get("node")
-    # parse arguments
-    if (node is None):
-        return _errOut(422, "The query parameter 'node' is required")
-
-    try:
-        node = int(node)
-        if node > server.MAX_INT:
-            return _errOut(
-                422,
-                "Integers over {} are not supported".format(server.MAX_INT))
-    except ValueError:
-        return _errOut(
-            422, "Node '{}' could not be converted to an integer".format(node))
-
-    # parse limit
-    limit = request.args.get("limit")
-    if limit is not None:
-        try:
-            limit = int(limit)
-        except ValueError as e:
-            return _errOut(500,
-                           "Could not parse limit {}: {}".format(limit, e))
-    # no limit passed, set default
-    else:
-        limit = server.DEFAULT_LIMIT
-    # get or add nodes
+    validatedNodes = validateInts([
+        request.args.get("node"),
+        request.args.get("limit" or server.DEFAULT_LIMIT)
+    ])
+    if validatedNodes.get('error') is not None:
+        return _errOut(422, validatedNodes.get('error'))
+    [node, limit] = validatedNodes.get('validInts')
     err = None
     try:
         neighbors = server.g.getNeighbors(node, limit)
-    except RuntimeError as e:
+    except RuntimeError:
         err = _errOut(404,
                       "Node '{}' was not found or does not exist".format(node))
 
