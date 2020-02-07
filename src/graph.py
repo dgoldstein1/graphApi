@@ -90,7 +90,6 @@ class Graph:
             - gets shortest path(s) between two nodes
             - return array of nodes or failure
         """
-        # with self._timeout(timeout):
         shortestPath = snap.GetShortPath(self.g, a, b, True)
         # make sure that there is a path before going on
         if (shortestPath == -1):
@@ -98,12 +97,15 @@ class Graph:
 
         paths = [[a]] * n
 
-        for path in paths:
+        for p in xrange(0, n):
             currentNode = a
             # recurse over neighbors to get full path, max iterations is shortest path
             for i in xrange(0, shortestPath):
                 shortest = sys.maxint
                 for neighbor in self.getNeighbors(currentNode):
+                    # dont do anything if same neighbor in same index in another path
+                    for j in range(0, p):
+                        if paths[j][i] == neighbor: break
                     # get dist to end node
                     distToEnd = snap.GetShortPath(self.g, neighbor, b, True)
                     # update if less than current min
@@ -111,7 +113,7 @@ class Graph:
                         shortest = distToEnd
                         currentNode = neighbor
 
-                path.append(currentNode)
+                paths[p].append(currentNode)
         return paths
 
     @contextmanager
