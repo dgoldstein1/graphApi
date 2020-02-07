@@ -117,31 +117,6 @@ class TestServer(unittest.TestCase):
         }
         self.assertEqual(response.get_json(), expectedResponse)
 
-    def test_getNeighborsParseArgs(self):
-        # assert that giving bad node fails
-        response = self.app.get("/neighbors")
-        self.assertEqual(response.status_code, 422)
-        self.assertEqual(response.get_json(), {
-            "code": 422,
-            "error": "The query parameter \'node\' is required"
-        })
-        response = self.app.get("/neighbors?node=sldfkjsldkfj")
-        self.assertEqual(response.status_code, 422)
-        self.assertEqual(
-            response.get_json(), {
-                "code":
-                422,
-                "error":
-                "Node \'sldfkjsldkfj\' could not be converted to an integer"
-            })
-        response = self.app.get("/neighbors?node=9999999999")
-        self.assertEqual(response.status_code, 422)
-        self.assertEqual(
-            response.get_json(), {
-                u'code': 422,
-                u'error': u'Integers over 999999999.0 are not supported'
-            })
-
     def test_serve_docs(self):
         response = self.app.get('/', follow_redirects=True)
         self.assertEqual(response.status_code, 200)
