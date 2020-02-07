@@ -92,18 +92,7 @@ class TestServer(unittest.TestCase):
         self.assertEqual(
             response.get_json(), {
                 u'code': 422,
-                u'error':
-                u"The query parameters 'start' and 'end' are required"
-            })
-        # bad end node
-        response = self.app.get("/shortestPath?start=3&end=pjijsiji")
-        self.assertEqual(response.status_code, 422)
-        self.assertEqual(
-            response.get_json(), {
-                u'code':
-                422,
-                u'error':
-                u"Nodes '3' and 'pjijsiji' could not be converted to integers"
+                u'error': u"could not convert [u'3', None] to an integer"
             })
         # end node doesn't exist
         response = self.app.get("/shortestPath?start=3&end=350000")
@@ -112,15 +101,6 @@ class TestServer(unittest.TestCase):
             u'code': 500,
             u'error': u'No such path from 3 to 350000'
         })
-        # too big int
-        response = self.app.get(
-            "/shortestPath?start=3&end=99999999999999999999999")
-        self.assertEqual(response.status_code, 422)
-        self.assertEqual(
-            response.get_json(), {
-                u'code': 422,
-                u'error': u'Integers over 999999999.0 are not supported'
-            })
         # normal path
         response = self.app.get("/shortestPath?start=3&end=35")
         self.assertEqual(response.status_code, 200)

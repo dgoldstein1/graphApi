@@ -141,25 +141,12 @@ def getNeighbors():
 
 def shortestPath():
     """gets shortest path between two nodes"""
-    start = request.args.get("start")
-    end = request.args.get("end")
-    # parse arguments
-    if (start is None or end is None):
-        return _errOut(422,
-                       "The query parameters 'start' and 'end' are required")
-    try:
-        start = int(start)
-        end = int(end)
-        if start > server.MAX_INT or end > server.MAX_INT:
-            return _errOut(
-                422,
-                "Integers over {} are not supported".format(server.MAX_INT))
-    except ValueError:
-        return _errOut(
-            422,
-            "Nodes '{}' and '{}' could not be converted to integers".format(
-                start, end))
-
+    validatedNodes = validateInts(
+        [request.args.get("start"),
+         request.args.get("end")])
+    if validatedNodes.get('error') is not None:
+        return _errOut(422, validatedNodes.get('error'))
+    [start, end] = validatedNodes.get('validInts')
     # get shortest path
     try:
         path = server.g.shortestPath(start, end, server.SHORTEST_PATH_TIMEOUT)
