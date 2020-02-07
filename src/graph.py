@@ -85,9 +85,9 @@ class Graph:
             self.g.AddEdge(node, n)
         return newNodes
 
-    def shortestPath(self, a, b, timeout=10):
+    def shortestPath(self, a, b, n=1):
         """
-            - gets shortest path between two nodes within timeout
+            - gets shortest path(s) between two nodes
             - return array of nodes or failure
         """
         # with self._timeout(timeout):

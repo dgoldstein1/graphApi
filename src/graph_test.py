@@ -91,8 +91,8 @@ class TestGraphMethods(unittest.TestCase):
         # 5 isn't connected to anything
         with self.assertRaises(IndexError):
             g.shortestPath(1, 5)
-        self.assertEqual(g.shortestPath(1, 2), [1, 2])
-        self.assertEqual(g.shortestPath(1, 4), [1, 3, 4])
+        self.assertEqual(g.shortestPath(1, 2), [[1, 2]])
+        self.assertEqual(g.shortestPath(1, 4), [[1, 3, 4]])
 
     def test_g(self):
         g = graph.Graph("../out/doesntexist.graph").g()
