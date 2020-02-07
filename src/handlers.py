@@ -57,16 +57,12 @@ def postEdges():
     neighborsToAdd = validatedNeighbors.get('validInts')
 
     # get or add nodes
-    err = None
     newNodes = []
     try:
         newNodes = server.g.addNeighbors(node, neighborsToAdd)
     except RuntimeError:
-        err = _errOut(404,
-                      "Node '{}' was not found or does not exist".format(node))
-
-    if err is not None:
-        return err
+        return _errOut(
+            404, "Node '{}' was not found or does not exist".format(node))
     return jsonify({"neighborsAdded": newNodes})
 
 
@@ -79,15 +75,11 @@ def getNeighbors():
     if validatedNodes.get('error') is not None:
         return _errOut(422, validatedNodes.get('error'))
     [node, limit] = validatedNodes.get('validInts')
-    err = None
     try:
         neighbors = server.g.getNeighbors(node, limit)
     except RuntimeError:
-        err = _errOut(404,
-                      "Node '{}' was not found or does not exist".format(node))
-
-    if err is not None:
-        return err
+        return _errOut(
+            404, "Node '{}' was not found or does not exist".format(node))
     return jsonify(neighbors)
 
 
