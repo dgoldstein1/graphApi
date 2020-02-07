@@ -96,21 +96,23 @@ class Graph:
         if (shortestPath == -1):
             raise IndexError("No such path from {} to {}".format(a, b))
 
-        path = [a]
-        currentNode = a
-        # recurse over neighbors to get full path, max iterations is shortest path
-        for i in xrange(0, shortestPath):
-            shortest = sys.maxint
-            for neighbor in self.getNeighbors(currentNode):
-                # get dist to end node
-                distToEnd = snap.GetShortPath(self.g, neighbor, b, True)
-                # update if less than current min
-                if (distToEnd != -1 and distToEnd < shortest):
-                    shortest = distToEnd
-                    currentNode = neighbor
+        paths = [[a]] * n
 
-            path.append(currentNode)
-        return path
+        for path in paths:
+            currentNode = a
+            # recurse over neighbors to get full path, max iterations is shortest path
+            for i in xrange(0, shortestPath):
+                shortest = sys.maxint
+                for neighbor in self.getNeighbors(currentNode):
+                    # get dist to end node
+                    distToEnd = snap.GetShortPath(self.g, neighbor, b, True)
+                    # update if less than current min
+                    if (distToEnd != -1 and distToEnd < shortest):
+                        shortest = distToEnd
+                        currentNode = neighbor
+
+                path.append(currentNode)
+        return paths
 
     @contextmanager
     def _timeout(self, time):

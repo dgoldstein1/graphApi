@@ -71,7 +71,7 @@ class TestServer(unittest.TestCase):
         # normal path
         response = self.app.get("/shortestPath?start=3&end=35")
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.get_json(), [3, 31, 35])
+        self.assertEqual(response.get_json(), [[3, 31, 35]])
 
         # nodes dont exist
         response = self.app.get("/shortestPath?start=23524234&end=324345")
