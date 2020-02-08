@@ -90,31 +90,33 @@ class Graph:
             - gets shortest path(s) between two nodes
             - return array of nodes or failure
         """
-        shortestPath = snap.GetShortPath(self.g, a, b, True)
+        shortestPathLen = snap.GetShortPath(self.g, a, b, True)
         # make sure that there is a path before going on
-        if (shortestPath == -1):
+        if (shortestPathLen == -1):
             raise IndexError("No such path from {} to {}".format(a, b))
 
-        paths = [[a]] * n
+        paths = []
+        for p in range(0, n):
+            paths.append(self._shortestPath(a, b, shortestPathLen))
 
-        for p in xrange(0, n):
-            currentNode = a
-            # recurse over neighbors to get full path, max iterations is shortest path
-            for i in xrange(0, shortestPath):
-                shortest = sys.maxint
-                for neighbor in self.getNeighbors(currentNode):
-                    # dont do anything if same neighbor in same index in another path
-                    for j in range(0, p):
-                        if paths[j][i] == neighbor: break
-                    # get dist to end node
-                    distToEnd = snap.GetShortPath(self.g, neighbor, b, True)
-                    # update if less than current min
-                    if (distToEnd != -1 and distToEnd < shortest):
-                        shortest = distToEnd
-                        currentNode = neighbor
-
-                paths[p].append(currentNode)
         return paths
+
+    def _shortestPath(self, a, b, shortestPathLen):
+        path = [a]
+        currentNode = a
+        # recurse over neighbors to get full path, max iterations is shortest path
+        for i in xrange(0, shortestPathLen):
+            shortest = sys.maxint
+            for neighbor in self.getNeighbors(currentNode):
+                # get dist to end node
+                distToEnd = snap.GetShortPath(self.g, neighbor, b, True)
+                # update if less than current min
+                if (distToEnd != -1 and distToEnd < shortest):
+                    shortest = distToEnd
+                    currentNode = neighbor
+
+            path.append(currentNode)
+        return path
 
     @contextmanager
     def _timeout(self, time):
