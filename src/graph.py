@@ -85,7 +85,7 @@ class Graph:
             self.g.AddEdge(node, n)
         return newNodes
 
-    def shortestPath(self, a, b, n=1):
+    def shortestPath(self, a, b, n=1, forceUnique=False):
         """
             - gets shortest path(s) between two nodes
             - return array of nodes or failure
@@ -96,12 +96,24 @@ class Graph:
             raise IndexError("No such path from {} to {}".format(a, b))
 
         paths = []
-        for p in range(0, n):
-            paths.append(self._shortestPath(a, b, shortestPathLen))
-
+        nodesInUse = []
+        for x in range(0, n):
+            p = self._shortestPath(a, b, shortestPathLen, nodesInUse)
+            paths.append(p)
+            # gather more nodesInUse to force unique
+            if forceUnique:
+                nodesInUse.extend(p[1:len(p) - 1])
+                nodesInUse = list(set(nodesInUse))
         return paths
 
-    def _shortestPath(self, a, b, shortestPathLen):
+    def _shortestPath(self, a, b, shortestPathLen, doNotUseNodes):
+        """
+        finds shortest path between two new nodes
+            a: source
+            b: destination
+            shortestPathLen: length of desired shortest path
+            doNotUseNodes: array of nodes not to use
+        """
         path = [a]
         currentNode = a
         # recurse over neighbors to get full path, max iterations is shortest path
@@ -111,7 +123,7 @@ class Graph:
                 # get dist to end node
                 distToEnd = snap.GetShortPath(self.g, neighbor, b, True)
                 # update if less than current min
-                if (distToEnd != -1 and distToEnd < shortest):
+                if distToEnd != -1 and distToEnd < shortest and neighbor not in doNotUseNodes:
                     shortest = distToEnd
                     currentNode = neighbor
 
