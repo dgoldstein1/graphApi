@@ -85,15 +85,18 @@ def getNeighbors():
 
 def shortestPath():
     """gets shortest path between two nodes"""
-    validatedNodes = validateInts(
-        [request.args.get("start"),
-         request.args.get("end")])
+    validatedNodes = validateInts([
+        request.args.get("start"),
+        request.args.get("end"),
+        request.args.get("n") or 1
+    ])
     if validatedNodes.get('error') is not None:
         return _errOut(422, validatedNodes.get('error'))
-    [start, end] = validatedNodes.get('validInts')
+    [start, end, n] = validatedNodes.get('validInts')
     # get shortest path
     try:
-        path = server.g.shortestPath(start, end)
+        path = server.g.shortestPath(start, end, n,
+                                     request.args.get("unique") == "true")
     except IndexError as e:
         # no such path
         return _errOut(500, e.message)
