@@ -96,8 +96,9 @@ class TestGraphMethods(unittest.TestCase):
         # multiple unique paths
         g.g().AddEdge(1, 5)
         g.g().AddEdge(5, 4)
-        self.assertEqual(g.shortestPath(1, 4, n=2, forceUnique=True),
-                         [[1, 3, 4], [1, 5, 4]])
+        paths = g.shortestPath(1, 4, n=2, forceUnique=True)
+        self.assertTrue([1, 3, 4] in paths)
+        self.assertTrue([1, 5, 4] in paths)
         # doesn't give same path twice (randomizes)
         for i in range(10, 10000):
             # make a bunch of paths from 1=>4
