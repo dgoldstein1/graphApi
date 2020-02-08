@@ -93,11 +93,19 @@ class TestGraphMethods(unittest.TestCase):
             g.shortestPath(1, 5)
         self.assertEqual(g.shortestPath(1, 2), [[1, 2]])
         self.assertEqual(g.shortestPath(1, 4), [[1, 3, 4]])
-        # multiple paths
+        # multiple unique paths
         g.g().AddEdge(1, 5)
         g.g().AddEdge(5, 4)
         self.assertEqual(g.shortestPath(1, 4, n=2, forceUnique=True),
                          [[1, 3, 4], [1, 5, 4]])
+        # doesn't give same path twice (randomizes)
+        for i in range(10, 10000):
+            # make a bunch of paths from 1=>4
+            g.g().AddNode(i)
+            g.g().AddEdge(1, i)
+            g.g().AddEdge(i, 4)
+        self.assertNotEqual(g.shortestPath(1, 4, n=4, forceUnique=False),
+                            [[1, 3, 4], [1, 3, 4], [1, 3, 4], [1, 3, 4]])
 
     def test_g(self):
         g = graph.Graph("../out/doesntexist.graph").g()

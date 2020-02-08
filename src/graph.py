@@ -6,6 +6,7 @@ from contextlib import contextmanager
 import random
 import datetime
 import os
+import random
 
 
 class Graph:
@@ -119,14 +120,20 @@ class Graph:
         # recurse over neighbors to get full path, max iterations is shortest path
         for i in xrange(0, shortestPathLen):
             shortest = sys.maxint
+            possibleNextNodes = []
             for neighbor in self.getNeighbors(currentNode):
                 # get dist to end node
                 distToEnd = snap.GetShortPath(self.g, neighbor, b, True)
                 # update if less than current min
-                if distToEnd != -1 and distToEnd < shortest and neighbor not in doNotUseNodes:
-                    shortest = distToEnd
-                    currentNode = neighbor
-
+                if distToEnd != -1 and distToEnd <= shortest and neighbor not in doNotUseNodes:
+                    # same length, add to possible next nodes
+                    if distToEnd == shortest:
+                        possibleNextNodes.append(neighbor)
+                    else:  # new shortest found
+                        possibleNextNodes = [neighbor]
+                        shortest = distToEnd
+            # get random next node from list
+            currentNode = random.choice(possibleNextNodes)
             path.append(currentNode)
         return path
 
