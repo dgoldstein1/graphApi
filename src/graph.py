@@ -6,6 +6,7 @@ from contextlib import contextmanager
 import random
 import datetime
 import os
+import random
 
 
 class Graph:
@@ -85,30 +86,54 @@ class Graph:
             self.g.AddEdge(node, n)
         return newNodes
 
-    def shortestPath(self, a, b, timeout=10):
+    def shortestPath(self, a, b, n=1, forceUnique=False):
         """
-            - gets shortest path between two nodes within timeout
+            - gets shortest path(s) between two nodes
             - return array of nodes or failure
         """
-        # with self._timeout(timeout):
-        shortestPath = snap.GetShortPath(self.g, a, b, True)
+        shortestPathLen = snap.GetShortPath(self.g, a, b, True)
         # make sure that there is a path before going on
-        if (shortestPath == -1):
+        if (shortestPathLen == -1):
             raise IndexError("No such path from {} to {}".format(a, b))
 
+        paths = []
+        nodesInUse = []
+        for x in range(0, n):
+            p = self._shortestPath(a, b, shortestPathLen, nodesInUse)
+            paths.append(p)
+            # gather more nodesInUse to force unique
+            if forceUnique:
+                nodesInUse.extend(p[1:len(p) - 1])
+                nodesInUse = list(set(nodesInUse))
+        return paths
+
+    def _shortestPath(self, a, b, shortestPathLen, doNotUseNodes):
+        """
+        finds shortest path between two new nodes
+            a: source
+            b: destination
+            shortestPathLen: length of desired shortest path
+            doNotUseNodes: array of nodes not to use
+        """
         path = [a]
         currentNode = a
         # recurse over neighbors to get full path, max iterations is shortest path
-        for i in xrange(0, shortestPath):
+        for i in xrange(0, shortestPathLen):
             shortest = sys.maxint
+            possibleNextNodes = []
             for neighbor in self.getNeighbors(currentNode):
                 # get dist to end node
                 distToEnd = snap.GetShortPath(self.g, neighbor, b, True)
                 # update if less than current min
-                if (distToEnd != -1 and distToEnd < shortest):
-                    shortest = distToEnd
-                    currentNode = neighbor
-
+                if distToEnd != -1 and distToEnd <= shortest and neighbor not in doNotUseNodes:
+                    # same length, add to possible next nodes
+                    if distToEnd == shortest:
+                        possibleNextNodes.append(neighbor)
+                    else:  # new shortest found
+                        possibleNextNodes = [neighbor]
+                        shortest = distToEnd
+            # get random next node from list
+            currentNode = random.choice(possibleNextNodes)
             path.append(currentNode)
         return path
 

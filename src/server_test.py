@@ -59,7 +59,7 @@ class TestServer(unittest.TestCase):
         self.assertEqual(
             response.get_json(), {
                 u'code': 422,
-                u'error': u"could not convert [u'3', None] to an integer"
+                u'error': u"could not convert [u'3', None, 1] to an integer"
             })
         # end node doesn't exist
         response = self.app.get("/shortestPath?start=3&end=350000")
@@ -71,7 +71,11 @@ class TestServer(unittest.TestCase):
         # normal path
         response = self.app.get("/shortestPath?start=3&end=35")
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.get_json(), [3, 31, 35])
+        self.assertEqual(response.get_json(), [[3, 31, 35]])
+        # unique, multiple paths
+        response = self.app.get("/shortestPath?start=3&end=35&n=3&unique=true")
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(len(response.get_json()), 3)
 
         # nodes dont exist
         response = self.app.get("/shortestPath?start=23524234&end=324345")

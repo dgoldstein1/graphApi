@@ -8,8 +8,8 @@ info:
     - [SNAP](https://snap.stanford.edu/index.html)
   version: "1.0.0-oas3"
 servers:
-  - url: http://staging-api.example.com
-    description: TODO create demo API
+  - url: https://links-biggraph.herokuapp.com/
+    description: heroku deployment
 
 
 paths:
@@ -109,15 +109,29 @@ paths:
             type: number
           required: true
           description: Name of the ending node.
+        - in: query
+          name: n
+          schema:
+            type: number
+          required: false
+          description: number of unique paths to return. Must be less than 100
+        - in: query
+          name: unique
+          schema:
+            type: boolean
+          required: false
+          description: If set to true, nodes in all paths will be unique
       responses:
         '200':
-          description: A JSON array of nodes
+          description: Array of paths (array of integers)
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  type: number
+                  type: array
+                  items:
+                    type: integer
         '500':
           description: An error message.
           content:
