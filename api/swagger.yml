@@ -113,8 +113,14 @@ paths:
           name: n
           schema:
             type: number
-          required: true
-          description: number of unique paths to return. Defaults to 1, must be less than 100
+          required: false
+          description: number of unique paths to return. Must be less than 100
+        - in: query
+          name: unique
+          schema:
+            type: boolean
+          required: false
+          description: If set to true, nodes in all paths will be unique
       responses:
         '200':
           description: Array of paths (array of integers)
