@@ -100,6 +100,11 @@ class Graph:
         nodesInUse = []
         for x in range(0, n):
             p = self._shortestPath(a, b, shortestPathLen, nodesInUse)
+            # stopping condition: path lengths are greater than shortest path
+            if (len(p) != shortestPathLen + 1): return paths
+            # assert no duplicates
+            if p in paths: return paths
+            # else add to list of paths
             paths.append(p)
             # gather more nodesInUse to force unique
             if forceUnique:
@@ -132,9 +137,14 @@ class Graph:
                     else:  # new shortest found
                         possibleNextNodes = [neighbor]
                         shortest = distToEnd
+            # ensure right number of nodes
+            if len(possibleNextNodes) == 0: return []
             # get random next node from list
             currentNode = random.choice(possibleNextNodes)
             path.append(currentNode)
+        # ensure list node is destination
+        if path[len(path) - 1] != b: return []
+        # else return normal path
         return path
 
     @contextmanager

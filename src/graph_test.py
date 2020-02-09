@@ -99,6 +99,19 @@ class TestGraphMethods(unittest.TestCase):
         paths = g.shortestPath(1, 4, n=2, forceUnique=True)
         self.assertTrue([1, 3, 4] in paths)
         self.assertTrue([1, 5, 4] in paths)
+        # doesnt give paths longer than shortest path (3)
+        paths = g.shortestPath(1, 4, n=10, forceUnique=True)
+        self.assertTrue(len(paths) < 10)
+        # doesnt give paths that dont end up at destination
+        g.g().AddNode(6)
+        g.g().AddEdge(1, 6)
+        g.g().AddEdge(6, 5)
+        paths = g.shortestPath(1, 4, n=10, forceUnique=True)
+        self.assertTrue(len(paths) == 2)
+        # doesn't give same path twice when forceUnique=False
+        paths = g.shortestPath(1, 4, n=10, forceUnique=False)
+        duplicates = [x for n, x in enumerate(paths) if x in paths[:n]]
+        self.assertTrue(len(duplicates) == 0)
         # doesn't give same path twice (randomizes)
         for i in range(10, 10000):
             # make a bunch of paths from 1=>4
