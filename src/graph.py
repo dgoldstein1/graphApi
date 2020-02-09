@@ -137,10 +137,14 @@ class Graph:
                     else:  # new shortest found
                         possibleNextNodes = [neighbor]
                         shortest = distToEnd
+            # ensure right number of nodes
+            if len(possibleNextNodes) == 0: return []
             # get random next node from list
-            if len(possibleNextNodes) == 0: return path
             currentNode = random.choice(possibleNextNodes)
             path.append(currentNode)
+        # ensure list node is destination
+        if path[len(path) - 1] != b: return []
+        # else return normal path
         return path
 
     @contextmanager
