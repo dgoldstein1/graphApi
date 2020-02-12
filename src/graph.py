@@ -86,7 +86,12 @@ class Graph:
             self.g.AddEdge(node, n)
         return newNodes
 
-    def shortestPath(self, a, b, n=1, forceUnique=False):
+    def shortestPath(self,
+                     a,
+                     b,
+                     n=1,
+                     forceUnique=False,
+                     mustBeSameLength=False):
         """
             - gets shortest path(s) between two nodes
             - return array of nodes or failure
@@ -101,7 +106,8 @@ class Graph:
         for x in range(0, n):
             p = self._shortestPath(a, b, shortestPathLen, nodesInUse)
             # stopping condition: path lengths are greater than shortest path
-            if (len(p) != shortestPathLen + 1): return paths
+            if (mustBeSameLength and len(p) != shortestPathLen + 1):
+                return paths
             # assert no duplicates
             if p in paths: return paths
             # else add to list of paths
