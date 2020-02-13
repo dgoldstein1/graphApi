@@ -86,7 +86,7 @@ class Graph:
             self.g.AddEdge(node, n)
         return newNodes
 
-    def shortestPath(self, a, b, n=1, forceUnique=False):
+    def shortestPath(self, a, b, n=1):
         """
             - gets shortest path(s) between two nodes
             - return array of nodes or failure
@@ -107,9 +107,8 @@ class Graph:
             # else add to list of paths
             paths.append(p)
             # gather more nodesInUse to force unique
-            if forceUnique:
-                nodesInUse.extend(p[1:len(p) - 1])
-                nodesInUse = list(set(nodesInUse))
+            nodesInUse.extend(p[1:len(p) - 1])
+            nodesInUse = list(set(nodesInUse))
         return paths
 
     def _shortestPath(self, a, b, shortestPathLen, doNotUseNodes):
