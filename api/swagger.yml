@@ -6,7 +6,7 @@ info:
 
     - [Source Code](https://github.com/dgoldstein1/graphApi)
     - [SNAP](https://snap.stanford.edu/index.html)
-  version: "1.0.0-oas3"
+  version: "1.0.2"
 servers:
   - url: https://links-biggraph.herokuapp.com/
     description: heroku deployment
@@ -114,13 +114,19 @@ paths:
           schema:
             type: number
           required: false
-          description: number of unique paths to return. Must be less than 100
+          description: number of paths to return. Must be less than 100
         - in: query
           name: unique
           schema:
             type: boolean
           required: false
-          description: If set to true, nodes in all paths will be unique
+          description: If set to true, all nodes in all paths will be unique
+        - in: query
+          name: mustBeSameLength
+          schema:
+            type: boolean
+          required: false
+          description: If set to true, all paths must be the shortest possible path length. Otherwise they are excluded  
       responses:
         '200':
           description: Array of paths (array of integers)

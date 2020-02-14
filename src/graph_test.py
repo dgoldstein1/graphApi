@@ -106,7 +106,11 @@ class TestGraphMethods(unittest.TestCase):
         g.g().AddNode(6)
         g.g().AddEdge(1, 6)
         g.g().AddEdge(6, 5)
-        paths = g.shortestPath(1, 4, n=10, forceUnique=True)
+        paths = g.shortestPath(1,
+                               4,
+                               n=10,
+                               forceUnique=True,
+                               mustBeSameLength=True)
         self.assertTrue(len(paths) == 2)
         # doesn't give same path twice when forceUnique=False
         paths = g.shortestPath(1, 4, n=10, forceUnique=False)
