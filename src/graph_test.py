@@ -125,9 +125,10 @@ class TestGraphMethods(unittest.TestCase):
         # timeout
         timeout = 1000
         start = time.time()
-        paths = g.shortestPath(1, 4, n=5, timeout=timeout)
+        paths = g.shortestPath(1, 4, n=500, timeout=timeout)
         execTime = (time.time() - start) * 1000
         self.assertTrue(execTime < timeout)
+        self.assertNotEqual(paths, [])
 
     def test_g(self):
         g = graph.Graph("../out/doesntexist.graph").g()
