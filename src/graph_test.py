@@ -127,7 +127,7 @@ class TestGraphMethods(unittest.TestCase):
         start = time.time()
         paths = g.shortestPath(1, 4, n=500, timeout=timeout)
         execTime = (time.time() - start) * 1000
-        self.assertTrue(execTime < timeout)
+        self.assertTrue(execTime < timeout + 100)  # add 100ms buffer
         self.assertNotEqual(paths, [])
 
     def test_g(self):

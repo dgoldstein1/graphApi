@@ -102,10 +102,7 @@ class Graph:
         execTime = 0
         for x in range(0, n):
             p, pTime = self._shortestPath(a, b, nodesInUse, directPathFound,
-                                          timeout / n)
-            # accumulate exec time
-            execTime = execTime + pTime
-            if execTime > timeout: return paths
+                                          timeout - execTime)
             # stopping condition, no more paths
             if p == []: return paths
             # direct path found. Edge condition since do
@@ -113,6 +110,9 @@ class Graph:
             if len(p) == 2: directPathFound = True
             # add to list of paths
             paths.append(p)
+            # accumulate exec time
+            execTime = execTime + pTime
+            if execTime > timeout: return paths
             # gather more nodesInUse to force unique
             nodesInUse.extend(p[1:len(p) - 1])
         return paths
