@@ -59,7 +59,8 @@ class TestServer(unittest.TestCase):
         self.assertEqual(
             response.get_json(), {
                 u'code': 422,
-                u'error': u"could not convert [u'3', None, 1] to an integer"
+                u'error':
+                u"could not convert [u'3', None, 1, 3000] to an integer"
             })
         # end node doesn't exist
         response = self.app.get("/shortestPath?start=3&end=350000")

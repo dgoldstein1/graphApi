@@ -88,14 +88,15 @@ def shortestPath():
     validatedNodes = validateInts([
         request.args.get("start"),
         request.args.get("end"),
-        request.args.get("n") or 1
+        request.args.get("n") or 1,
+        request.args.get("timeout") or 3000,
     ])
     if validatedNodes.get('error') is not None:
         return _errOut(422, validatedNodes.get('error'))
-    [start, end, n] = validatedNodes.get('validInts')
+    [start, end, n, timeout] = validatedNodes.get('validInts')
     # get shortest path
     try:
-        path = server.g.shortestPath(start, end, n)
+        path = server.g.shortestPath(start, end, n, timeout)
     except IndexError as e:
         # no such path
         return _errOut(500, e.message)
