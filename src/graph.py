@@ -133,7 +133,6 @@ class Graph:
             if nextNode is None: return []
             # continue traversal
             path.append(nextNode)
-            doNotUseNodes.append(neighbor)
             currentNode = nextNode
         return path
 
