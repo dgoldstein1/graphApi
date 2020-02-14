@@ -122,28 +122,20 @@ class Graph:
         path = [a]
         currentNode = a
         # recurse over neighbors to get full path, max iterations is shortest path
-        for i in xrange(0, shortestPathLen):
+        while currentNode != b:
+            nextNode = None
             shortest = sys.maxint
-            possibleNextNodes = []
+            # find shortest neighbors
             for neighbor in self.getNeighbors(currentNode):
-                # get dist to end node
                 distToEnd = snap.GetShortPath(self.g, neighbor, b, True)
-                # update if less than current min
-                if distToEnd != -1 and distToEnd <= shortest and neighbor not in doNotUseNodes:
-                    # same length, add to possible next nodes
-                    if distToEnd == shortest:
-                        possibleNextNodes.append(neighbor)
-                    else:  # new shortest found
-                        possibleNextNodes = [neighbor]
-                        shortest = distToEnd
-            # ensure right number of nodes
-            if len(possibleNextNodes) == 0: return []
-            # get random next node from list
-            currentNode = random.choice(possibleNextNodes)
-            path.append(currentNode)
-        # ensure list node is destination
-        if path[len(path) - 1] != b: return []
-        # else return normal path
+                # update if new shortest in available nodes
+                if distToEnd != -1 and distToEnd < shortest and neighbor not in doNotUseNodes:
+                    nextNode = neighbor
+            # stopping condition
+            if nextNode is None: return []
+            # continue traversal
+            path.append(nextNode)
+            currentNode = nextNode
         return path
 
     @contextmanager
