@@ -128,10 +128,12 @@ class Graph:
                 # update if new shortest in available nodes
                 if distToEnd != -1 and distToEnd < shortest and neighbor not in doNotUseNodes:
                     nextNode = neighbor
+                    shortest = distToEnd
             # stopping condition
             if nextNode is None: return []
             # continue traversal
             path.append(nextNode)
+            doNotUseNodes.append(neighbor)
             currentNode = nextNode
         return path
 
