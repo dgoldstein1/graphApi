@@ -2,7 +2,6 @@ import snap
 import logging
 import sys
 import signal
-from contextlib import contextmanager
 import random
 import datetime
 import os
@@ -134,25 +133,6 @@ class Graph:
             path.append(nextNode)
             currentNode = nextNode
         return path
-
-    @contextmanager
-    def _timeout(self, time):
-        # Register a function to raise a MemoryError on the signal.
-        signal.signal(signal.SIGALRM, self._raise_timeout)
-        # Schedule the signal to be sent after ``time``.
-        signal.alarm(time)
-
-        try:
-            yield
-        except MemoryError:
-            pass
-        finally:
-            # Unregister the signal so it won't be triggered
-            # if the timeout is not reached.
-            signal.signal(signal.SIGALRM, signal.SIG_IGN)
-
-    def _raise_timeout(self, signum, frame):
-        raise MemoryError
 
     def g(self):
         return self.g
