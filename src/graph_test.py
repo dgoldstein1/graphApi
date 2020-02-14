@@ -3,6 +3,7 @@ import graph
 import logging
 import snap
 import os
+import time
 
 
 class TestGraphMethods(unittest.TestCase):
@@ -36,7 +37,6 @@ class TestGraphMethods(unittest.TestCase):
         g.g().AddEdge(1, 3)
         g.g().AddEdge(3, 4)
         output = g.info()
-        print output
         self.assertTrue("Nodes:                    4" in output)
         self.assertTrue("Edges:                    3" in output)
         # make sure no files 'graph-info-*'
@@ -97,12 +97,13 @@ class TestGraphMethods(unittest.TestCase):
         g.g().AddEdge(1, 5)
         g.g().AddEdge(5, 4)
         paths = g.shortestPath(1, 4, n=2)
-        print paths
         self.assertTrue([1, 3, 4] in paths)
         self.assertTrue([1, 5, 4] in paths)
-        # doesnt give duplicates (3)
+        # doesnt give duplicates
         paths = g.shortestPath(1, 4, n=10)
         self.assertTrue(len(paths) < 10)
+        # no duplicates in direct routes
+        self.assertEqual(len(g.shortestPath(1, 5, n=10)), 1)
         # doesnt give paths that dont end up at destination
         g.g().AddNode(6)
         g.g().AddEdge(1, 6)
@@ -121,6 +122,12 @@ class TestGraphMethods(unittest.TestCase):
             g.g().AddEdge(i, 4)
         self.assertNotEqual(g.shortestPath(1, 4, n=4),
                             [[1, 3, 4], [1, 3, 4], [1, 3, 4], [1, 3, 4]])
+        # timeout
+        timeout = 1000
+        start = time.time()
+        paths = g.shortestPath(1, 4, n=5, timeout=timeout)
+        execTime = (time.time() - start) * 1000
+        self.assertTrue(execTime < timeout)
 
     def test_g(self):
         g = graph.Graph("../out/doesntexist.graph").g()

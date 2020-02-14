@@ -6,6 +6,7 @@ import random
 import datetime
 import os
 import random
+import time
 
 
 class Graph:
@@ -85,7 +86,7 @@ class Graph:
             self.g.AddEdge(node, n)
         return newNodes
 
-    def shortestPath(self, a, b, n=1):
+    def shortestPath(self, a, b, n=1, timeout=3000):
         """
             - gets shortest path(s) between two nodes
             - return array of nodes or failure
@@ -97,42 +98,59 @@ class Graph:
 
         paths = []
         nodesInUse = []
+        directPathFound = False
+        execTime = 0
         for x in range(0, n):
-            p = self._shortestPath(a, b, nodesInUse)
+            p, pTime = self._shortestPath(a, b, nodesInUse, directPathFound,
+                                          timeout / n)
+            # accumulate exec time
+            execTime = execTime + pTime
+            if execTime > timeout: return paths
             # stopping condition, no more paths
             if p == []: return paths
+            # direct path found. Edge condition since do
+            # not add destination node to excluded node
+            if len(p) == 2: directPathFound = True
             # add to list of paths
             paths.append(p)
             # gather more nodesInUse to force unique
             nodesInUse.extend(p[1:len(p) - 1])
         return paths
 
-    def _shortestPath(self, a, b, doNotUseNodes):
+    def _shortestPath(self, a, b, doNotUseNodes, directPathFound, timeout):
         """
         finds shortest path between two new nodes
             a: source
             b: destination
             doNotUseNodes: array of nodes not to use
         """
+        execTime = 0
         path = [a]
         currentNode = a
         # recurse over neighbors to get full path, max iterations is shortest path
         while currentNode != b:
             nextNode = None
             shortest = sys.maxint
-            # find shortest neighbors
+            # find shortest of neighbors
+            start = time.time()
             for neighbor in self.getNeighbors(currentNode):
                 distToEnd = snap.GetShortPath(self.g, neighbor, b, True)
                 # update if new shortest in available nodes
-                if distToEnd != -1 and distToEnd < shortest and neighbor not in doNotUseNodes:
+                if (distToEnd != -1 and distToEnd < shortest
+                        and neighbor not in doNotUseNodes):
+                    # do not update if direct path and direct path already found
+                    if directPathFound and path == [a] and neighbor == b: break
                     nextNode = neighbor
                     shortest = distToEnd
             # stopping condition
-            if nextNode is None: return []
+            if nextNode is None: return ([], execTime)
             # continue traversal
             path.append(nextNode)
             currentNode = nextNode
-        return path
+            # add execution time
+            execTime = execTime + (time.time() - start) * 1000
+            if execTime > timeout: return ([], execTime)
+        return (path, execTime)
 
     def g(self):
         return self.g
