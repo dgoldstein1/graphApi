@@ -99,24 +99,21 @@ class Graph:
         paths = []
         nodesInUse = []
         for x in range(0, n):
-            p = self._shortestPath(a, b, shortestPathLen, nodesInUse)
-            # stopping condition: path lengths are greater than shortest path
-            if (len(p) != shortestPathLen + 1): return paths
-            # assert no duplicates
-            if p in paths: return paths
-            # else add to list of paths
+            p = self._shortestPath(a, b, nodesInUse)
+            # stopping condition, no more paths
+            if p == []: return paths
+            # add to list of paths
             paths.append(p)
             # gather more nodesInUse to force unique
             nodesInUse.extend(p[1:len(p) - 1])
             nodesInUse = list(set(nodesInUse))
         return paths
 
-    def _shortestPath(self, a, b, shortestPathLen, doNotUseNodes):
+    def _shortestPath(self, a, b, doNotUseNodes):
         """
         finds shortest path between two new nodes
             a: source
             b: destination
-            shortestPathLen: length of desired shortest path
             doNotUseNodes: array of nodes not to use
         """
         path = [a]
