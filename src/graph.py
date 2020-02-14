@@ -106,7 +106,6 @@ class Graph:
             paths.append(p)
             # gather more nodesInUse to force unique
             nodesInUse.extend(p[1:len(p) - 1])
-            nodesInUse = list(set(nodesInUse))
         return paths
 
     def _shortestPath(self, a, b, doNotUseNodes):
