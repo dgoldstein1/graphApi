@@ -157,5 +157,18 @@ class Graph:
             takes page rank of subgraph of network for two nodes,
             returns array of relveant nodes, sorted by relevance
         """
+        # add edges for each node in short paths
+        paths = self.shortestPath(n1, n2, timeout=timeout / 2)
+        paths.extend(self.shortestPath(n2, n1, timeout=timeout / 2))
+        # flatten path into nodes
+        nodes = [item for sublist in paths for item in sublist]
+        # expand to neighbors for bigger graph
+        for n in nodes:
+            nodes.extend(self.getNeighbors(n))
+        # snap.GetSubGraph(self.g, snap.TIntV.GetV(0,1,2,3,4))
+        print nodes
+
+        return []
+
     def g(self):
         return self.g

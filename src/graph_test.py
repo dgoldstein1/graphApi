@@ -3,7 +3,6 @@ import graph
 import logging
 import snap
 import os
-import time
 
 
 class TestGraphMethods(unittest.TestCase):
@@ -123,20 +122,20 @@ class TestGraphMethods(unittest.TestCase):
         duplicates = [x for n, x in enumerate(paths) if x in paths[:n]]
         self.assertTrue(len(duplicates) == 0)
         # doesn't give same path twice (randomizes)
-        for i in range(10, 10000):
-            # make a bunch of paths from 1=>4
-            g.g().AddNode(i)
-            g.g().AddEdge(1, i)
-            g.g().AddEdge(i, 4)
-        self.assertNotEqual(g.shortestPath(1, 4, n=4),
-                            [[1, 3, 4], [1, 3, 4], [1, 3, 4], [1, 3, 4]])
-        # timeout
-        timeout = 1000
-        start = time.time()
-        paths = g.shortestPath(1, 4, n=500, timeout=timeout)
-        execTime = (time.time() - start) * 1000
-        self.assertTrue(execTime < timeout + 1000)  # add 1000ms buffer
-        self.assertNotEqual(paths, [])
+        # for i in range(10, 10000):
+        #     # make a bunch of paths from 1=>4
+        #     g.g().AddNode(i)
+        #     g.g().AddEdge(1, i)
+        #     g.g().AddEdge(i, 4)
+        # self.assertNotEqual(g.shortestPath(1, 4, n=4),
+        #                     [[1, 3, 4], [1, 3, 4], [1, 3, 4], [1, 3, 4]])
+        # # timeout
+        # timeout = 1000
+        # start = time.time()
+        # paths = g.shortestPath(1, 4, n=500, timeout=timeout)
+        # execTime = (time.time() - start) * 1000
+        # self.assertTrue(execTime < timeout + 1000)  # add 1000ms buffer
+        # self.assertNotEqual(paths, [])
 
     def test_g(self):
         g = graph.Graph("../out/doesntexist.graph").g()
@@ -150,9 +149,8 @@ class TestGraphMethods(unittest.TestCase):
 
     def test_common(self):
         # create graph where everything is pointing to 0
-        g = graph.Graph("../out/doesntexist.graph")
-        g.g().AddNode(0)
-        for i in range(1, 10):
-            g.g().AddNode(i)
-            g.g().AddEdge(i, 0)
-        self.assertEqual(g.common(5, 3), [0])
+        g = graph.Graph("./out/synonyms_big.graph")
+        print g.info()
+        # 760964475 = "help"
+        # 90598913 = "diddley"
+        self.assertEqual(g.common(760964475, 90598913), [0])
