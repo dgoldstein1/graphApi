@@ -114,19 +114,14 @@ paths:
           schema:
             type: number
           required: false
-          description: number of paths to return. Must be less than 100
+          description: number of completely unique paths to return. Must be less than 100
         - in: query
-          name: unique
+          name: timeout
           schema:
-            type: boolean
+            type: number
           required: false
-          description: If set to true, all nodes in all paths will be unique
-        - in: query
-          name: mustBeSameLength
-          schema:
-            type: boolean
-          required: false
-          description: If set to true, all paths must be the shortest possible path length. Otherwise they are excluded  
+          description: Max execution time in milliseconds. Defaults to 3000ms
+
       responses:
         '200':
           description: Array of paths (array of integers)
