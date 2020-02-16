@@ -152,5 +152,10 @@ class Graph:
             if execTime > timeout: return ([], execTime)
         return (path, execTime)
 
+    def common(self, n1, n2, timeout=3000):
+        """
+            takes page rank of subgraph of network for two nodes,
+            returns array of relveant nodes, sorted by relevance
+        """
     def g(self):
         return self.g

@@ -147,3 +147,12 @@ class TestGraphMethods(unittest.TestCase):
         file = "{}/out/test1.graph".format(os.getcwd())
         g = graph.Graph(file).g()
         self.assertNotEqual(g.GetNodes(), 0)
+
+    def test_common(self):
+        # create graph where everything is pointing to 0
+        g = graph.Graph("../out/doesntexist.graph")
+        g.g().AddNode(0)
+        for i in range(1, 10):
+            g.g().AddNode(i)
+            g.g().AddEdge(i, 0)
+        self.assertEqual(g.common(5, 3), [0])
