@@ -117,28 +117,36 @@ class Graph:
             nodesInUse.extend(p[1:len(p) - 1])
         return paths
 
-    def _shortestPath(self, a, b, doNotUseNodes, directPathFound, timeout):
+    def _shortestPath(self, a, b, doNotUse, dpf, t):
         """
         finds shortest path between two new nodes
             a: source
             b: destination
-            doNotUseNodes: array of nodes not to use
+            doNotUse: array of nodes not to use
+            dpf: direct path already found?
+            t: timeout
         """
         start = time.time()
         shortestDist = snap.GetShortPath(self.g, a, b, True)
         # stopping conditions
         if (shortestDist == 0): return ([a], time.time() - start)
-        if (shortestDist == 1 and not directPathFound):
+        if (shortestDist == 1 and not dpf):
             return ([a, b], time.time() - start)
 
         # get lengths from a->b and b->a
         lentoB, lentoA = snap.TIntH(), snap.TIntH()
         snap.GetShortPath(self.g, b, lentoB, False, shortestDist)
         snap.GetShortPath(self.g, a, lentoA, False, shortestDist)
+        lentoB.SortByDat()
+        # clean out do not use nodes
+        [lentoB.DelIfKey(n) for n in doNotUse]
+        [lentoA.DelIfKey(n) for n in doNotUse]
         # find shortest middle between the two
         s = sys.maxint
         middleNode = None
-        lentoB.SortByDat()
+        # stopping condition: no nodes left
+        if (len(lentoB) == 0 or len(lentoA) == 0):
+            return ([], time.time() - start)
         for n in lentoB:
             if (n == b or n == a): continue
             l = lentoB[n] + lentoA[n]
@@ -147,10 +155,8 @@ class Graph:
                 middleNode = n
         if middleNode is None: return ([], time.time() - start)
         # else recurse from paths of middle nodes
-        (aToMid, t1) = self._shortestPath(a, middleNode, doNotUseNodes,
-                                          directPathFound, timeout)
-        (midToB, t2) = self._shortestPath(middleNode, b, doNotUseNodes,
-                                          directPathFound, timeout)
+        (aToMid, t1) = self._shortestPath(a, middleNode, doNotUse, dpf, t)
+        (midToB, t2) = self._shortestPath(middleNode, b, doNotUse, dpf, t)
         aToMid.extend(midToB[1:])
         return (aToMid, t1 + t2)
 

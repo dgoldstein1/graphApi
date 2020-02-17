@@ -90,15 +90,15 @@ class TestGraphMethods(unittest.TestCase):
         # 5 isn't connected to anything
         with self.assertRaises(IndexError):
             g.shortestPath(1, 5)
-        # self.assertEqual(g.shortestPath(1, 2), [[1, 2]])
+        self.assertEqual(g.shortestPath(1, 2), [[1, 2]])
         self.assertEqual(g.shortestPath(1, 4), [[1, 3, 4]])
-        # # multiple unique paths
-        # g.g().AddEdge(1, 5)
-        # g.g().AddEdge(5, 4)
-        # paths = g.shortestPath(1, 4, n=2)
-        # self.assertTrue([1, 3, 4] in paths)
-        # self.assertTrue([1, 5, 4] in paths)
-        # # doesnt give duplicates
+        # multiple unique paths
+        g.g().AddEdge(1, 5)
+        g.g().AddEdge(5, 4)
+        paths = g.shortestPath(1, 4, n=2)
+        self.assertTrue([1, 3, 4] in paths)
+        self.assertTrue([1, 5, 4] in paths)
+        # doesnt give duplicates
         # paths = g.shortestPath(1, 4, n=10)
         # self.assertTrue(len(paths) < 10)
         # # no duplicates in direct routes
