@@ -117,7 +117,7 @@ class Graph:
             nodesInUse.extend(p[1:len(p) - 1])
         return paths
 
-    def _shortestPath(self, a, b, doNotUse, dpf, t):
+    def _shortestPath(self, a, b, doNotUse, dpf, t, i=0):
         """
         finds shortest path between two new nodes
             a: source
@@ -130,7 +130,7 @@ class Graph:
         shortestDist = snap.GetShortPath(self.g, a, b, True)
         # stopping conditions
         if (shortestDist == 0): return ([a], time.time() - start)
-        if (shortestDist == 1 and not dpf):
+        if (shortestDist == 1 and (not dpf or i != 0)):
             return ([a, b], time.time() - start)
 
         # get lengths from a->b and b->a
@@ -155,8 +155,10 @@ class Graph:
                 middleNode = n
         if middleNode is None: return ([], time.time() - start)
         # else recurse from paths of middle nodes
-        (aToMid, t1) = self._shortestPath(a, middleNode, doNotUse, dpf, t)
-        (midToB, t2) = self._shortestPath(middleNode, b, doNotUse, dpf, t)
+        (aToMid, t1) = self._shortestPath(a, middleNode, doNotUse, dpf, t,
+                                          i + 1)
+        (midToB, t2) = self._shortestPath(middleNode, b, doNotUse, dpf, t,
+                                          i + 1)
         aToMid.extend(midToB[1:])
         return (aToMid, t1 + t2)
 
