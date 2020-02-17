@@ -6,6 +6,7 @@ import datetime
 import os
 import random
 import sys
+import time
 
 
 class Graph:
@@ -123,13 +124,12 @@ class Graph:
             b: destination
             doNotUseNodes: array of nodes not to use
         """
-        execTime = 0
-        # raises error if no path
+        start = time.time()
         shortestDist = snap.GetShortPath(self.g, a, b, True)
         # stopping conditions
-        if (shortestDist == 0): return ([a], execTime)
+        if (shortestDist == 0): return ([a], time.time() - start)
         if (shortestDist == 1 and not directPathFound):
-            return ([a, b], execTime)
+            return ([a, b], time.time() - start)
 
         # get lengths from a->b and b->a
         lentoB, lentoA = snap.TIntH(), snap.TIntH()
@@ -145,7 +145,7 @@ class Graph:
             if l < s:
                 s = l
                 middleNode = n
-        if middleNode is None: return ([], execTime)
+        if middleNode is None: return ([], time.time() - start)
         # else recurse from paths of middle nodes
         (aToMid, t1) = self._shortestPath(a, middleNode, doNotUseNodes,
                                           directPathFound, timeout)
