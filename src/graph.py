@@ -1,12 +1,10 @@
 import snap
 import logging
-import sys
 import signal
 import random
 import datetime
 import os
 import random
-import time
 
 
 class Graph:
@@ -124,60 +122,30 @@ class Graph:
             b: destination
             doNotUseNodes: array of nodes not to use
         """
-        start = time.time()
         execTime = 0
         path = [a]
         currentNode = a
-        # # recurse over neighbors to get full path, max iterations is shortest path
+        # recurse over neighbors to get full path, max iterations is shortest path
         # while currentNode != b:
-        #     lenCurrToN = snap.TIntH()
-        #     snap.GetShortPath(self.g, currentNode, lenCurrToN, True, 1000)
-        #     # sort shortest path ascending
-        #     lenCurrToN.SortByDat()
-        #     # recurse until a new node is found
-        #     nextNodeFound = False
-        #     for n in lenCurrToN:
-        #         isValidNodeInList = (n != currentNode
-        #                              and n not in doNotUseNodes)
-        #         # break on direct path found, cannot put dest in doNotUseNodes
-        #         isNotAlreadyFoundDirectPath = (directPathFound and path == [a]
-        #                                        and n == b)
-        #         # node found is both are true
-        #         if (isValidNodeInList and isValidNodeInList):
-        #             path.append(n)
-        #             currentNode = n
-        #             nextNodeFound = True
-        #         else:
-        #             continue
-        #         # break if node found
-        #         break
-        #     # new node not found, breaking conditions
-        #     if nextNodeFound is False: return ([], execTime)
-        #     # prepare to iterate again
-        #     lenCurrToN.Clr()
-        # return (path, execTime)
-
         while currentNode != b:
-            nextNode = None
-            shortest = sys.maxint
-            # find shortest of neighbors
-            for neighbor in self.getNeighbors(currentNode):
-                distToEnd = snap.GetShortPath(self.g, neighbor, b, True)
-                # update if new shortest in available nodes
-                if (distToEnd != -1 and distToEnd < shortest
-                        and neighbor not in doNotUseNodes):
-                    # do not update if direct path and direct path already found
-                    if directPathFound and path == [a] and neighbor == b: break
-                    nextNode = neighbor
-                    shortest = distToEnd
-            # stopping condition
-            if nextNode is None: return ([], execTime)
-            # continue traversal
-            path.append(nextNode)
-            currentNode = nextNode
-            # add execution time
-            execTime = execTime + (time.time() - start) * 1000
-            if execTime > timeout: return ([], execTime)
+            lenCurrToN = snap.TIntH()
+            snap.GetShortPath(self.g, currentNode, lenCurrToN, True, 1000)
+            # sort shortest path ascending
+            lenCurrToN.SortByDat()
+            # clean out do not use nodes
+            [lenCurrToN.DelIfKey(n) for n in doNotUseNodes]
+            # recurse until a new node is found
+            for n in lenCurrToN:
+                # break on direct path found, cannot put dest in doNotUseNodes
+                if (directPathFound and len(path) == 1 and n == b): continue
+                # node found! passed all checks
+                path.append(n)
+                currentNode = n
+                break
+                if found == False: return ([], execTime)
+            print path
+            lenCurrToN.Clr()
+        path.append(b)
         return (path, execTime)
 
     def common(self, n1, n2, timeout=3000):
