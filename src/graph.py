@@ -134,11 +134,14 @@ class Graph:
         if (shortestDist == 1):
             if dpf and i == 0: return ([], time.time() - start)
             return ([a, b], time.time() - start)
+        print "------------------------"
+        print "a : {}, b : {}, shortestDist : {}, doNotUse : {}, iteration: {}".format(
+            a, b, shortestDist, doNotUse, i)
 
         # get lengths from a->b and b->a
         lentoB, lentoA = snap.TIntH(), snap.TIntH()
-        snap.GetShortPath(self.g, b, lentoB, False, shortestDist)
-        snap.GetShortPath(self.g, a, lentoA, False, shortestDist)
+        snap.GetShortPath(self.g, b, lentoB, False, shortestDist * 5)
+        snap.GetShortPath(self.g, a, lentoA, False, shortestDist * 5)
         lentoB.SortByDat()
         # clean out do not use nodes
         [lentoB.DelIfKey(n) for n in doNotUse]
@@ -153,9 +156,12 @@ class Graph:
             if (lentoB[n] < 1 or lentoA[n] < 1): continue
             l = lentoB[n] + lentoA[n]
             if l < s:
+                print "a: {}, b : {}, lenB: {}, lenA : {}, l: {}, n: {}".format(
+                    a, b, lentoB[n], lentoA[n], l, n)
                 s = l
                 middleNode = n
         if middleNode is None: return ([], time.time() - start)
+        print "------------------------"
         # else recurse from paths of middle nodes
         (aToMid, t1) = self._shortestPath(a, middleNode, doNotUse, dpf, t,
                                           i + 1)
