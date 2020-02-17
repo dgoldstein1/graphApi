@@ -135,7 +135,7 @@ class Graph:
             if dpf and i == 0: return ([], time.time() - start)
             return ([a, b], time.time() - start)
 
-        # get lengths from a->b and b->a
+        # get lengths from n->b and n->a
         lentoB, lentoA = snap.TIntH(), snap.TIntH()
         snap.GetShortPath(g, b, lentoB, False, shortestDist * 5)
         snap.GetShortPath(g, a, lentoA, False, shortestDist * 5)

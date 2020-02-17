@@ -138,6 +138,11 @@ class TestGraphMethods(unittest.TestCase):
         self.assertTrue(execTime < timeout + 1000)  # add 1000ms buffer
         self.assertNotEqual(paths, [])
 
+        # error with too many things in hash set
+        # sangamon county, illinois to daggett county, utah
+        g = graph.Graph("./out/counties.graph")
+        g.shortestPath(284128874, 656315998, n=5)
+
     def test_g(self):
         g = graph.Graph("../out/doesntexist.graph").g()
         # creates new graph on bad filename
