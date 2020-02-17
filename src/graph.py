@@ -112,7 +112,7 @@ class Graph:
             paths.append(copy.copy(p))
             # accumulate exec time
             execTime = execTime + pTime
-            if execTime > timeout: return paths
+            if (execTime * 1000) > timeout: return paths
             # removes nodes currently in use in path
             [g.DelNode(n) for n in p[1:len(p) - 1]]
 
@@ -157,7 +157,7 @@ class Graph:
         (aToMid, t1) = self._shortestPath(a, middleNode, dpf, t, g, i + 1)
         (midToB, t2) = self._shortestPath(middleNode, b, dpf, t, g, i + 1)
         aToMid.extend(midToB[1:])
-        return (aToMid, t1 + t2)
+        return (aToMid, (time.time() - start) + t1 + t2)
 
     def common(self, n1, n2, timeout=3000):
         """

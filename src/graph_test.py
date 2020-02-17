@@ -3,6 +3,7 @@ import graph
 import logging
 import snap
 import os
+import time
 
 
 class TestGraphMethods(unittest.TestCase):
@@ -96,12 +97,10 @@ class TestGraphMethods(unittest.TestCase):
         g.g().AddEdge(1, 5)
         g.g().AddEdge(5, 4)
         paths = g.shortestPath(1, 4, n=2)
-        print paths
         self.assertTrue([1, 3, 4] in paths)
         self.assertTrue([1, 5, 4] in paths)
         # doesnt give duplicates
         paths = g.shortestPath(1, 4, n=3)
-        print paths
         self.assertTrue(len(paths) < 10)
         # no duplicates in direct routes
         g.g().AddNode(12345679)
@@ -111,33 +110,33 @@ class TestGraphMethods(unittest.TestCase):
         g.g().AddEdge(1, 12345678)
         g.g().AddEdge(12345678, 12345679)
 
-        self.assertEqual(g.shortestPath(1, 12345679, n=10),
-                         [[1, 12345679], [1, 12345678, 12345679]])
+        # self.assertEqual(g.shortestPath(1, 12345679, n=10),
+        #                  [[1, 12345679], [1, 12345678, 12345679]])
         # doesnt give paths that dont end up at destination
-        # g.g().AddNode(6)
-        # g.g().AddEdge(1, 6)
-        # g.g().AddEdge(6, 5)
-        # paths = g.shortestPath(1, 4, n=10)
-        # self.assertEqual(len(paths), 2)
-        # # doesn't give same path twice
-        # paths = g.shortestPath(1, 4, n=10)
-        # duplicates = [x for n, x in enumerate(paths) if x in paths[:n]]
-        # self.assertTrue(len(duplicates) == 0)
-        # # doesn't give same path twice (randomizes)
-        # for i in range(10, 10000):
-        #     # make a bunch of paths from 1=>4
-        #     g.g().AddNode(i)
-        #     g.g().AddEdge(1, i)
-        #     g.g().AddEdge(i, 4)
-        # self.assertNotEqual(g.shortestPath(1, 4, n=4),
-        #                     [[1, 3, 4], [1, 3, 4], [1, 3, 4], [1, 3, 4]])
-        # # timeout
-        # timeout = 1000
-        # start = time.time()
-        # paths = g.shortestPath(1, 4, n=500, timeout=timeout)
-        # execTime = (time.time() - start) * 1000
-        # self.assertTrue(execTime < timeout + 1000)  # add 1000ms buffer
-        # self.assertNotEqual(paths, [])
+        g.g().AddNode(6)
+        g.g().AddEdge(1, 6)
+        g.g().AddEdge(6, 5)
+        paths = g.shortestPath(1, 4, n=10)
+        self.assertEqual(len(paths), 2)
+        # doesn't give same path twice
+        paths = g.shortestPath(1, 4, n=10)
+        duplicates = [x for n, x in enumerate(paths) if x in paths[:n]]
+        self.assertTrue(len(duplicates) == 0)
+        # doesn't give same path twice (randomizes)
+        for i in range(10, 10000):
+            # make a bunch of paths from 1=>4
+            g.g().AddNode(i)
+            g.g().AddEdge(1, i)
+            g.g().AddEdge(i, 4)
+        self.assertNotEqual(g.shortestPath(1, 4, n=4),
+                            [[1, 3, 4], [1, 3, 4], [1, 3, 4], [1, 3, 4]])
+        # timeout
+        timeout = 1000
+        start = time.time()
+        paths = g.shortestPath(1, 4, n=500, timeout=timeout)
+        execTime = (time.time() - start) * 1000
+        self.assertTrue(execTime < timeout + 1000)  # add 1000ms buffer
+        self.assertNotEqual(paths, [])
 
     def test_g(self):
         g = graph.Graph("../out/doesntexist.graph").g()
