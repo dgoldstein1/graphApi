@@ -100,8 +100,9 @@ class Graph:
         paths = []
         dpf = False
         execTime = 0
-        g = copy.copy(self.g)
+        g = snap.GetBfsTree(self.g, a, True, False)
         for x in range(0, n):
+            print "paths is (1) : {}".format(paths)
             p, pTime = self._shortestPath(a, b, dpf, timeout - execTime, g)
             # stopping condition, no more paths
             if p == []: return paths
@@ -110,12 +111,17 @@ class Graph:
             if len(p) == 2: dpf = True
             # add to list of paths
             paths.append(copy.copy(p))
-            print "paths is : {}".format(paths)
+            print "paths is (2) : {}".format(paths)
             # accumulate exec time
             execTime = execTime + pTime
             if execTime > timeout: return paths
             # removes nodes currently in use in path
-            [g.DelNode(n) for n in p[1:len(p) - 1]]
+            for n in p[1:len(p) - 1]:
+                g.DelNode(n)
+                snap.PrintInfo(g)
+                snap.PrintInfo(self.g)
+                print paths
+            print "paths is (3) : {}".format(paths)
         return paths
 
     def _shortestPath(self, a, b, dpf, t, g, i=0):
