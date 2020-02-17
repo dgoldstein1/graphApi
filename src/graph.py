@@ -5,6 +5,7 @@ import random
 import datetime
 import os
 import random
+import sys
 
 
 class Graph:
@@ -122,16 +123,32 @@ class Graph:
             b: destination
             doNotUseNodes: array of nodes not to use
         """
+        # stopping condition
+        if a == b: return [a]
         # raises error if no path
-        snap.GetShortPath(self.g, a, b, True)
+        shortestDist = snap.GetShortPath(self.g, a, b, True)
 
         execTime = 0
-        path = [a]
-        # recurse over neighbors to get full path, max iterations is shortest path
-        # while currentNode != b:
-        for i in range(0, 3):
-            pass
-        return (path, execTime)
+        # get lengths from a->b and b->a
+        lentoB, lentoA = snap.TIntH(), snap.TIntH()
+        snap.GetShortPath(self.g, b, lentoB, False, shortestDist)
+        snap.GetShortPath(self.g, a, lentoA, False, shortestDist)
+        s = sys.maxint
+        middleNode = None
+        # find shortest middle between the two
+        lentoB.SortByDat()
+        for n in lentoB:
+            l = lentoB[n] + lentoA[n]
+            if l < s:
+                s = l
+                middleNode = n
+        if middleNode is None: return ([], execTime)
+        # else recurse from paths of middle nodes
+        aToMid = self._shortestPath(a, middleNode, doNotUseNodes,
+                                    directPathFound, timeout)
+        midToB = self._shortestPath(middleNode, b, doNotUseNodes,
+                                    directPathFound, timeout)
+        return aToMid.extend(midToB)
 
     def common(self, n1, n2, timeout=3000):
         """
