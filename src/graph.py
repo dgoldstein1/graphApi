@@ -122,30 +122,15 @@ class Graph:
             b: destination
             doNotUseNodes: array of nodes not to use
         """
+        # raises error if no path
+        snap.GetShortPath(self.g, a, b, True)
+
         execTime = 0
         path = [a]
-        currentNode = a
         # recurse over neighbors to get full path, max iterations is shortest path
         # while currentNode != b:
-        while currentNode != b:
-            lenCurrToN = snap.TIntH()
-            snap.GetShortPath(self.g, currentNode, lenCurrToN, True, 1000)
-            # sort shortest path ascending
-            lenCurrToN.SortByDat()
-            # clean out do not use nodes
-            [lenCurrToN.DelIfKey(n) for n in doNotUseNodes]
-            # recurse until a new node is found
-            for n in lenCurrToN:
-                # break on direct path found, cannot put dest in doNotUseNodes
-                if (directPathFound and len(path) == 1 and n == b): continue
-                # node found! passed all checks
-                path.append(n)
-                currentNode = n
-                break
-                if found == False: return ([], execTime)
-            print path
-            lenCurrToN.Clr()
-        path.append(b)
+        for i in range(0, 3):
+            pass
         return (path, execTime)
 
     def common(self, n1, n2, timeout=3000):
