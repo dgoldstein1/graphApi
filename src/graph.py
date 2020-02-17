@@ -128,34 +128,34 @@ class Graph:
         execTime = 0
         path = [a]
         currentNode = a
-        # recurse over neighbors to get full path, max iterations is shortest path
-        while currentNode != b:
-            lenCurrToN = snap.TIntH()
-            snap.GetShortPath(self.g, currentNode, lenCurrToN, True, 1000)
-            # sort shortest path ascending
-            lenCurrToN.SortByDat()
-            # recurse until a new node is found
-            nextNodeFound = False
-            for n in lenCurrToN:
-                isValidNodeInList = (n != currentNode
-                                     and n not in doNotUseNodes)
-                # break on direct path found, cannot put dest in doNotUseNodes
-                isNotAlreadyFoundDirectPath = (directPathFound and path == [a]
-                                               and n == b)
-                # node found is both are true
-                if (isValidNodeInList and isValidNodeInList):
-                    path.append(n)
-                    currentNode = n
-                    nextNodeFound = True
-                else:
-                    continue
-                # break if node found
-                break
-            # new node not found, breaking conditions
-            if nextNodeFound is False: return ([], execTime)
-            # prepare to iterate again
-            lenCurrToN.Clr()
-        return (path, execTime)
+        # # recurse over neighbors to get full path, max iterations is shortest path
+        # while currentNode != b:
+        #     lenCurrToN = snap.TIntH()
+        #     snap.GetShortPath(self.g, currentNode, lenCurrToN, True, 1000)
+        #     # sort shortest path ascending
+        #     lenCurrToN.SortByDat()
+        #     # recurse until a new node is found
+        #     nextNodeFound = False
+        #     for n in lenCurrToN:
+        #         isValidNodeInList = (n != currentNode
+        #                              and n not in doNotUseNodes)
+        #         # break on direct path found, cannot put dest in doNotUseNodes
+        #         isNotAlreadyFoundDirectPath = (directPathFound and path == [a]
+        #                                        and n == b)
+        #         # node found is both are true
+        #         if (isValidNodeInList and isValidNodeInList):
+        #             path.append(n)
+        #             currentNode = n
+        #             nextNodeFound = True
+        #         else:
+        #             continue
+        #         # break if node found
+        #         break
+        #     # new node not found, breaking conditions
+        #     if nextNodeFound is False: return ([], execTime)
+        #     # prepare to iterate again
+        #     lenCurrToN.Clr()
+        # return (path, execTime)
 
         while currentNode != b:
             nextNode = None
