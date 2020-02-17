@@ -124,15 +124,43 @@ class Graph:
             b: destination
             doNotUseNodes: array of nodes not to use
         """
+        start = time.time()
         execTime = 0
         path = [a]
         currentNode = a
         # recurse over neighbors to get full path, max iterations is shortest path
         while currentNode != b:
+            lenCurrToN = snap.TIntH()
+            snap.GetShortPath(self.g, currentNode, lenCurrToN, True, 1000)
+            # sort shortest path ascending
+            lenCurrToN.SortByDat()
+            # recurse until a new node is found
+            nextNodeFound = False
+            for n in lenCurrToN:
+                isValidNodeInList = (n != currentNode
+                                     and n not in doNotUseNodes)
+                # break on direct path found, cannot put dest in doNotUseNodes
+                isNotAlreadyFoundDirectPath = (directPathFound and path == [a]
+                                               and n == b)
+                # node found is both are true
+                if (isValidNodeInList and isValidNodeInList):
+                    path.append(n)
+                    currentNode = n
+                    nextNodeFound = True
+                else:
+                    continue
+                # break if node found
+                break
+            # new node not found, breaking conditions
+            if nextNodeFound is False: return ([], execTime)
+            # prepare to iterate again
+            lenCurrToN.Clr()
+        return (path, execTime)
+
+        while currentNode != b:
             nextNode = None
             shortest = sys.maxint
             # find shortest of neighbors
-            start = time.time()
             for neighbor in self.getNeighbors(currentNode):
                 distToEnd = snap.GetShortPath(self.g, neighbor, b, True)
                 # update if new shortest in available nodes
@@ -158,17 +186,17 @@ class Graph:
             returns array of relveant nodes, sorted by relevance
         """
         # add edges for each node in short paths
-        paths = self.shortestPath(n1, n2, timeout=timeout)
-        paths.extend(self.shortestPath(n2, n1, timeout=timeout))
-        # flatten path into nodes
-        nodes = [item for sublist in paths for item in sublist]
-        # expand to neighbors for bigger graph
-        for n in nodes:
-            edges = self.g.GetNI(n).GetOutEdges()
-            print edges
+        # paths = self.shortestPath(n1, n2, timeout=timeout)
+        # paths.extend(self.shortestPath(n2, n1, timeout=timeout))
+        # # flatten path into nodes
+        # nodes = [item for sublist in paths for item in sublist]
+        # # expand to neighbors for bigger graph
+        # for n in nodes:
+        #     edges = self.g.GetNI(n).GetOutEdges()
+        #     print edges
 
-        # snap.GetSubGraph(self.g, snap.TIntV.GetV(0,1,2,3,4))
-        print nodes
+        # # snap.GetSubGraph(self.g, snap.TIntV.GetV(0,1,2,3,4))
+        # print nodes
 
         return []
 
