@@ -98,16 +98,16 @@ class Graph:
 
         paths = []
         nodesInUse = []
-        directPathFound = False
+        dpf = False
         execTime = 0
         for x in range(0, n):
-            p, pTime = self._shortestPath(a, b, nodesInUse, directPathFound,
+            p, pTime = self._shortestPath(a, b, nodesInUse, dpf,
                                           timeout - execTime)
             # stopping condition, no more paths
             if p == []: return paths
             # direct path found. Edge condition since do
             # not add destination node to excluded node
-            if len(p) == 2: directPathFound = True
+            if len(p) == 2: dpf = True
             # add to list of paths
             paths.append(p)
             # accumulate exec time
@@ -129,14 +129,16 @@ class Graph:
         start = time.time()
         shortestDist = snap.GetShortPath(self.g, a, b, True)
         # stopping conditions
+        if (shortestDist == -1): return ([], time.time() - start)
         if (shortestDist == 0): return ([a], time.time() - start)
-        if (shortestDist == 1 and (not dpf or i != 0)):
+        if (shortestDist == 1):
+            if dpf and i != 0: return ([], time.time() - start)
             return ([a, b], time.time() - start)
 
         # get lengths from a->b and b->a
         lentoB, lentoA = snap.TIntH(), snap.TIntH()
-        snap.GetShortPath(self.g, b, lentoB, False, shortestDist)
-        snap.GetShortPath(self.g, a, lentoA, False, shortestDist)
+        snap.GetShortPath(self.g, b, lentoB, False, shortestDist * 5)
+        snap.GetShortPath(self.g, a, lentoA, False, shortestDist * 5)
         lentoB.SortByDat()
         # clean out do not use nodes
         [lentoB.DelIfKey(n) for n in doNotUse]
@@ -148,7 +150,7 @@ class Graph:
         if (len(lentoB) == 0 or len(lentoA) == 0):
             return ([], time.time() - start)
         for n in lentoB:
-            if (n == b or n == a): continue
+            if (lentoB[n] < 1 or lentoA[n] < 1): continue
             l = lentoB[n] + lentoA[n]
             if l < s:
                 s = l
