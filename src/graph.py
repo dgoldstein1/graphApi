@@ -102,7 +102,6 @@ class Graph:
         execTime = 0
         g = snap.GetBfsTree(self.g, a, True, False)
         for x in range(0, n):
-            print "paths is (1) : {}".format(paths)
             p, pTime = self._shortestPath(a, b, dpf, timeout - execTime, g)
             # stopping condition, no more paths
             if p == []: return paths
@@ -111,17 +110,12 @@ class Graph:
             if len(p) == 2: dpf = True
             # add to list of paths
             paths.append(copy.copy(p))
-            print "paths is (2) : {}".format(paths)
             # accumulate exec time
             execTime = execTime + pTime
             if execTime > timeout: return paths
             # removes nodes currently in use in path
-            for n in p[1:len(p) - 1]:
-                g.DelNode(n)
-                snap.PrintInfo(g)
-                snap.PrintInfo(self.g)
-                print paths
-            print "paths is (3) : {}".format(paths)
+            [g.DelNode(n) for n in p[1:len(p) - 1]]
+
         return paths
 
     def _shortestPath(self, a, b, dpf, t, g, i=0):
@@ -135,12 +129,11 @@ class Graph:
         start = time.time()
         shortestDist = snap.GetShortPath(g, a, b, False)
         # stopping conditions
-        if (shortestDist == -1): return ([], time.time() - start)
-        if (shortestDist == 0): return ([a], time.time() - start)
-        if (shortestDist == 1): return ([a, b], time.time() - start)
-        print "------------------------"
-        print "a : {}, b : {}, shortestDist : {}, iteration: {}".format(
-            a, b, shortestDist, i)
+        if shortestDist == -1: return ([], time.time() - start)
+        if shortestDist == 0: return ([a], time.time() - start)
+        if shortestDist == 1:
+            if dpf and i == 0: return ([], time.time() - start)
+            return ([a, b], time.time() - start)
 
         # get lengths from a->b and b->a
         lentoB, lentoA = snap.TIntH(), snap.TIntH()
@@ -151,19 +144,15 @@ class Graph:
         s = sys.maxint
         middleNode = None
         # stopping condition: no nodes left
-        if (len(lentoB) == 0 or len(lentoA) == 0):
+        if len(lentoB) == 0 or len(lentoA) == 0:
             return ([], time.time() - start)
         for n in lentoB:
-            if (lentoB[n] < 1 or lentoA[n] < 1): continue
+            if lentoB[n] < 1 or lentoA[n] < 1: continue
             l = lentoB[n] + lentoA[n]
-            print "n={},a: {}, b : {}, lenB: {}, lenA : {}, l: {}".format(
-                n, a, b, lentoB[n], lentoA[n], l)
             if l < s:
                 s = l
                 middleNode = n
-        print "middle node is: {}".format(middleNode)
         if middleNode is None: return ([], time.time() - start)
-        print "------------------------"
         # else recurse from paths of middle nodes
         (aToMid, t1) = self._shortestPath(a, middleNode, dpf, t, g, i + 1)
         (midToB, t2) = self._shortestPath(middleNode, b, dpf, t, g, i + 1)
