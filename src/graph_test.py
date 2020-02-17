@@ -96,6 +96,7 @@ class TestGraphMethods(unittest.TestCase):
         g.g().AddEdge(1, 5)
         g.g().AddEdge(5, 4)
         paths = g.shortestPath(1, 4, n=2)
+        print paths
         self.assertTrue([1, 3, 4] in paths)
         self.assertTrue([1, 5, 4] in paths)
         # doesnt give duplicates

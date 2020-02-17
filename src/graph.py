@@ -7,6 +7,7 @@ import os
 import random
 import sys
 import time
+import copy
 
 
 class Graph:
@@ -97,55 +98,49 @@ class Graph:
             raise IndexError("No such path from {} to {}".format(a, b))
 
         paths = []
-        nodesInUse = []
         dpf = False
         execTime = 0
+        g = copy.copy(self.g)
         for x in range(0, n):
-            p, pTime = self._shortestPath(a, b, nodesInUse, dpf,
-                                          timeout - execTime)
+            p, pTime = self._shortestPath(a, b, dpf, timeout - execTime, g)
             # stopping condition, no more paths
             if p == []: return paths
             # direct path found. Edge condition since do
             # not add destination node to excluded node
             if len(p) == 2: dpf = True
             # add to list of paths
-            paths.append(p)
+            paths.append(copy.copy(p))
+            print "paths is : {}".format(paths)
             # accumulate exec time
             execTime = execTime + pTime
             if execTime > timeout: return paths
-            # gather more nodesInUse to force unique
-            nodesInUse.extend(p[1:len(p) - 1])
+            # removes nodes currently in use in path
+            [g.DelNode(n) for n in p[1:len(p) - 1]]
         return paths
 
-    def _shortestPath(self, a, b, doNotUse, dpf, t, i=0):
+    def _shortestPath(self, a, b, dpf, t, g, i=0):
         """
         finds shortest path between two new nodes
             a: source
             b: destination
-            doNotUse: array of nodes not to use
             dpf: direct path already found?
             t: timeout
         """
         start = time.time()
-        shortestDist = snap.GetShortPath(self.g, a, b, False)
+        shortestDist = snap.GetShortPath(g, a, b, False)
         # stopping conditions
         if (shortestDist == -1): return ([], time.time() - start)
         if (shortestDist == 0): return ([a], time.time() - start)
-        if (shortestDist == 1):
-            if dpf and i == 0: return ([], time.time() - start)
-            return ([a, b], time.time() - start)
+        if (shortestDist == 1): return ([a, b], time.time() - start)
         print "------------------------"
-        print "a : {}, b : {}, shortestDist : {}, doNotUse : {}, iteration: {}".format(
-            a, b, shortestDist, doNotUse, i)
+        print "a : {}, b : {}, shortestDist : {}, iteration: {}".format(
+            a, b, shortestDist, i)
 
         # get lengths from a->b and b->a
         lentoB, lentoA = snap.TIntH(), snap.TIntH()
-        snap.GetShortPath(self.g, b, lentoB, False, shortestDist * 5)
-        snap.GetShortPath(self.g, a, lentoA, False, shortestDist * 5)
+        snap.GetShortPath(g, b, lentoB, False, shortestDist * 5)
+        snap.GetShortPath(g, a, lentoA, False, shortestDist * 5)
         lentoB.SortByDat()
-        # clean out do not use nodes
-        [lentoB.DelIfKey(n) for n in doNotUse]
-        [lentoA.DelIfKey(n) for n in doNotUse]
         # find shortest middle between the two
         s = sys.maxint
         middleNode = None
@@ -155,18 +150,17 @@ class Graph:
         for n in lentoB:
             if (lentoB[n] < 1 or lentoA[n] < 1): continue
             l = lentoB[n] + lentoA[n]
+            print "n={},a: {}, b : {}, lenB: {}, lenA : {}, l: {}".format(
+                n, a, b, lentoB[n], lentoA[n], l)
             if l < s:
-                print "a: {}, b : {}, lenB: {}, lenA : {}, l: {}, n: {}".format(
-                    a, b, lentoB[n], lentoA[n], l, n)
                 s = l
                 middleNode = n
+        print "middle node is: {}".format(middleNode)
         if middleNode is None: return ([], time.time() - start)
         print "------------------------"
         # else recurse from paths of middle nodes
-        (aToMid, t1) = self._shortestPath(a, middleNode, doNotUse, dpf, t,
-                                          i + 1)
-        (midToB, t2) = self._shortestPath(middleNode, b, doNotUse, dpf, t,
-                                          i + 1)
+        (aToMid, t1) = self._shortestPath(a, middleNode, dpf, t, g, i + 1)
+        (midToB, t2) = self._shortestPath(middleNode, b, dpf, t, g, i + 1)
         aToMid.extend(midToB[1:])
         return (aToMid, t1 + t2)
 
