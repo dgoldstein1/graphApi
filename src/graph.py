@@ -147,6 +147,7 @@ class Graph:
         if len(lentoB) == 0 or len(lentoA) == 0:
             return ([], time.time() - start)
         for n in lentoB:
+            if not lentoB.IsKey(n) or not lentoA.IsKey(n): continue
             if lentoB[n] < 1 or lentoA[n] < 1: continue
             l = lentoB[n] + lentoA[n]
             if l < s:
