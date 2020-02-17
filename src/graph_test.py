@@ -111,12 +111,12 @@ class TestGraphMethods(unittest.TestCase):
 
         self.assertEqual(g.shortestPath(1, 12345679, n=10),
                          [[1, 12345679], [1, 12345678, 12345679]])
-        # # doesnt give paths that dont end up at destination
-        # g.g().AddNode(6)
-        # g.g().AddEdge(1, 6)
-        # g.g().AddEdge(6, 5)
-        # paths = g.shortestPath(1, 4, n=10)
-        # self.assertEqual(len(paths), 2)
+        # doesnt give paths that dont end up at destination
+        g.g().AddNode(6)
+        g.g().AddEdge(1, 6)
+        g.g().AddEdge(6, 5)
+        paths = g.shortestPath(1, 4, n=10)
+        self.assertEqual(len(paths), 2)
         # # doesn't give same path twice
         # paths = g.shortestPath(1, 4, n=10)
         # duplicates = [x for n, x in enumerate(paths) if x in paths[:n]]
