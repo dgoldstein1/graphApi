@@ -123,32 +123,36 @@ class Graph:
             b: destination
             doNotUseNodes: array of nodes not to use
         """
-        # stopping condition
-        if a == b: return [a]
+        execTime = 0
         # raises error if no path
         shortestDist = snap.GetShortPath(self.g, a, b, True)
+        # stopping conditions
+        if (shortestDist == 0): return ([a], execTime)
+        if (shortestDist == 1 and not directPathFound):
+            return ([a, b], execTime)
 
-        execTime = 0
         # get lengths from a->b and b->a
         lentoB, lentoA = snap.TIntH(), snap.TIntH()
         snap.GetShortPath(self.g, b, lentoB, False, shortestDist)
         snap.GetShortPath(self.g, a, lentoA, False, shortestDist)
+        # find shortest middle between the two
         s = sys.maxint
         middleNode = None
-        # find shortest middle between the two
         lentoB.SortByDat()
         for n in lentoB:
+            if (n == b or n == a): continue
             l = lentoB[n] + lentoA[n]
             if l < s:
                 s = l
                 middleNode = n
         if middleNode is None: return ([], execTime)
         # else recurse from paths of middle nodes
-        aToMid = self._shortestPath(a, middleNode, doNotUseNodes,
-                                    directPathFound, timeout)
-        midToB = self._shortestPath(middleNode, b, doNotUseNodes,
-                                    directPathFound, timeout)
-        return aToMid.extend(midToB)
+        (aToMid, t1) = self._shortestPath(a, middleNode, doNotUseNodes,
+                                          directPathFound, timeout)
+        (midToB, t2) = self._shortestPath(middleNode, b, doNotUseNodes,
+                                          directPathFound, timeout)
+        aToMid.extend(midToB[1:])
+        return (aToMid, t1 + t2)
 
     def common(self, n1, n2, timeout=3000):
         """
