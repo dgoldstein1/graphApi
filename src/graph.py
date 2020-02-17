@@ -127,18 +127,18 @@ class Graph:
             t: timeout
         """
         start = time.time()
-        shortestDist = snap.GetShortPath(self.g, a, b, True)
+        shortestDist = snap.GetShortPath(self.g, a, b, False)
         # stopping conditions
         if (shortestDist == -1): return ([], time.time() - start)
         if (shortestDist == 0): return ([a], time.time() - start)
         if (shortestDist == 1):
-            if dpf and i != 0: return ([], time.time() - start)
+            if dpf and i == 0: return ([], time.time() - start)
             return ([a, b], time.time() - start)
 
         # get lengths from a->b and b->a
         lentoB, lentoA = snap.TIntH(), snap.TIntH()
-        snap.GetShortPath(self.g, b, lentoB, False, shortestDist * 5)
-        snap.GetShortPath(self.g, a, lentoA, False, shortestDist * 5)
+        snap.GetShortPath(self.g, b, lentoB, False, shortestDist)
+        snap.GetShortPath(self.g, a, lentoA, False, shortestDist)
         lentoB.SortByDat()
         # clean out do not use nodes
         [lentoB.DelIfKey(n) for n in doNotUse]

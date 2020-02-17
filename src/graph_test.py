@@ -103,15 +103,15 @@ class TestGraphMethods(unittest.TestCase):
         print paths
         self.assertTrue(len(paths) < 10)
         # no duplicates in direct routes
-        # g.g().AddNode(12345679)
-        # g.g().AddEdge(1, 12345679)
+        g.g().AddNode(12345679)
+        g.g().AddEdge(1, 12345679)
 
-        # g.g().AddNode(12345678)
-        # g.g().AddEdge(1, 12345678)
-        # g.g().AddEdge(12345678, 12345679)
+        g.g().AddNode(12345678)
+        g.g().AddEdge(1, 12345678)
+        g.g().AddEdge(12345678, 12345679)
 
-        # self.assertEqual(g.shortestPath(1, 12345679, n=10),
-        #                  [[1, 12345679], [1, 12345678, 12345679]])
+        self.assertEqual(g.shortestPath(1, 12345679, n=10),
+                         [[1, 12345679], [1, 12345678, 12345679]])
         # doesnt give paths that dont end up at destination
         # g.g().AddNode(6)
         # g.g().AddEdge(1, 6)
