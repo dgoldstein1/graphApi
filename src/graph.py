@@ -158,13 +158,15 @@ class Graph:
             returns array of relveant nodes, sorted by relevance
         """
         # add edges for each node in short paths
-        paths = self.shortestPath(n1, n2, timeout=timeout / 2)
-        paths.extend(self.shortestPath(n2, n1, timeout=timeout / 2))
+        paths = self.shortestPath(n1, n2, timeout=timeout)
+        paths.extend(self.shortestPath(n2, n1, timeout=timeout))
         # flatten path into nodes
         nodes = [item for sublist in paths for item in sublist]
         # expand to neighbors for bigger graph
         for n in nodes:
-            nodes.extend(self.getNeighbors(n))
+            edges = self.g.GetNI(n).GetOutEdges()
+            print edges
+
         # snap.GetSubGraph(self.g, snap.TIntV.GetV(0,1,2,3,4))
         print nodes
 
