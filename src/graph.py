@@ -26,7 +26,7 @@ class Graph:
             self.g = snap.TNGraph.New()
             logging.warn(
                 "Exception loading graph '{}' at path '{}'. Creating new graph."
-                .format(e.message, path))
+                .format(e, path))
 
     def info(self):
         """
