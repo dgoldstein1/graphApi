@@ -96,7 +96,13 @@ def shortestPath():
     [start, end, n, timeout] = validatedNodes.get('validInts')
     # get shortest path
     try:
-        path = server.g.shortestPath(start, end, n, timeout)
+        path = server.g.shortestPath(
+            start,
+            end,
+            n,
+            timeout,
+            request.args.get("directed") == "true",
+        )
     except IndexError as e:
         # no such path
         return _errOut(500, e.message)

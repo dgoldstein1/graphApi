@@ -87,7 +87,7 @@ class Graph:
             self.g.AddEdge(node, n)
         return newNodes
 
-    def shortestPath(self, a, b, n=1, timeout=3000):
+    def shortestPath(self, a, b, n=1, timeout=3000, directed=False):
         """
             - gets shortest path(s) between two nodes
             - return array of nodes or failure
@@ -102,7 +102,13 @@ class Graph:
         execTime = 0
         g = snap.GetBfsTree(self.g, a, True, False)
         for x in range(0, n):
-            p, pTime = self._shortestPath(a, b, dpf, timeout - execTime, g)
+            p, pTime = ([], 0)
+            if directed:
+                (p, pTime) = self.shortestPathDir(a, b, dpf,
+                                                  timeout - execTime, g)
+            else:
+                (p, pTime) = self.shortestPathUndir(a, b, dpf,
+                                                    timeout - execTime, g)
             # stopping condition, no more paths
             if p == []: return paths
             # direct path found. Edge condition since do
@@ -115,10 +121,12 @@ class Graph:
             if (execTime * 1000) > timeout: return paths
             # removes nodes currently in use in path
             [g.DelNode(n) for n in p[1:len(p) - 1]]
-
         return paths
 
-    def _shortestPath(self, a, b, dpf, t, g, i=0):
+    def shortestPathDir(self, a, b, dpf, t, g, i=0):
+        pass
+
+    def shortestPathUndir(self, a, b, dpf, t, g, i=0):
         """
         finds shortest path between two new nodes
             a: source
@@ -155,8 +163,8 @@ class Graph:
                 middleNode = n
         if middleNode is None: return ([], time.time() - start)
         # else recurse from paths of middle nodes
-        (aToMid, t1) = self._shortestPath(a, middleNode, dpf, t, g, i + 1)
-        (midToB, t2) = self._shortestPath(middleNode, b, dpf, t, g, i + 1)
+        (aToMid, t1) = self.shortestPathUndir(a, middleNode, dpf, t, g, i + 1)
+        (midToB, t2) = self.shortestPathUndir(middleNode, b, dpf, t, g, i + 1)
         aToMid.extend(midToB[1:])
         return (aToMid, (time.time() - start) + t1 + t2)
 

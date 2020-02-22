@@ -121,6 +121,12 @@ paths:
             type: number
           required: false
           description: Max execution time in milliseconds. Defaults to 3000ms
+        - in: query
+          name: directed
+          schema:
+            type: bool
+          required: false
+          description: consider the data directed?          
 
       responses:
         '200':
