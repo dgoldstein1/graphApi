@@ -1,12 +1,13 @@
 import snap
 import logging
-import sys
 import signal
 import random
 import datetime
 import os
 import random
+import sys
 import time
+import copy
 
 
 class Graph:
@@ -25,7 +26,7 @@ class Graph:
             self.g = snap.TNGraph.New()
             logging.warn(
                 "Exception loading graph '{}' at path '{}'. Creating new graph."
-                .format(e.message, path))
+                .format(e, path))
 
     def info(self):
         """
@@ -86,7 +87,7 @@ class Graph:
             self.g.AddEdge(node, n)
         return newNodes
 
-    def shortestPath(self, a, b, n=1, timeout=3000):
+    def shortestPath(self, a, b, n=1, timeout=3000, directed=False):
         """
             - gets shortest path(s) between two nodes
             - return array of nodes or failure
@@ -97,60 +98,115 @@ class Graph:
             raise IndexError("No such path from {} to {}".format(a, b))
 
         paths = []
-        nodesInUse = []
-        directPathFound = False
+        dpf = False
         execTime = 0
+        g = snap.GetBfsTree(self.g, a, True, False)
         for x in range(0, n):
-            p, pTime = self._shortestPath(a, b, nodesInUse, directPathFound,
-                                          timeout - execTime)
+            p, pTime = ([], 0)
+            if directed:
+                (p, pTime) = self.shortestPathDir(a, b, dpf,
+                                                  timeout - execTime, g)
+            else:
+                (p, pTime) = self.shortestPathUndir(a, b, dpf,
+                                                    timeout - execTime, g)
             # stopping condition, no more paths
             if p == []: return paths
             # direct path found. Edge condition since do
             # not add destination node to excluded node
-            if len(p) == 2: directPathFound = True
+            if len(p) == 2: dpf = True
             # add to list of paths
-            paths.append(p)
+            paths.append(copy.copy(p))
             # accumulate exec time
             execTime = execTime + pTime
-            if execTime > timeout: return paths
-            # gather more nodesInUse to force unique
-            nodesInUse.extend(p[1:len(p) - 1])
+            if (execTime * 1000) > timeout: return paths
+            # removes nodes currently in use in path
+            [g.DelNode(n) for n in p[1:len(p) - 1]]
         return paths
 
-    def _shortestPath(self, a, b, doNotUseNodes, directPathFound, timeout):
+    def _hasStoppingCondition(self, a, b, shortestDist, dpf, i):
+        """
+        helper for determing stopping condition. If there is one, returns
+        expected path at that point
+        returns (Bool,path)
+        """
+        if shortestDist == -1: return (True, [])
+        if shortestDist == 0: return (True, [a])
+        if shortestDist == 1:
+            if dpf and i == 0: return (True, [])
+            return (True, [a, b])
+        return (False, [])
+
+    def shortestPathDir(self, a, b, dpf, t, g, i=0):
+        """
+        shortest path in directed graph
+        returns (path, execution time ms)
+        """
+        start = time.time()
+        shortestDist = snap.GetShortPath(g, a, b, True)
+        # stopping conditions
+        shouldStop, p = self._hasStoppingCondition(a, b, shortestDist, dpf, i)
+        if shouldStop: return (p, time.time() - start)
+
+        # get nodes at middle hop
+        nodeVec = snap.TIntV()
+        midDist = int(round(shortestDist / 2))
+        snap.GetNodesAtHop(g, a, midDist, nodeVec, True)
+        # if odd mid distance needs to be once less
+        if shortestDist % 2 is not 0: midDist = midDist + 1
+        for n in nodeVec:
+            # check if less or middle node
+            d = snap.GetShortPath(g, n, b, True)
+            if d == midDist:
+                # recurse from paths of middle nodes
+                (aToMid, t1) = self.shortestPathDir(a, n, dpf, t, g, i + 1)
+                (midToB, t2) = self.shortestPathDir(n, b, dpf, t, g, i + 1)
+                aToMid.extend(midToB[1:])
+                return (aToMid, (time.time() - start) + t1 + t2)
+
+        # unreachable code
+        raise IndexError(
+            "ERROR: unreachable code: a={}b={}dist={}midDist={}".format(
+                a, b, shortestDist, midDist))
+
+    def shortestPathUndir(self, a, b, dpf, t, g, i=0):
         """
         finds shortest path between two new nodes
             a: source
             b: destination
-            doNotUseNodes: array of nodes not to use
+            dpf: direct path already found?
+            t: timeout
         """
-        execTime = 0
-        path = [a]
-        currentNode = a
-        # recurse over neighbors to get full path, max iterations is shortest path
-        while currentNode != b:
-            nextNode = None
-            shortest = sys.maxint
-            # find shortest of neighbors
-            start = time.time()
-            for neighbor in self.getNeighbors(currentNode):
-                distToEnd = snap.GetShortPath(self.g, neighbor, b, True)
-                # update if new shortest in available nodes
-                if (distToEnd != -1 and distToEnd < shortest
-                        and neighbor not in doNotUseNodes):
-                    # do not update if direct path and direct path already found
-                    if directPathFound and path == [a] and neighbor == b: break
-                    nextNode = neighbor
-                    shortest = distToEnd
-            # stopping condition
-            if nextNode is None: return ([], execTime)
-            # continue traversal
-            path.append(nextNode)
-            currentNode = nextNode
-            # add execution time
-            execTime = execTime + (time.time() - start) * 1000
-            if execTime > timeout: return ([], execTime)
-        return (path, execTime)
+        start = time.time()
+        shortestDist = snap.GetShortPath(g, a, b, False)
+        # stopping conditions
+        # stopping conditions
+        shouldStop, p = self._hasStoppingCondition(a, b, shortestDist, dpf, i)
+        if shouldStop: return (p, time.time() - start)
+
+        # get lengths from n->b and n->a
+        lentoB, lentoA = snap.TIntH(), snap.TIntH()
+        snap.GetShortPath(g, b, lentoB, False, shortestDist * 5)
+        snap.GetShortPath(g, a, lentoA, False, shortestDist * 5)
+        lentoB.SortByDat()
+        # find shortest middle between the two
+        s = sys.maxint
+        middleNode = None
+        # stopping condition: no nodes left
+        if len(lentoB) == 0 or len(lentoA) == 0:
+            return ([], time.time() - start)
+        for n in lentoB:
+            if not lentoB.IsKey(n) or not lentoA.IsKey(n): continue
+            if lentoB[n] < 1 or lentoA[n] < 1: continue
+            l = lentoB[n] + lentoA[n]
+            if l < s:
+                s = l
+                middleNode = n
+        if middleNode is None: return ([], time.time() - start)
+        # else recurse from paths of middle nodes
+        (aToMid, t1) = self.shortestPathUndir(a, middleNode, dpf, t, g, i + 1)
+        (midToB, t2) = self.shortestPathUndir(middleNode, b, dpf, t, g, i + 1)
+        aToMid.extend(midToB[1:])
+        return (aToMid, (time.time() - start) + t1 + t2)
 
     def g(self):
         return self.g

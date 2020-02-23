@@ -6,7 +6,7 @@ info:
 
     - [Source Code](https://github.com/dgoldstein1/graphApi)
     - [SNAP](https://snap.stanford.edu/index.html)
-  version: "1.0.2"
+  version: "1.2.0"
 servers:
   - url: https://links-biggraph.herokuapp.com/
     description: heroku deployment
@@ -121,6 +121,12 @@ paths:
             type: number
           required: false
           description: Max execution time in milliseconds. Defaults to 3000ms
+        - in: query
+          name: directed
+          schema:
+            type: bool
+          required: false
+          description: consider the data directed?          
 
       responses:
         '200':
@@ -139,7 +145,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-
+                    
   /metrics:
     get:
       summary: Prometheus Metrics.
