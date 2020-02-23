@@ -126,7 +126,7 @@ class Graph:
     def shortestPathDir(self, a, b, dpf, t, g, i=0):
         start = time.time()
         print a, b, dpf, t, g, i
-        # shortestDist = snap.GetShortPath(g, a, b, True)
+        shortestDist = snap.GetShortPath(g, a, b, False)
         shortestDist = -1
         # stopping conditions
         if shortestDist == -1: return ([], time.time() - start)
