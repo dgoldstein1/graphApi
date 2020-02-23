@@ -142,7 +142,7 @@ class Graph:
         returns (path, execution time ms)
         """
         start = time.time()
-        shortestDist = snap.GetShortPath(g, a, b, False)
+        shortestDist = snap.GetShortPath(g, a, b, True)
         # stopping conditions
         shouldStop, p = self._hasStoppingCondition(a, b, shortestDist, dpf, i)
         if shouldStop: return (p, time.time() - start)
@@ -164,7 +164,8 @@ class Graph:
                 return (aToMid, (time.time() - start) + t1 + t2)
 
         # unreachable code
-        return None
+        print "ERROR: unreachable code: a={}b={}dist={}midDist={}".format(
+            a, b, shortestDist, midDist)
         return ([], time.time() - start)
 
     def shortestPathUndir(self, a, b, dpf, t, g, i=0):

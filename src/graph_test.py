@@ -171,7 +171,7 @@ class TestGraphMethods(unittest.TestCase):
         # 760964475 = "help"
         # 90598913 = "diddley"
         paths = g.shortestPath(760964475, 90598913, n=5, directed=True)
-        self.assertEqual(paths, [[]])
+        self.assertNotEqual(paths, [[]])
 
     def test_g(self):
         g = graph.Graph("../out/doesntexist.graph").g()
