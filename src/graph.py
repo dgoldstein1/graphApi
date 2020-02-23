@@ -150,13 +150,15 @@ class Graph:
 
         # get nodes at middle hop
         nodeVec = snap.TIntV()
-        hop = int(round(shortestDist / 2))
-        snap.GetNodesAtHop(g, a, hop, nodeVec, True)
+        midDist = int(round(shortestDist / 2))
+        snap.GetNodesAtHop(g, a, midDist, nodeVec, True)
+        # if odd mid distance needs to be once less
+        if shortestDist % 2 is not 0: midDist = midDist + 1
         for n in nodeVec:
             # check if less or middle node
             d = snap.GetShortPath(g, n, b, True)
-            print "n={},d={},hop={}".format(n, d, hop)
-            if d == hop:
+            print "n={},d={},midDist={}".format(n, d, midDist)
+            if d == midDist:
                 # recurse from paths of middle nodes
                 (aToMid, t1) = self.shortestPathDir(a, n, dpf, t, g, i + 1)
                 (midToB, t2) = self.shortestPathDir(n, b, dpf, t, g, i + 1)

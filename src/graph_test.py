@@ -155,10 +155,10 @@ class TestGraphMethods(unittest.TestCase):
         g.g().AddEdge(3, 4)
         g.g().AddEdge(4, 5)
 
-        g.g().AddNode(6)
-        g.g().AddEdge(5, 6)
-        p = g.shortestPath(1, 6, n=1, timeout=2000, directed=True)
-        self.assertEqual(p, [[1, 3, 4, 5, 6]])
+        # g.g().AddNode(6)
+        # g.g().AddEdge(5, 6)
+        # p = g.shortestPath(1, 6, n=1, timeout=2000, directed=True)
+        # self.assertEqual(p, [[1, 3, 4, 5, 6]])
 
         p = g.shortestPath(1, 5, n=1, timeout=2000, directed=True)
         self.assertEqual(p, [[1, 3, 4, 5]])
