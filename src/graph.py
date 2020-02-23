@@ -225,8 +225,30 @@ class Graph:
             "eccentricity": snap.GetNodeEcc(self.g, n, True),
         }
 
-    def graphCentrality(self, slow=False):
+    def centrality(self, fast=True):
         """
             returns top nodes for each type of centrality
-                - if slow is true, will run through each node in graph, 
+                - if slow is true, will run through each node in
+                  graph, getting highest nodeCentrality()
         """
+        nResults = 10  #results for each type
+        # betweeness
+        nodes = snap.TIntFltH()
+        edges = snap.TIntPrFltH()
+        snap.GetBetweennessCentr(self.g, nodes, edges, 4, True)
+        betweeness = self._extractTopN(nodes, n=nResults)
+        print betweeness
+
+    def _extractTopN(self, tHash, n=10, asc=False):
+        """
+        utility for extracting top n results from a hash table in format {nodeId : value}
+        ascending: lowest values first?
+        """
+        tHash.SortByDat(asc)
+        i = 0
+        r = []
+        for j in tHash:
+            if i == n - 1: return r
+            r.append({j: tHash[j]})
+            i = i + 1
+        return r

@@ -193,3 +193,12 @@ class TestGraphMethods(unittest.TestCase):
             'farness': 16.91583027393793
         }
         self.assertEqual(c, expectedResult)
+
+    def test_centrality(self):
+        g = graph.Graph("./out/counties.graph")
+        start = time.time()
+        c = g.centrality()
+        execTime = (time.time() - start) * 1000
+        self.assertLess(execTime, 15000)
+        expectedResult = {}
+        self.assertEqual(c, expectedResult)
