@@ -215,8 +215,18 @@ class Graph:
         """
             gets centrality measures for individual node returns as dict
         """
+        # get degree centrality
+        nNodes = float(self.g.GetNodes())
+        nEdges = float(self.g.GetNI(n).GetOutDeg())
         return {
+            "degree": nEdges / (nNodes - 1),
             "closeness": snap.GetClosenessCentr(self.g, n, True, True),
             "farness": snap.GetFarnessCentr(self.g, n, True, True),
             "eccentricity": snap.GetNodeEcc(self.g, n, True),
         }
+
+    def graphCentrality(self, slow=False):
+        """
+            returns top nodes for each type of centrality
+                - if slow is true, will run through each node in graph, 
+        """

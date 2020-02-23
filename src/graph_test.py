@@ -188,6 +188,7 @@ class TestGraphMethods(unittest.TestCase):
         c = g.nodeCentrality(284128874)
         expectedResult = {
             'eccentricity': 37,
+            'degree': 0.0026936026936026937,
             'closeness': 0.0591162233130638,
             'farness': 16.91583027393793
         }
