@@ -124,7 +124,13 @@ class Graph:
         return paths
 
     def shortestPathDir(self, a, b, dpf, t, g, i=0):
-        pass
+        time.time()
+        snap.GetShortPath(g, a, b, True)
+        # get nodes at middle hop
+        # https://snap.stanford.edu/snappy/doc/reference/composite.html?highlight=tintprv
+        NodeVec = snap.TIntPrV()
+        # https://snap.stanford.edu/snappy/doc/reference/GetNodesAtHops.html
+        snap.GetNodesAtHops(Graph, a, NodeVec, True)
 
     def shortestPathUndir(self, a, b, dpf, t, g, i=0):
         """

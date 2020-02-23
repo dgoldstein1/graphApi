@@ -143,6 +143,23 @@ class TestGraphMethods(unittest.TestCase):
         g = graph.Graph("./out/counties.graph")
         paths = g.shortestPath(284128874, 656315998, n=5)
 
+    def test_shortest_path_dir(self):
+        g = graph.Graph("../out/doesntexist.graph")
+        g.g().AddNode(1)
+        g.g().AddNode(2)
+        g.g().AddNode(3)
+        g.g().AddNode(4)
+        g.g().AddNode(5)
+        g.g().AddEdge(1, 2)
+        g.g().AddEdge(1, 3)
+        g.g().AddEdge(3, 4)
+        g.g().AddEdge(4, 5)
+
+        p = g.shortestPathDir(1, 4, dpf=False, t=2000, g=g)
+        self.assertEqual(p, [1, 3, 4])
+        p = g.shortestPathDir(1, 5, dpf=False, t=2000, g=g)
+        self.assertEqual(p, [1, 3, 4, 5])
+
     def test_g(self):
         g = graph.Graph("../out/doesntexist.graph").g()
         # creates new graph on bad filename
