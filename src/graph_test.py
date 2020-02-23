@@ -155,13 +155,23 @@ class TestGraphMethods(unittest.TestCase):
         g.g().AddEdge(3, 4)
         g.g().AddEdge(4, 5)
 
-        # g.g().AddNode(6)
-        # g.g().AddEdge(5, 6)
-        # p = g.shortestPath(1, 6, n=1, timeout=2000, directed=True)
-        # self.assertEqual(p, [[1, 3, 4, 5, 6]])
+        g.g().AddNode(6)
+        g.g().AddEdge(5, 6)
+        p = g.shortestPath(1, 6, n=1, directed=True)
+        self.assertEqual(p, [[1, 3, 4, 5, 6]])
 
-        p = g.shortestPath(1, 5, n=1, timeout=2000, directed=True)
+        p = g.shortestPath(1, 5, n=1, directed=True)
         self.assertEqual(p, [[1, 3, 4, 5]])
+
+        g = graph.Graph("./out/counties.graph")
+        paths = g.shortestPath(284128874, 656315998, n=5, directed=True)
+        self.assertNotEqual(paths, [[]])
+
+        g = graph.Graph("./out/synonyms_big.graph")
+        # 760964475 = "help"
+        # 90598913 = "diddley"
+        paths = g.shortestPath(760964475, 90598913, n=5, directed=True)
+        self.assertEqual(paths, [[]])
 
     def test_g(self):
         g = graph.Graph("../out/doesntexist.graph").g()
