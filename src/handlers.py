@@ -105,11 +105,11 @@ def shortestPath():
         )
     except IndexError as e:
         # no such path
-        return _errOut(500, e.message)
+        return _errOut(500, str(e))
     except RuntimeError as e:
         # nodes do not exist
-        return _errOut(
-            500, "Could not find given start and end values: " + e.message)
+        return _errOut(500,
+                       "Could not find given start and end values: " + str(e))
     except:
         logging.error(sys.exc_info()[0])
         return _errOut(500, "Unexpected error occured, see logs")
