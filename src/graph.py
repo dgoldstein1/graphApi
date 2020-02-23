@@ -236,10 +236,11 @@ class Graph:
         nodes = snap.TIntFltH()
         edges = snap.TIntPrFltH()
         snap.GetBetweennessCentr(self.g, nodes, edges, 4, True)
-        betweeness = self._extractTopN(nodes, n=nResults)
-        print betweeness
+        betweenessNodes = self._extractTopN(nodes, n=nResults)
+        betweenessEdges = self._extractTopN(edges, n=nResults, isTPair=True)
+        print betweenessEdges
 
-    def _extractTopN(self, tHash, n=10, asc=False):
+    def _extractTopN(self, tHash, n=10, asc=False, isTPair=False):
         """
         utility for extracting top n results from a hash table in format {nodeId : value}
         ascending: lowest values first?
@@ -249,6 +250,12 @@ class Graph:
         r = []
         for j in tHash:
             if i == n - 1: return r
-            r.append({j: tHash[j]})
+            toAdd = {'val': tHash[j]}
+            if isTPair:
+                toAdd['start'] = j.Val1()
+                toAdd['end'] = j.Val2()
+            else:
+                toAdd['node'] = j
+            r.append(toAdd)
             i = i + 1
         return r
