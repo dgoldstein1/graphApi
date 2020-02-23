@@ -123,22 +123,36 @@ class Graph:
             [g.DelNode(n) for n in p[1:len(p) - 1]]
         return paths
 
-    def shortestPathDir(self, a, b, dpf, t, g, i=0):
-        start = time.time()
-        print a, b, dpf, t, g, i
-        shortestDist = snap.GetShortPath(g, a, b, False)
-        shortestDist = -1
-        # stopping conditions
-        if shortestDist == -1: return ([], time.time() - start)
-        if shortestDist == 0: return ([a], time.time() - start)
+    def _hasStoppingCondition(self, a, b, shortestDist, dpf, i):
+        """
+        helper for determing stopping condition. If there is one, returns
+        expected path at that point
+        returns (Bool,path)
+        """
+        if shortestDist == -1: return (True, [])
+        if shortestDist == 0: return (True, [a])
         if shortestDist == 1:
-            if dpf and i == 0: return ([], time.time() - start)
-            return ([a, b], time.time() - start)
-        # get nodes at middle hop
-        # https://snap.stanford.edu/snappy/doc/reference/composite.html?highlight=tintprv
-        NodeVec = snap.TIntPrV()
-        # https://snap.stanford.edu/snappy/doc/reference/GetNodesAtHops.html
-        snap.GetNodesAtHops(Graph, a, NodeVec, True)
+            if dpf and i == 0: return (True, [])
+            return (True, [a, b])
+        return (False, [])
+
+    def shortestPathDir(self, a, b, dpf, t, g, i=0):
+        """
+        shortest path in directed graph
+        returns (path, execution time ms)
+        """
+        start = time.time()
+        shortestDist = snap.GetShortPath(g, a, b, False)
+        # stopping conditions
+        shouldStop, p = self._hasStoppingCondition(a, b, shortestDist, dpf, i)
+        if shouldStop: return (p, time.time() - start)
+
+        # # get nodes at middle hop
+        # # https://snap.stanford.edu/snappy/doc/reference/composite.html?highlight=tintprv
+        # NodeVec = snap.TIntPrV()
+        # # https://snap.stanford.edu/snappy/doc/reference/GetNodesAtHops.html
+        # snap.GetNodesAtHops(Graph, a, NodeVec, True)
+        return ([], time.time() - start)
 
     def shortestPathUndir(self, a, b, dpf, t, g, i=0):
         """
@@ -151,11 +165,9 @@ class Graph:
         start = time.time()
         shortestDist = snap.GetShortPath(g, a, b, False)
         # stopping conditions
-        if shortestDist == -1: return ([], time.time() - start)
-        if shortestDist == 0: return ([a], time.time() - start)
-        if shortestDist == 1:
-            if dpf and i == 0: return ([], time.time() - start)
-            return ([a, b], time.time() - start)
+        # stopping conditions
+        shouldStop, p = self._hasStoppingCondition(a, b, shortestDist, dpf, i)
+        if shouldStop: return (p, time.time() - start)
 
         # get lengths from n->b and n->a
         lentoB, lentoA = snap.TIntH(), snap.TIntH()
