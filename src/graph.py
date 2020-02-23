@@ -124,8 +124,16 @@ class Graph:
         return paths
 
     def shortestPathDir(self, a, b, dpf, t, g, i=0):
-        time.time()
-        snap.GetShortPath(g, a, b, True)
+        start = time.time()
+        print a, b, dpf, t, g, i
+        # shortestDist = snap.GetShortPath(g, a, b, True)
+        shortestDist = -1
+        # stopping conditions
+        if shortestDist == -1: return ([], time.time() - start)
+        if shortestDist == 0: return ([a], time.time() - start)
+        if shortestDist == 1:
+            if dpf and i == 0: return ([], time.time() - start)
+            return ([a, b], time.time() - start)
         # get nodes at middle hop
         # https://snap.stanford.edu/snappy/doc/reference/composite.html?highlight=tintprv
         NodeVec = snap.TIntPrV()

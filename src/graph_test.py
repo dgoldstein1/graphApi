@@ -155,10 +155,9 @@ class TestGraphMethods(unittest.TestCase):
         g.g().AddEdge(3, 4)
         g.g().AddEdge(4, 5)
 
-        p = g.shortestPathDir(1, 4, dpf=False, t=2000, g=g)
+        print "graph type: {}".format(type(g.g()))
+        p = g.shortestPathDir(1, 4, False, 2000, g.g())
         self.assertEqual(p, [1, 3, 4])
-        p = g.shortestPathDir(1, 5, dpf=False, t=2000, g=g)
-        self.assertEqual(p, [1, 3, 4, 5])
 
     def test_g(self):
         g = graph.Graph("../out/doesntexist.graph").g()
