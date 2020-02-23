@@ -238,7 +238,16 @@ class Graph:
         snap.GetBetweennessCentr(self.g, nodes, edges, 4, True)
         betweenessNodes = self._extractTopN(nodes, n=nResults)
         betweenessEdges = self._extractTopN(edges, n=nResults, isTPair=True)
-        print betweenessEdges
+        # page rank
+        nodes = snap.TIntFltH()
+        snap.GetPageRank(self.g, nodes, 0.85, 1e-4, 30)
+        pageRank = self._extractTopN(nodes, n=nResults)
+
+        return {
+            'betweenessNodes': betweenessNodes,
+            'betweenessEdges': betweenessEdges,
+            'pageRank': pageRank,
+        }
 
     def _extractTopN(self, tHash, n=10, asc=False, isTPair=False):
         """
