@@ -182,12 +182,3 @@ class TestGraphMethods(unittest.TestCase):
         file = "{}/out/test1.graph".format(os.getcwd())
         g = graph.Graph(file).g()
         self.assertNotEqual(g.GetNodes(), 0)
-
-    def test_common(self):
-        # create graph where everything is pointing to 0
-        # g = graph.Graph("./out/synonyms_big.graph")
-        # print g.info()
-        # # 760964475 = "help"
-        # # 90598913 = "diddley"
-        # self.assertEqual(g.common(760964475, 90598913), [0])
-        pass

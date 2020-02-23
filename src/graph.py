@@ -208,25 +208,5 @@ class Graph:
         aToMid.extend(midToB[1:])
         return (aToMid, (time.time() - start) + t1 + t2)
 
-    def common(self, n1, n2, timeout=3000):
-        """
-            takes page rank of subgraph of network for two nodes,
-            returns array of relveant nodes, sorted by relevance
-        """
-        # add edges for each node in short paths
-        # paths = self.shortestPath(n1, n2, timeout=timeout)
-        # paths.extend(self.shortestPath(n2, n1, timeout=timeout))
-        # # flatten path into nodes
-        # nodes = [item for sublist in paths for item in sublist]
-        # # expand to neighbors for bigger graph
-        # for n in nodes:
-        #     edges = self.g.GetNI(n).GetOutEdges()
-        #     print edges
-
-        # # snap.GetSubGraph(self.g, snap.TIntV.GetV(0,1,2,3,4))
-        # print nodes
-
-        return []
-
     def g(self):
         return self.g
