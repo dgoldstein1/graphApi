@@ -143,15 +143,27 @@ class Graph:
         """
         start = time.time()
         shortestDist = snap.GetShortPath(g, a, b, False)
+        print "a {}===>b {}: len={}".format(a, b, shortestDist)
         # stopping conditions
         shouldStop, p = self._hasStoppingCondition(a, b, shortestDist, dpf, i)
         if shouldStop: return (p, time.time() - start)
 
-        # # get nodes at middle hop
-        # # https://snap.stanford.edu/snappy/doc/reference/composite.html?highlight=tintprv
-        # NodeVec = snap.TIntPrV()
-        # # https://snap.stanford.edu/snappy/doc/reference/GetNodesAtHops.html
-        # snap.GetNodesAtHops(Graph, a, NodeVec, True)
+        # get nodes at middle hop
+        nodeVec = snap.TIntV()
+        hop = int(round(shortestDist / 2))
+        snap.GetNodesAtHop(g, a, hop, nodeVec, True)
+        for n in nodeVec:
+            # check if less or middle node
+            d = snap.GetShortPath(g, n, b, True)
+            print "n={},d={},hop={}".format(n, d, hop)
+            if d == hop:
+                # recurse from paths of middle nodes
+                (aToMid, t1) = self.shortestPathDir(a, n, dpf, t, g, i + 1)
+                (midToB, t2) = self.shortestPathDir(n, b, dpf, t, g, i + 1)
+                aToMid.extend(midToB[1:])
+                print "aToMid: {}".format(aToMid)
+                return (aToMid, (time.time() - start) + t1 + t2)
+
         return ([], time.time() - start)
 
     def shortestPathUndir(self, a, b, dpf, t, g, i=0):
