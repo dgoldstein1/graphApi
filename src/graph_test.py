@@ -182,3 +182,13 @@ class TestGraphMethods(unittest.TestCase):
         file = "{}/out/test1.graph".format(os.getcwd())
         g = graph.Graph(file).g()
         self.assertNotEqual(g.GetNodes(), 0)
+
+    def test_node_centrality(self):
+        g = graph.Graph("./out/counties.graph")
+        c = g.nodeCentrality(284128874)
+        expectedResult = {
+            'eccentricity': 37,
+            'closeness': 0.0591162233130638,
+            'farness': 16.91583027393793
+        }
+        self.assertEqual(c, expectedResult)

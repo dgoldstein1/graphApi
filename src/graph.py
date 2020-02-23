@@ -28,6 +28,9 @@ class Graph:
                 "Exception loading graph '{}' at path '{}'. Creating new graph."
                 .format(e, path))
 
+    def g(self):
+        return self.g
+
     def info(self):
         """
             create new file with random name
@@ -208,5 +211,12 @@ class Graph:
         aToMid.extend(midToB[1:])
         return (aToMid, (time.time() - start) + t1 + t2)
 
-    def g(self):
-        return self.g
+    def nodeCentrality(self, n):
+        """
+            gets centrality measures for individual node returns as dict
+        """
+        return {
+            "closeness": snap.GetClosenessCentr(self.g, n, True, True),
+            "farness": snap.GetFarnessCentr(self.g, n, True, True),
+            "eccentricity": snap.GetNodeEcc(self.g, n, True),
+        }
