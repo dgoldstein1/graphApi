@@ -207,8 +207,6 @@ class TestGraphMethods(unittest.TestCase):
         # g.g().AddEdge(3, 4)
         # g.g().AddEdge(4, 5)
         start = time.time()
-        c = g.centrality()
+        g.centrality()
         execTime = (time.time() - start) * 1000
         self.assertLess(execTime, 15000)
-        expectedResult = {}
-        self.assertEqual(c, expectedResult)
