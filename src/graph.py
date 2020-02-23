@@ -164,9 +164,9 @@ class Graph:
                 return (aToMid, (time.time() - start) + t1 + t2)
 
         # unreachable code
-        print "ERROR: unreachable code: a={}b={}dist={}midDist={}".format(
-            a, b, shortestDist, midDist)
-        return ([], time.time() - start)
+        raise IndexError(
+            "ERROR: unreachable code: a={}b={}dist={}midDist={}".format(
+                a, b, shortestDist, midDist))
 
     def shortestPathUndir(self, a, b, dpf, t, g, i=0):
         """
