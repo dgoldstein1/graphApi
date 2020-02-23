@@ -89,6 +89,10 @@ class TestServer(unittest.TestCase):
             u'Could not find given start and end values: Execution stopped: Graph->IsNode(StartNId), file ../../snap/snap-core/bfsdfs.h, line 104'
         }
         self.assertEqual(response.get_json(), expectedResponse)
+        # parses args correctly
+        response = self.app.get(
+            "/shortestPath?start=3&end=35&n=5&directed=true")
+        self.assertEqual(response.status_code, 200)
 
     def test_serve_docs(self):
         response = self.app.get('/', follow_redirects=True)
