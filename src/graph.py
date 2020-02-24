@@ -259,8 +259,8 @@ class Graph:
             if i == n - 1: return r
             toAdd = {'val': tHash[j]}
             if isTPair:
-                toAdd['start'] = j.Val1()
-                toAdd['end'] = j.Val2()
+                toAdd['startId'] = j.Val1()
+                toAdd['endId'] = j.Val2()
             else:
                 toAdd['id'] = j
             r.append(toAdd)
