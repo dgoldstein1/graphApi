@@ -145,6 +145,32 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+
+  /top:
+    get:
+      summary: Retrieves top N for each type of supported centrality measure
+      parameters:
+        - in: query
+          name: n
+          schema:
+            type: number
+          required: false
+          description: number of top things to fetch for. Default is 10, max is 50
+      responses:
+      
+        '200':
+          description: JSON map of node id to centrality info. If could not retrieve node, gives error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TopInfo'
+        '500':
+          description: An error message.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
   /centrality:
     post:
       summary: Retrieves centrality measures for given nodes
@@ -276,10 +302,14 @@ components:
             $ref: '#/components/schemas/TopNNode'
         betweenessEdges:
           description: top N edges with greatest number of paths through edge edge
-          type: number
+          type: array
+          items:
+            $ref: '#/components/schemas/TopNEdge'
         pageRank:
           description: top N nodes ranked on degree centrality + influence of neighbors
-          type: number
+          type: array
+          items:
+            $ref: '#/components/schemas/TopNNode'
 
     TopNNode:
       type: object
