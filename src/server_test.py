@@ -127,3 +127,9 @@ class TestServer(unittest.TestCase):
         response = self.app.post("/centrality", json=[9, 19, 30, 99999])
         self.assertEqual(response.status_code, 200)
         self.assertIsNotNone(response.get_json())
+
+    def test_topn(self):
+        # bad json
+        response = self.app.get("/top?n=5")
+        self.assertEqual(response.status_code, 200)
+        self.assertIsNotNone(response.get_json())
