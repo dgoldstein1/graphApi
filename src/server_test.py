@@ -129,7 +129,10 @@ class TestServer(unittest.TestCase):
         self.assertIsNotNone(response.get_json())
 
     def test_topn(self):
-        # bad json
-        response = self.app.get("/top?n=5")
+        # bad node
+        response = self.app.get("/top?n=sdfdfsdsdfsdfsd")
+        self.assertEqual(response.status_code, 422)
+        # positive test
+        response = self.app.get("/top")
         self.assertEqual(response.status_code, 200)
         self.assertIsNotNone(response.get_json())

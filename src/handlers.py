@@ -126,6 +126,14 @@ def centrality():
     return jsonify(200, resp)
 
 
+def top():
+    r = validateInts([request.args.get("n") or 1])
+    if r.get("error") is not None:
+        return _errOut(422, r.get("error"))
+    [n] = r.get('validInts')
+    return jsonify(server.g.centrality(n))
+
+
 def validateInts(n):
     """
     Validates integer.
