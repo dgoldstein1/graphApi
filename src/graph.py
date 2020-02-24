@@ -28,6 +28,9 @@ class Graph:
                 "Exception loading graph '{}' at path '{}'. Creating new graph."
                 .format(e, path))
 
+    def g(self):
+        return self.g
+
     def info(self):
         """
             create new file with random name
@@ -208,5 +211,60 @@ class Graph:
         aToMid.extend(midToB[1:])
         return (aToMid, (time.time() - start) + t1 + t2)
 
-    def g(self):
-        return self.g
+    def nodeCentrality(self, n):
+        """
+            gets centrality measures for individual node returns as dict
+        """
+        if not self.g.IsNode(n):
+            return {'error': 'node {} was not found in graph'.format(n)}
+        # get degree centrality
+        nNodes = float(self.g.GetNodes())
+        nEdges = float(self.g.GetNI(n).GetOutDeg())
+        return {
+            "degree": nEdges / (nNodes - 1),
+            "closeness": snap.GetClosenessCentr(self.g, n, True, True),
+            "eccentricity": snap.GetNodeEcc(self.g, n, True),
+        }
+
+    def centrality(self, nResults=10):
+        """
+            returns top nodes for each type of centrality
+                - if slow is true, will run through each node in
+                  graph, getting highest nodeCentrality()
+        """
+        # betweeness
+        nodes = snap.TIntFltH()
+        edges = snap.TIntPrFltH()
+        snap.GetBetweennessCentr(self.g, nodes, edges, 4, True)
+        betweenessNodes = self._extractTopN(nodes, n=nResults)
+        betweenessEdges = self._extractTopN(edges, n=nResults, isTPair=True)
+        # page rank
+        nodes = snap.TIntFltH()
+        snap.GetPageRank(self.g, nodes, 0.85, 1e-4, 30)
+        pageRank = self._extractTopN(nodes, n=nResults)
+
+        return {
+            'betweenessNodes': betweenessNodes,
+            'betweenessEdges': betweenessEdges,
+            'pageRank': pageRank,
+        }
+
+    def _extractTopN(self, tHash, n=10, asc=False, isTPair=False):
+        """
+        utility for extracting top n results from a hash table in format {nodeId : value}
+        ascending: lowest values first?
+        """
+        tHash.SortByDat(asc)
+        i = 0
+        r = []
+        for j in tHash:
+            toAdd = {'val': tHash[j]}
+            if isTPair:
+                toAdd['startId'] = j.Val1()
+                toAdd['endId'] = j.Val2()
+            else:
+                toAdd['id'] = j
+            r.append(toAdd)
+            i = i + 1
+            if i == n: return r
+        return r

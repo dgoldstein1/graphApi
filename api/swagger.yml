@@ -6,7 +6,7 @@ info:
 
     - [Source Code](https://github.com/dgoldstein1/graphApi)
     - [SNAP](https://snap.stanford.edu/index.html)
-  version: "1.2.0"
+  version: "1.3.0"
 servers:
   - url: https://links-biggraph.herokuapp.com/
     description: heroku deployment
@@ -124,7 +124,7 @@ paths:
         - in: query
           name: directed
           schema:
-            type: bool
+            type: boolean
           required: false
           description: consider the data directed?          
 
@@ -145,6 +145,74 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+
+  /top:
+    get:
+      summary: Retrieves top N for each type of supported centrality measure
+      parameters:
+        - in: query
+          name: n
+          schema:
+            type: number
+          required: false
+          description: number of top things to fetch for. Default is 10, max is 50
+      responses:
+      
+        '200':
+          description: JSON map of node id to centrality info. If could not retrieve node, gives error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TopInfo'
+        '500':
+          description: An error message.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /centrality:
+    post:
+      summary: Retrieves centrality measures for given nodes
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              description: array of ids to fetch centrality for
+              type: array
+              items:
+                type: number
+
+      responses:
+        '200':
+          description: JSON map of node id to centrality info. If could not retrieve node, gives error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id1:
+                    type: object
+                    schema:
+                    $ref: '#/components/schemas/NodeCentralityInfo'
+                  id2:
+                    type: object
+                    schema:
+                    $ref: '#/components/schemas/NodeCentralityInfo'
+                  idN:
+                    type: object
+                    schema:
+                    $ref: '#/components/schemas/NodeCentralityInfo'
+
+
+        '500':
+          description: An error message.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
                     
   /metrics:
     get:
@@ -210,6 +278,62 @@ paths:
 
 components:
   schemas:
+
+    NodeCentralityInfo:
+      type: object
+      properties:
+        degree:
+          description: number of out edges / node in graph - 1
+          type: number
+        closeness:
+          description: mean shortest path across all nodes in graph
+          type: number
+        eccentricity:
+          description: maximum distance from n to any node in graph
+          type: number
+
+    TopInfo:
+      type: object
+      properties:
+        betweenessNodes:
+          description: top N nodes with greatest number of paths through node node
+          type: array
+          items:
+            $ref: '#/components/schemas/TopNNode'
+        betweenessEdges:
+          description: top N edges with greatest number of paths through edge edge
+          type: array
+          items:
+            $ref: '#/components/schemas/TopNEdge'
+        pageRank:
+          description: top N nodes ranked on degree centrality + influence of neighbors
+          type: array
+          items:
+            $ref: '#/components/schemas/TopNNode'
+
+    TopNNode:
+      type: object
+      properties:
+        id:
+          description: node id
+          type: number
+        val:
+          description: value of metric
+          type: number
+
+    TopNEdge:
+      type: object
+      properties:
+        startId:
+          description: starting node id
+          type: number
+        endId:
+          description: ending node id
+          type: number
+        val:
+          description: value of metric
+          type: number
+
     EdgesResponse:
       type: object
       properties:

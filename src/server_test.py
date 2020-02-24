@@ -118,3 +118,36 @@ class TestServer(unittest.TestCase):
             "HELP python_info Python platform information" in response.data)
         # assert that contains mix in
         self.assertTrue("Number of nodes" in response.data)
+
+    def test_centrality(self):
+        # bad json
+        response = self.app.post("/centrality", json={'test': 'test'})
+        self.assertEqual(response.status_code, 422)
+        # get centrality for a bunch existing / non-existing edges
+        response = self.app.post("/centrality", json=[9, 19, 30, 99999])
+        self.assertEqual(response.status_code, 200)
+        self.assertIsNotNone(response.get_json())
+
+    def test_topn(self):
+        # bad node
+        response = self.app.get("/top?n=sdfdfsdsdfsdfsd")
+        self.assertEqual(response.status_code, 422)
+        # positive test
+        response = self.app.get("/top?n=1")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            response.get_json(), {
+                'betweenessEdges': [{
+                    'startId': 277895,
+                    'endId': 256198,
+                    'val': 347650.1521888455
+                }],
+                'betweenessNodes': [{
+                    'id': 15580374,
+                    'val': 299295.95094627613
+                }],
+                'pageRank': [{
+                    'id': 15580374,
+                    'val': 0.0006902889901921872
+                }]
+            })
