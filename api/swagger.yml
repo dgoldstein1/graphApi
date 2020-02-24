@@ -153,21 +153,32 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              required:
-                - neighbors
-              properties:
-                neighbors:
-                  type: array
-                  items:
-                    type: number
+              description: array of ids to fetch centrality for
+              type: array
+              items:
+                type: number
+
       responses:
         '200':
           description: JSON map of node id to centrality info. If could not retrieve node, gives error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/NodeCentralityInfo'
+                type: object
+                properties:
+                  id1:
+                    type: object
+                    schema:
+                    $ref: '#/components/schemas/NodeCentralityInfo'
+                  id2:
+                    type: object
+                    schema:
+                    $ref: '#/components/schemas/NodeCentralityInfo'
+                  idN:
+                    type: object
+                    schema:
+                    $ref: '#/components/schemas/NodeCentralityInfo'
+
 
         '500':
           description: An error message.
@@ -241,6 +252,8 @@ paths:
 
 components:
   schemas:
+
+
     NodeCentralityInfo:
       type: object
       properties:
