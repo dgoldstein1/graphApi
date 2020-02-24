@@ -221,7 +221,6 @@ class Graph:
         return {
             "degree": nEdges / (nNodes - 1),
             "closeness": snap.GetClosenessCentr(self.g, n, True, True),
-            "farness": snap.GetFarnessCentr(self.g, n, True, True),
             "eccentricity": snap.GetNodeEcc(self.g, n, True),
         }
 

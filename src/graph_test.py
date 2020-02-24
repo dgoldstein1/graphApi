@@ -190,22 +190,12 @@ class TestGraphMethods(unittest.TestCase):
             'eccentricity': 37,
             'degree': 0.0026936026936026937,
             'closeness': 0.0591162233130638,
-            'farness': 16.91583027393793
         }
         self.assertEqual(c, expectedResult)
 
     def test_centrality(self):
         g = graph.Graph("./out/counties.graph")
-        # g = graph.Graph("../out/doesntexist.graph")
-        # g.g().AddNode(1)
-        # g.g().AddNode(2)
-        # g.g().AddNode(3)
-        # g.g().AddNode(4)
-        # g.g().AddNode(5)
-        # g.g().AddEdge(1, 2)
-        # g.g().AddEdge(1, 3)
-        # g.g().AddEdge(3, 4)
-        # g.g().AddEdge(4, 5)
+        # g = graph.Graph("./out/synonyms_big.graph")
         start = time.time()
         g.centrality()
         execTime = (time.time() - start) * 1000

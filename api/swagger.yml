@@ -6,7 +6,7 @@ info:
 
     - [Source Code](https://github.com/dgoldstein1/graphApi)
     - [SNAP](https://snap.stanford.edu/index.html)
-  version: "1.2.0"
+  version: "1.3.0"
 servers:
   - url: https://links-biggraph.herokuapp.com/
     description: heroku deployment
@@ -124,7 +124,7 @@ paths:
         - in: query
           name: directed
           schema:
-            type: bool
+            type: boolean
           required: false
           description: consider the data directed?          
 
@@ -145,6 +145,37 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /centrality:
+    post:
+      summary: Retrieves centrality measures for given nodes
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - neighbors
+              properties:
+                neighbors:
+                  type: array
+                  items:
+                    type: number
+      responses:
+        '200':
+          description: JSON map of node id to centrality info. If could not retrieve node, gives error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NodeCentralityInfo'
+
+        '500':
+          description: An error message.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
                     
   /metrics:
     get:
@@ -210,6 +241,19 @@ paths:
 
 components:
   schemas:
+    NodeCentralityInfo:
+      type: object
+      properties:
+        degree:
+          description: number of out edges / node in graph - 1
+          type: number
+        closeness:
+          description: mean shortest path across all nodes in graph
+          type: number
+        eccentricity:
+          description: maximum distance from n to any node in graph
+          type: number
+
     EdgesResponse:
       type: object
       properties:
