@@ -253,7 +253,6 @@ paths:
 components:
   schemas:
 
-
     NodeCentralityInfo:
       type: object
       properties:
@@ -265,6 +264,44 @@ components:
           type: number
         eccentricity:
           description: maximum distance from n to any node in graph
+          type: number
+
+    TopInfo:
+      type: object
+      properties:
+        betweenessNodes:
+          description: top N nodes with greatest number of paths through node node
+          type: array
+          items:
+            $ref: '#/components/schemas/TopNNode'
+        betweenessEdges:
+          description: top N edges with greatest number of paths through edge edge
+          type: number
+        pageRank:
+          description: top N nodes ranked on degree centrality + influence of neighbors
+          type: number
+
+    TopNNode:
+      type: object
+      properties:
+        id:
+          description: node id
+          type: number
+        val:
+          description: value of metric
+          type: number
+
+    TopNEdge:
+      type: object
+      properties:
+        startId:
+          description: starting node id
+          type: number
+        endId:
+          description: ending node id
+          type: number
+        val:
+          description: value of metric
           type: number
 
     EdgesResponse:

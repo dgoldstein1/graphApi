@@ -224,13 +224,12 @@ class Graph:
             "eccentricity": snap.GetNodeEcc(self.g, n, True),
         }
 
-    def centrality(self, fast=True):
+    def centrality(self, nResults=10):
         """
             returns top nodes for each type of centrality
                 - if slow is true, will run through each node in
                   graph, getting highest nodeCentrality()
         """
-        nResults = 10  #results for each type
         # betweeness
         nodes = snap.TIntFltH()
         edges = snap.TIntPrFltH()
@@ -263,7 +262,7 @@ class Graph:
                 toAdd['start'] = j.Val1()
                 toAdd['end'] = j.Val2()
             else:
-                toAdd['node'] = j
+                toAdd['id'] = j
             r.append(toAdd)
             i = i + 1
         return r
