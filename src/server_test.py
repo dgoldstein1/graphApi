@@ -133,6 +133,21 @@ class TestServer(unittest.TestCase):
         response = self.app.get("/top?n=sdfdfsdsdfsdfsd")
         self.assertEqual(response.status_code, 422)
         # positive test
-        response = self.app.get("/top")
+        response = self.app.get("/top?n=1")
         self.assertEqual(response.status_code, 200)
-        self.assertIsNotNone(response.get_json())
+        self.assertEqual(
+            response.get_json(), {
+                'betweenessEdges': [{
+                    'startId': 277895,
+                    'endId': 256198,
+                    'val': 347650.1521888455
+                }],
+                'betweenessNodes': [{
+                    'id': 15580374,
+                    'val': 299295.95094627613
+                }],
+                'pageRank': [{
+                    'id': 15580374,
+                    'val': 0.0006902889901921872
+                }]
+            })

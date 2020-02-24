@@ -123,11 +123,11 @@ def centrality():
     resp = {}
     for n in r.get("validInts"):
         resp[n] = server.g.nodeCentrality(n)
-    return jsonify(200, resp)
+    return jsonify(resp)
 
 
 def top():
-    r = validateInts([request.args.get("n") or 1])
+    r = validateInts([request.args.get("n") or 10])
     if r.get("error") is not None:
         return _errOut(422, r.get("error"))
     [n] = r.get('validInts')

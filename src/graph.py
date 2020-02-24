@@ -258,7 +258,6 @@ class Graph:
         i = 0
         r = []
         for j in tHash:
-            if i == n - 1: return r
             toAdd = {'val': tHash[j]}
             if isTPair:
                 toAdd['startId'] = j.Val1()
@@ -267,4 +266,5 @@ class Graph:
                 toAdd['id'] = j
             r.append(toAdd)
             i = i + 1
+            if i == n: return r
         return r
