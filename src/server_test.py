@@ -118,3 +118,9 @@ class TestServer(unittest.TestCase):
             "HELP python_info Python platform information" in response.data)
         # assert that contains mix in
         self.assertTrue("Number of nodes" in response.data)
+
+    def test_centrality(self):
+        # get centrality for a bunch existing / non-existing edges
+        response = self.app.post("/centrality", json=[9, 19, 30, 99999])
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.get_json(), {})
