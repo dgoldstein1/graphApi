@@ -215,6 +215,8 @@ class Graph:
         """
             gets centrality measures for individual node returns as dict
         """
+        if not self.g.IsNode(n):
+            return {'error': 'node {} was not found in graph'.format(n)}
         # get degree centrality
         nNodes = float(self.g.GetNodes())
         nEdges = float(self.g.GetNI(n).GetOutDeg())

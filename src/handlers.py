@@ -116,6 +116,16 @@ def shortestPath():
     return jsonify(path)
 
 
+def centrality():
+    r = validateInts(request.get_json())
+    if r.get("error") is not None:
+        return _errOut(422, r.get("error"))
+    resp = {}
+    for n in r.get("validInts"):
+        resp[n] = server.g.nodeCentrality(n)
+    return jsonify(200, resp)
+
+
 def validateInts(n):
     """
     Validates integer.

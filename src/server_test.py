@@ -120,7 +120,10 @@ class TestServer(unittest.TestCase):
         self.assertTrue("Number of nodes" in response.data)
 
     def test_centrality(self):
+        # bad json
+        response = self.app.post("/centrality", json={'test': 'test'})
+        self.assertEqual(response.status_code, 422)
         # get centrality for a bunch existing / non-existing edges
         response = self.app.post("/centrality", json=[9, 19, 30, 99999])
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.get_json(), {})
+        self.assertIsNotNone(response.get_json())

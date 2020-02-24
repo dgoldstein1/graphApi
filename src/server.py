@@ -25,6 +25,11 @@ g = graph.Graph(file)
 app.add_url_rule('/edges', "add edges", handlers.postEdges, methods=["POST"])
 app.add_url_rule("/neighbors", "get neighbors", handlers.getNeighbors)
 app.add_url_rule("/shortestPath", "get shortest path", handlers.shortestPath)
+# structural porperties
+app.add_url_rule("/centrality",
+                 "centrality info for individual nodes",
+                 handlers.centrality,
+                 methods=["POST"])
 # docs
 app.add_url_rule('/', "swagger docs", handlers.serveDocs)
 # metrics
