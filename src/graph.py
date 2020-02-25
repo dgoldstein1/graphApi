@@ -8,6 +8,7 @@ import random
 import sys
 import time
 import copy
+import networkx as nx
 
 
 class Graph:
@@ -18,6 +19,9 @@ class Graph:
             - tries to read from graph, else initializes empty
         """
         self.path = path
+        # long-compute time values can be saved in class
+        self.nxg = None
+        self.pageRank = None
         try:
             FIn = snap.TFIn(path)
             self.g = snap.TNGraph.Load(FIn)
@@ -232,39 +236,28 @@ class Graph:
                 - if slow is true, will run through each node in
                   graph, getting highest nodeCentrality()
         """
-        # betweeness
-        nodes = snap.TIntFltH()
-        edges = snap.TIntPrFltH()
-        snap.GetBetweennessCentr(self.g, nodes, edges, 4, True)
-        betweenessNodes = self._extractTopN(nodes, n=nResults)
-        betweenessEdges = self._extractTopN(edges, n=nResults, isTPair=True)
-        # page rank
-        nodes = snap.TIntFltH()
-        snap.GetPageRank(self.g, nodes, 0.85, 1e-4, 30)
-        pageRank = self._extractTopN(nodes, n=nResults)
+        if self.nxg is None:
+            logging.debug("loading nx graph into memory")
+            snap.SaveEdgeList(self.g, "temp.edges")
+            self.nxg = nx.read_edgelist("temp.edges")
+            os.remove("temp.edges")
+
+        if self.pageRank is None:
+            pr = nx.pagerank(self.nxg)
+            self.pageRank = self._extractTopN(pr, nResults)
 
         return {
-            'betweenessNodes': betweenessNodes,
-            'betweenessEdges': betweenessEdges,
-            'pageRank': pageRank,
+            'pageRank': self.pageRank,
         }
 
-    def _extractTopN(self, tHash, n=10, asc=False, isTPair=False):
+    def _extractTopN(self, d, n=10, asc=False):
         """
         utility for extracting top n results from a hash table in format {nodeId : value}
         ascending: lowest values first?
         """
-        tHash.SortByDat(asc)
-        i = 0
-        r = []
-        for j in tHash:
-            toAdd = {'val': tHash[j]}
-            if isTPair:
-                toAdd['startId'] = j.Val1()
-                toAdd['endId'] = j.Val2()
-            else:
-                toAdd['id'] = j
-            r.append(toAdd)
-            i = i + 1
-            if i == n: return r
-        return r
+        # sort
+        d = sorted(d.items(), key=lambda kv: (kv[1], kv[0]))[:n]
+        # convert to good format
+        for i in range(0, len(d)):
+            d[i] = {"id": int(d[i][0]), "val": d[i][1]}
+        return d
