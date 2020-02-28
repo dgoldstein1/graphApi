@@ -32,6 +32,8 @@ class Graph:
             returns string info on success
             raises IOError error on failure
         """
+        return nx.info(self.g)
+
     def save(self):
         """overwrites files at path with current graph"""
     def getNeighbors(self, node=0, limit=10000):

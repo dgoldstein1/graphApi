@@ -15,33 +15,21 @@ class TestGraphMethods(unittest.TestCase):
         self.assertEqual(len(g.getGraph().nodes), 10)
         g.save()
 
-    # def test_info(self):
-    #     # bad graph
-    #     g = graph.Graph("../out/slkjlk jsdflkjsdft.gv we wWraph")
-    #     output = g.info()
-    #     self.assertTrue("Nodes:                    0" in output)
-    #     self.assertTrue("Edges:                    0" in output)
-    #     g = graph.Graph("../out/doesntexist.graph")
-    #     # reset dir
-    #     os.listdir(".")
-    #     for f in os.listdir("."):
-    #         if f.startswith("graph-info-"):
-    #             os.remove(f)
+    def test_info(self):
+        # bad graph
+        g = graph.Graph("../out/slkjlk jsdflkjsdft.gv we wWraph")
+        output = g.info()
+        print output
+        self.assertTrue("Number of nodes: 0" in output)
+        self.assertTrue("Number of edges: 0" in output)
+        g = graph.Graph("../out/doesntexist.graph")
 
-    #     g.g().AddNode(1)
-    #     g.g().AddNode(2)
-    #     g.g().AddNode(3)
-    #     g.g().AddNode(4)
-    #     g.g().AddEdge(1, 2)
-    #     g.g().AddEdge(1, 3)
-    #     g.g().AddEdge(3, 4)
-    #     output = g.info()
-    #     self.assertTrue("Nodes:                    4" in output)
-    #     self.assertTrue("Edges:                    3" in output)
-    #     # make sure no files 'graph-info-*'
-    #     os.listdir(".")
-    #     for f in os.listdir("."):
-    #         self.assertFalse(f.startswith("graph-info-"))
+        g.getGraph().add_edge("1", "2")
+        g.getGraph().add_edge("1", "3")
+        g.getGraph().add_edge("3", "4")
+        output = g.info()
+        self.assertTrue("Number of nodes: 4" in output)
+        self.assertTrue("Number of edges: 3" in output)
 
     # def test_getNeighbors(self):
     #     g = graph.Graph("../out/doesntexist.graph")
@@ -49,9 +37,9 @@ class TestGraphMethods(unittest.TestCase):
     #     g.g().AddNode(2)
     #     g.g().AddNode(3)
     #     g.g().AddNode(4)
-    #     g.g().AddEdge(1, 2)
-    #     g.g().AddEdge(1, 3)
-    #     g.g().AddEdge(3, 4)
+    #     g.g().add_edge(1, 2)
+    #     g.g().add_edge(1, 3)
+    #     g.g().add_edge(3, 4)
     #     self.assertEqual(g.getNeighbors(1), [2, 3])
     #     self.assertEqual(g.getNeighbors(2), [])
     #     self.assertEqual(g.getNeighbors(3), [4])
@@ -84,17 +72,17 @@ class TestGraphMethods(unittest.TestCase):
     #     g.g().AddNode(3)
     #     g.g().AddNode(4)
     #     g.g().AddNode(5)
-    #     g.g().AddEdge(1, 2)
-    #     g.g().AddEdge(1, 3)
-    #     g.g().AddEdge(3, 4)
+    #     g.g().add_edge(1, 2)
+    #     g.g().add_edge(1, 3)
+    #     g.g().add_edge(3, 4)
     #     # 5 isn't connected to anything
     #     with self.assertRaises(IndexError):
     #         g.shortestPath(1, 5)
     #     self.assertEqual(g.shortestPath(1, 2), [[1, 2]])
     #     self.assertEqual(g.shortestPath(1, 4), [[1, 3, 4]])
     #     # multiple unique paths
-    #     g.g().AddEdge(1, 5)
-    #     g.g().AddEdge(5, 4)
+    #     g.g().add_edge(1, 5)
+    #     g.g().add_edge(5, 4)
     #     paths = g.shortestPath(1, 4, n=2)
     #     self.assertTrue([1, 3, 4] in paths)
     #     self.assertTrue([1, 5, 4] in paths)
@@ -103,18 +91,18 @@ class TestGraphMethods(unittest.TestCase):
     #     self.assertTrue(len(paths) < 10)
     #     # no duplicates in direct routes
     #     g.g().AddNode(12345679)
-    #     g.g().AddEdge(1, 12345679)
+    #     g.g().add_edge(1, 12345679)
 
     #     g.g().AddNode(12345678)
-    #     g.g().AddEdge(1, 12345678)
-    #     g.g().AddEdge(12345678, 12345679)
+    #     g.g().add_edge(1, 12345678)
+    #     g.g().add_edge(12345678, 12345679)
 
     #     # self.assertEqual(g.shortestPath(1, 12345679, n=10),
     #     #                  [[1, 12345679], [1, 12345678, 12345679]])
     #     # doesnt give paths that dont end up at destination
     #     g.g().AddNode(6)
-    #     g.g().AddEdge(1, 6)
-    #     g.g().AddEdge(6, 5)
+    #     g.g().add_edge(1, 6)
+    #     g.g().add_edge(6, 5)
     #     paths = g.shortestPath(1, 4, n=10)
     #     self.assertEqual(len(paths), 2)
     #     # doesn't give same path twice
@@ -125,8 +113,8 @@ class TestGraphMethods(unittest.TestCase):
     #     for i in range(10, 10000):
     #         # make a bunch of paths from 1=>4
     #         g.g().AddNode(i)
-    #         g.g().AddEdge(1, i)
-    #         g.g().AddEdge(i, 4)
+    #         g.g().add_edge(1, i)
+    #         g.g().add_edge(i, 4)
     #     self.assertNotEqual(g.shortestPath(1, 4, n=4),
     #                         [[1, 3, 4], [1, 3, 4], [1, 3, 4], [1, 3, 4]])
     #     # timeout
@@ -149,13 +137,13 @@ class TestGraphMethods(unittest.TestCase):
     #     g.g().AddNode(3)
     #     g.g().AddNode(4)
     #     g.g().AddNode(5)
-    #     g.g().AddEdge(1, 2)
-    #     g.g().AddEdge(1, 3)
-    #     g.g().AddEdge(3, 4)
-    #     g.g().AddEdge(4, 5)
+    #     g.g().add_edge(1, 2)
+    #     g.g().add_edge(1, 3)
+    #     g.g().add_edge(3, 4)
+    #     g.g().add_edge(4, 5)
 
     #     g.g().AddNode(6)
-    #     g.g().AddEdge(5, 6)
+    #     g.g().add_edge(5, 6)
     #     p = g.shortestPath(1, 6, n=1, directed=True)
     #     self.assertEqual(p, [[1, 3, 4, 5, 6]])
 
@@ -201,10 +189,10 @@ class TestGraphMethods(unittest.TestCase):
     #     g.g().AddNode(3)
     #     g.g().AddNode(4)
     #     g.g().AddNode(5)
-    #     g.g().AddEdge(1, 2)
-    #     g.g().AddEdge(1, 3)
-    #     g.g().AddEdge(3, 4)
-    #     g.g().AddEdge(4, 5)
+    #     g.g().add_edge(1, 2)
+    #     g.g().add_edge(1, 3)
+    #     g.g().add_edge(3, 4)
+    #     g.g().add_edge(4, 5)
 
     #     start = time.time()
     #     g.centrality()
