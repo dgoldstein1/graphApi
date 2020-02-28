@@ -62,6 +62,12 @@ class Graph:
             - returns [new nodes added]
         """
         # add node if does not exist
+        added = []
+        for n in neighbors:
+            if n not in self.g:
+                self.g.add_edge(node, n)
+                added.append(n)
+        return added
 
     def shortestPath(self, a, b, n=1, timeout=3000, directed=False):
         """

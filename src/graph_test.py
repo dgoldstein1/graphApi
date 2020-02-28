@@ -47,19 +47,19 @@ class TestGraphMethods(unittest.TestCase):
         with self.assertRaises(RuntimeError):
             g.getNeighbors(0)
 
-    # def test_addNeighbors(self):
-    #     g = graph.Graph("../out/doesntexist.graph")
-    #     # add neighbors that don't exist
-    #     nodes = g.addNeighbors(1, [2, 3])
-    #     self.assertEqual(nodes, [2, 3])
-    #     self.assertEqual(g.getGraph().GetNodes(), 3)
-    #     self.assertEqual(g.getGraph().GetEdges(), 2)
-    #     # add neighbors that do exist
-    #     nodes = g.addNeighbors(1, [2, 3, 4])
-    #     self.assertEqual(g.getGraph().GetNodes(), 4)
-    #     self.assertEqual(g.getGraph().GetEdges(), 3)
-    #     # returns only new edges
-    #     self.assertEqual(nodes, [4])
+    def test_addNeighbors(self):
+        g = graph.Graph("../out/doesntexist.graph")
+        # add neighbors that don't exist
+        nodes = g.addNeighbors(1, [2, 3])
+        self.assertEqual(nodes, [2, 3])
+        self.assertEqual(len(g.getGraph().nodes), 3)
+        self.assertEqual(len(g.getGraph().edges), 2)
+        # add neighbors that do exist
+        nodes = g.addNeighbors(1, [2, 3, 4])
+        self.assertEqual(len(g.getGraph().nodes), 4)
+        self.assertEqual(len(g.getGraph().edges), 3)
+        # returns only new edges
+        self.assertEqual(nodes, [4])
 
     # def test_shortestPath(self):
     #     g = graph.Graph("../out/doesntexist.graph")
