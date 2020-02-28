@@ -109,13 +109,13 @@ class Graph:
         #     self.nxg = nx.read_edgelist("temp.edges")
         #     os.remove("temp.edges")
 
-        # if self.pageRank is None:
-        #     pr = nx.pagerank(self.nxg)
-        #     self.pageRank = self._extractTopN(pr, nResults)
+        if self.pageRank is None:
+            pr = nx.pagerank(self.g)
+            self.pageRank = self._extractTopN(pr, nResults)
 
-        # return {
-        #     'pageRank': self.pageRank,
-        # }
+        return {
+            'pageRank': self.pageRank,
+        }
 
     def _extractTopN(self, d, n=10, asc=False):
         """
@@ -123,8 +123,8 @@ class Graph:
         ascending: lowest values first?
         """
         # sort
-        # d = sorted(d.items(), key=lambda kv: (kv[1], kv[0]))[:n]
-        # # convert to good format
-        # for i in range(0, len(d)):
-        #     d[i] = {"id": int(d[i][0]), "val": d[i][1]}
-        # return d
+        d = sorted(d.items(), key=lambda kv: (kv[1], kv[0]))[:n]
+        # convert to good format
+        for i in range(0, len(d)):
+            d[i] = {"id": int(d[i][0]), "val": d[i][1]}
+        return d
