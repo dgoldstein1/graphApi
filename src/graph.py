@@ -18,7 +18,7 @@ class Graph:
             self.g = nx.read_edgelist(path)
             logging.debug("Loaded graph '{}' successfully".format(path))
         except IOError as e:
-            self.g = nx.Graph()
+            self.g = nx.DiGraph()
             logging.warn(
                 "Exception loading graph '{}' at path '{}'. Creating new graph."
                 .format(e, path))
@@ -36,11 +36,25 @@ class Graph:
 
     def save(self):
         """overwrites files at path with current graph"""
+        nx.write_edgelist(self.g, self.path)
+
     def getNeighbors(self, node=0, limit=10000):
         """
             - finds node
             - returns all edges from that node
         """
+        try:
+            i = 0
+            neighbors = []
+            for n in self.g.neighbors(node):
+                if i >= limit: break
+                neighbors.append(n)
+                i = i + 1
+            return neighbors
+
+        except nx.exception.NetworkXError as e:
+            raise RuntimeError(e)
+
     def addNeighbors(self, node, neighbors=[]):
         """
             - creates node if does not exist

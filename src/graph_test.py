@@ -31,58 +31,54 @@ class TestGraphMethods(unittest.TestCase):
         self.assertTrue("Number of nodes: 4" in output)
         self.assertTrue("Number of edges: 3" in output)
 
-    # def test_getNeighbors(self):
-    #     g = graph.Graph("../out/doesntexist.graph")
-    #     g.g().AddNode(1)
-    #     g.g().AddNode(2)
-    #     g.g().AddNode(3)
-    #     g.g().AddNode(4)
-    #     g.g().add_edge(1, 2)
-    #     g.g().add_edge(1, 3)
-    #     g.g().add_edge(3, 4)
-    #     self.assertEqual(g.getNeighbors(1), [2, 3])
-    #     self.assertEqual(g.getNeighbors(2), [])
-    #     self.assertEqual(g.getNeighbors(3), [4])
-    #     # limit
-    #     self.assertEqual(g.getNeighbors(1, 2), [2, 3])
-    #     self.assertEqual(g.getNeighbors(1, 1), [2])
-    #     self.assertEqual(g.getNeighbors(1, -1), [])
-    #     # trying to access node that doesn't exist throws error
-    #     with self.assertRaises(RuntimeError):
-    #         g.getNeighbors(0)
+    def test_getNeighbors(self):
+        g = graph.Graph("../out/doesntexist.graph")
+        g.getGraph().add_edge(1, 2)
+        g.getGraph().add_edge(1, 3)
+        g.getGraph().add_edge(3, 4)
+        self.assertEqual(g.getNeighbors(1), [2, 3])
+        self.assertEqual(g.getNeighbors(2), [])
+        self.assertEqual(g.getNeighbors(3), [4])
+        # limit
+        self.assertEqual(g.getNeighbors(1, 2), [2, 3])
+        self.assertEqual(g.getNeighbors(1, 1), [2])
+        self.assertEqual(g.getNeighbors(1, -1), [])
+        # trying to access node that doesn't exist throws error
+        with self.assertRaises(RuntimeError):
+            g.getNeighbors(0)
 
     # def test_addNeighbors(self):
     #     g = graph.Graph("../out/doesntexist.graph")
     #     # add neighbors that don't exist
     #     nodes = g.addNeighbors(1, [2, 3])
     #     self.assertEqual(nodes, [2, 3])
-    #     self.assertEqual(g.g().GetNodes(), 3)
-    #     self.assertEqual(g.g().GetEdges(), 2)
+    #     self.assertEqual(g.getGraph().GetNodes(), 3)
+    #     self.assertEqual(g.getGraph().GetEdges(), 2)
     #     # add neighbors that do exist
     #     nodes = g.addNeighbors(1, [2, 3, 4])
-    #     self.assertEqual(g.g().GetNodes(), 4)
-    #     self.assertEqual(g.g().GetEdges(), 3)
+    #     self.assertEqual(g.getGraph().GetNodes(), 4)
+    #     self.assertEqual(g.getGraph().GetEdges(), 3)
     #     # returns only new edges
     #     self.assertEqual(nodes, [4])
 
     # def test_shortestPath(self):
     #     g = graph.Graph("../out/doesntexist.graph")
-    #     g.g().AddNode(1)
-    #     g.g().AddNode(2)
-    #     g.g().AddNode(3)
-    #     g.g().AddNode(4)
-    #     g.g().AddNode(5)
-    #     g.g().add_edge(1, 2)
-    #     g.g().add_edge(1, 3)
-    #     g.g().add_edge(3, 4)
+    #     g.getGraph().AddNode(1)
+    #     g.getGraph().AddNode(2)
+    #     g.getGraph().AddNode(3)
+    #     g.getGraph().AddNode(4)
+    #     g.getGraph().AddNode(5)
+    #     g.getGraph().add_edge(1, 2)
+    #     g.getGraph().add_edge(1, 3)
+    #     g.getGraph().add_edge(3, 4)
     #     # 5 isn't connected to anything
     #     with self.assertRaises(IndexError):
     #         g.shortestPath(1, 5)
     #     self.assertEqual(g.shortestPath(1, 2), [[1, 2]])
     #     self.assertEqual(g.shortestPath(1, 4), [[1, 3, 4]])
     #     # multiple unique paths
-    #     g.g().add_edge(1, 5)
-    #     g.g().add_edge(5, 4)
+    #     g.getGraph().add_edge(1, 5)
+    #     g.getGraph().add_edge(5, 4)
     #     paths = g.shortestPath(1, 4, n=2)
     #     self.assertTrue([1, 3, 4] in paths)
     #     self.assertTrue([1, 5, 4] in paths)
@@ -90,19 +86,19 @@ class TestGraphMethods(unittest.TestCase):
     #     paths = g.shortestPath(1, 4, n=3)
     #     self.assertTrue(len(paths) < 10)
     #     # no duplicates in direct routes
-    #     g.g().AddNode(12345679)
-    #     g.g().add_edge(1, 12345679)
+    #     g.getGraph().AddNode(12345679)
+    #     g.getGraph().add_edge(1, 12345679)
 
-    #     g.g().AddNode(12345678)
-    #     g.g().add_edge(1, 12345678)
-    #     g.g().add_edge(12345678, 12345679)
+    #     g.getGraph().AddNode(12345678)
+    #     g.getGraph().add_edge(1, 12345678)
+    #     g.getGraph().add_edge(12345678, 12345679)
 
     #     # self.assertEqual(g.shortestPath(1, 12345679, n=10),
     #     #                  [[1, 12345679], [1, 12345678, 12345679]])
     #     # doesnt give paths that dont end up at destination
-    #     g.g().AddNode(6)
-    #     g.g().add_edge(1, 6)
-    #     g.g().add_edge(6, 5)
+    #     g.getGraph().AddNode(6)
+    #     g.getGraph().add_edge(1, 6)
+    #     g.getGraph().add_edge(6, 5)
     #     paths = g.shortestPath(1, 4, n=10)
     #     self.assertEqual(len(paths), 2)
     #     # doesn't give same path twice
@@ -112,9 +108,9 @@ class TestGraphMethods(unittest.TestCase):
     #     # doesn't give same path twice (randomizes)
     #     for i in range(10, 10000):
     #         # make a bunch of paths from 1=>4
-    #         g.g().AddNode(i)
-    #         g.g().add_edge(1, i)
-    #         g.g().add_edge(i, 4)
+    #         g.getGraph().AddNode(i)
+    #         g.getGraph().add_edge(1, i)
+    #         g.getGraph().add_edge(i, 4)
     #     self.assertNotEqual(g.shortestPath(1, 4, n=4),
     #                         [[1, 3, 4], [1, 3, 4], [1, 3, 4], [1, 3, 4]])
     #     # timeout
@@ -132,18 +128,18 @@ class TestGraphMethods(unittest.TestCase):
 
     # def test_shortest_path_dir(self):
     #     g = graph.Graph("../out/doesntexist.graph")
-    #     g.g().AddNode(1)
-    #     g.g().AddNode(2)
-    #     g.g().AddNode(3)
-    #     g.g().AddNode(4)
-    #     g.g().AddNode(5)
-    #     g.g().add_edge(1, 2)
-    #     g.g().add_edge(1, 3)
-    #     g.g().add_edge(3, 4)
-    #     g.g().add_edge(4, 5)
+    #     g.getGraph().AddNode(1)
+    #     g.getGraph().AddNode(2)
+    #     g.getGraph().AddNode(3)
+    #     g.getGraph().AddNode(4)
+    #     g.getGraph().AddNode(5)
+    #     g.getGraph().add_edge(1, 2)
+    #     g.getGraph().add_edge(1, 3)
+    #     g.getGraph().add_edge(3, 4)
+    #     g.getGraph().add_edge(4, 5)
 
-    #     g.g().AddNode(6)
-    #     g.g().add_edge(5, 6)
+    #     g.getGraph().AddNode(6)
+    #     g.getGraph().add_edge(5, 6)
     #     p = g.shortestPath(1, 6, n=1, directed=True)
     #     self.assertEqual(p, [[1, 3, 4, 5, 6]])
 
@@ -184,15 +180,15 @@ class TestGraphMethods(unittest.TestCase):
     #     # g = graph.Graph("./out/counties.graph")
     #     # g = graph.Graph("./out/synonyms_big.graph")
     #     g = graph.Graph("../out/doesntexist.graph")
-    #     g.g().AddNode(1)
-    #     g.g().AddNode(2)
-    #     g.g().AddNode(3)
-    #     g.g().AddNode(4)
-    #     g.g().AddNode(5)
-    #     g.g().add_edge(1, 2)
-    #     g.g().add_edge(1, 3)
-    #     g.g().add_edge(3, 4)
-    #     g.g().add_edge(4, 5)
+    #     g.getGraph().AddNode(1)
+    #     g.getGraph().AddNode(2)
+    #     g.getGraph().AddNode(3)
+    #     g.getGraph().AddNode(4)
+    #     g.getGraph().AddNode(5)
+    #     g.getGraph().add_edge(1, 2)
+    #     g.getGraph().add_edge(1, 3)
+    #     g.getGraph().add_edge(3, 4)
+    #     g.getGraph().add_edge(4, 5)
 
     #     start = time.time()
     #     g.centrality()
