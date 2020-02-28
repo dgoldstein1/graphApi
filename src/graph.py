@@ -34,16 +34,13 @@ class Graph:
             returns string info on success
             raises IOError error on failure
         """
-
     def save(self):
         """overwrites files at path with current graph"""
-
     def getNeighbors(self, node=0, limit=10000):
         """
             - finds node
             - returns all edges from that node
         """
-
     def addNeighbors(self, node, neighbors=[]):
         """
             - creates node if does not exist
@@ -57,13 +54,11 @@ class Graph:
             - gets shortest path(s) between two nodes
             - return array of nodes or failure
         """
-
     def shortestPathDir(self, a, b, dpf, t, g, i=0):
         """
         shortest path in directed graph
         returns (path, execution time ms)
         """
-
     def shortestPathUndir(self, a, b, dpf, t, g, i=0):
         """
         finds shortest path between two new nodes
@@ -72,7 +67,6 @@ class Graph:
             dpf: direct path already found?
             t: timeout
         """
-
     def nodeCentrality(self, n):
         """
             gets centrality measures for individual node returns as dict
