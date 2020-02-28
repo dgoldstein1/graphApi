@@ -15,17 +15,15 @@ class Graph:
         # long-compute time values can be saved in class
         self.pageRank = None
         try:
-            # TODO
-            self.g = None
+            self.g = nx.read_edgelist(path)
             logging.debug("Loaded graph '{}' successfully".format(path))
-        except RuntimeError as e:
-            # TODO
-            self.g = None
+        except IOError as e:
+            self.g = nx.Graph()
             logging.warn(
                 "Exception loading graph '{}' at path '{}'. Creating new graph."
                 .format(e, path))
 
-    def g(self):
+    def getGraph(self):
         return self.g
 
     def info(self):

@@ -10,9 +10,9 @@ class TestGraphMethods(unittest.TestCase):
         logging.getLogger().setLevel(logging.ERROR)
 
     def test_save(self):
-        file = "{}/out/test1SavedTest.graph".format(os.getcwd())
+        file = "{}/out/test1SavedGraph.edges".format(os.getcwd())
         g = graph.Graph(file)
-        self.assertEqual(g.g().GetNodes(), 1)
+        self.assertEqual(len(g.getGraph().nodes), 10)
         g.save()
 
     # def test_info(self):
