@@ -43,17 +43,16 @@ class Graph:
             - finds node
             - returns all edges from that node
         """
+        neighbors = []
         try:
             i = 0
-            neighbors = []
             for n in self.g.neighbors(node):
                 if i >= limit: break
                 neighbors.append(n)
                 i = i + 1
-            return neighbors
-
         except nx.exception.NetworkXError as e:
             raise RuntimeError(e)
+        return neighbors
 
     def addNeighbors(self, node, neighbors=[]):
         """
@@ -74,19 +73,18 @@ class Graph:
             - gets shortest path(s) between two nodes
             - return array of nodes or failure
         """
-    def shortestPathDir(self, a, b, dpf, t, g, i=0):
-        """
-        shortest path in directed graph
-        returns (path, execution time ms)
-        """
-    def shortestPathUndir(self, a, b, dpf, t, g, i=0):
-        """
-        finds shortest path between two new nodes
-            a: source
-            b: destination
-            dpf: direct path already found?
-            t: timeout
-        """
+        paths = []
+        try:
+            allPaths = nx.all_shortest_paths(self.g, a, b)
+            i = 0
+            for p in allPaths:
+                if i > n: break
+                paths.append(p)
+                i = i + 1
+        except nx.exception.NetworkXNoPath as e:
+            raise IndexError(e)
+        return paths
+
     def nodeCentrality(self, n):
         """
             gets centrality measures for individual node returns as dict
