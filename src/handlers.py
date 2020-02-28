@@ -15,8 +15,10 @@ def serveMetrics():
     # parse out number of nodes and edges
     info = server.g.info().replace(" ", "")
     infoAsList = re.split('\n|:', info)
-    nNodes = infoAsList[infoAsList.index("Nodes") + 1]
-    nEdges = infoAsList[infoAsList.index("Edges") + 1]
+    print infoAsList
+    nNodes = infoAsList[infoAsList.index("Numberofnodes") + 1]
+    nEdges = infoAsList[infoAsList.index("Numberofedges") + 1]
+    avgDegree = infoAsList[infoAsList.index("Averagedegree") + 1]
     # add in as prom metric
     metrics += """
 # HELP Number of nodes
@@ -25,7 +27,8 @@ number_of_nodes {}
 # HELP Number of edges
 # TYPE number_of_edges counter
 number_of_edges {}
-    """.format(nNodes, nEdges)
+average_degree {}
+    """.format(nNodes, nEdges, avgDegree)
     return metrics
 
 

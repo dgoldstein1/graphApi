@@ -37,6 +37,7 @@ class Graph:
     def save(self):
         """overwrites files at path with current graph"""
         nx.write_edgelist(self.g, self.path)
+        return self.path
 
     def getNeighbors(self, node=0, limit=10000):
         """
