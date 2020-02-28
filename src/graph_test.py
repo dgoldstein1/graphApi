@@ -126,25 +126,12 @@ class TestGraphMethods(unittest.TestCase):
         p = g.shortestPath(1, 5, n=1, directed=True)
         self.assertEqual(p, [[1, 3, 4, 5]])
 
-    # def test_g(self):
-    #     g = graph.Graph("../out/doesntexist.graph").g()
-    #     # creates new graph on bad filename
-    #     self.assertIsNotNone(g)
-    #     self.assertEqual(g.GetNodes(), 0)
-    #     # reads in graph from legit file
-    #     file = "{}/out/test1.graph".format(os.getcwd())
-    #     g = graph.Graph(file).g()
-    #     self.assertNotEqual(g.GetNodes(), 0)
-
-    # def test_node_centrality(self):
-    #     g = graph.Graph("./out/counties.graph")
-    #     c = g.nodeCentrality(284128874)
-    #     expectedResult = {
-    #         'eccentricity': 37,
-    #         'degree': 0.0026936026936026937,
-    #         'closeness': 0.0591162233130638,
-    #     }
-    #     self.assertEqual(c, expectedResult)
+    def test_node_centrality(self):
+        file = "{}/out/test1SavedGraph.edges".format(os.getcwd())
+        g = graph.Graph(file)
+        c = g.nodeCentrality(2)
+        expectedResult = {'closeness': 0.6923076923076923, 'degree': 5}
+        self.assertEqual(c, expectedResult)
 
     # def test_centrality(self):
     #     # g = graph.Graph("./out/counties.graph")

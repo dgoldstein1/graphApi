@@ -89,16 +89,13 @@ class Graph:
         """
             gets centrality measures for individual node returns as dict
         """
-        # if not self.g.IsNode(n):
-        #     return {'error': 'node {} was not found in graph'.format(n)}
-        # # get degree centrality
-        # nNodes = float(self.g.GetNodes())
-        # nEdges = float(self.g.GetNI(n).GetOutDeg())
-        # return {
-        #     "degree": nEdges / (nNodes - 1),
-        #     "closeness": snap.GetClosenessCentr(self.g, n, True, True),
-        #     "eccentricity": snap.GetNodeEcc(self.g, n, True),
-        # }
+        n = unicode(n)
+        if n not in self.g.nodes:
+            return {'error': 'node {} was not found in graph'.format(n)}
+        return {
+            "degree": len(list(self.g.neighbors(n))),
+            "closeness": nx.closeness_centrality(self.g, n),
+        }
 
     def centrality(self, nResults=10):
         """
