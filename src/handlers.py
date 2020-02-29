@@ -1,6 +1,5 @@
 import server
 import requests
-import re
 from flask import send_file, request, jsonify
 import logging
 
@@ -11,13 +10,7 @@ def serveMetrics():
     localMetricsUrl = "{}:{}".format(server.app.config["METRICS_HOST"],
                                      server.app.config["METRICS_PORT"])
     metrics = requests.get(localMetricsUrl).content
-    # parse out number of nodes and edges
-    info = server.g.info().replace(" ", "")
-    infoAsList = re.split('\n|:', info)
-    print infoAsList
-    nNodes = infoAsList[infoAsList.index("Numberofnodes") + 1]
-    nEdges = infoAsList[infoAsList.index("Numberofedges") + 1]
-    avgDegree = infoAsList[infoAsList.index("Averagedegree") + 1]
+    info = server.g.info()
     # add in as prom metric
     metrics += """
 # HELP Number of nodes
@@ -27,7 +20,7 @@ number_of_nodes {}
 # TYPE number_of_edges counter
 number_of_edges {}
 average_degree {}
-    """.format(nNodes, nEdges, avgDegree)
+    """.format(info['nNodes'], info['nEdges'], info['avgDegree'])
     return metrics
 
 
@@ -38,7 +31,7 @@ def serveDocs():
 
 def info():
     """renders graph info to browser"""
-    return server.g.info()
+    return jsonify(server.g.info())
 
 
 def save():

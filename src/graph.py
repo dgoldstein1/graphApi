@@ -31,7 +31,18 @@ class Graph:
             returns string info on success
             raises IOError error on failure
         """
-        return nx.info(self.g)
+        # return nx.info(self.g)
+
+        return {
+            'nNodes': 0,
+            'nEdges': 0,
+            'avgDegree': 0,
+        }
+        # info = server.g.info().replace(" ", "")
+        # infoAsList = re.split('\n|:', info)
+        # nNodes = infoAsList[infoAsList.index("Numberofnodes") + 1]
+        # nEdges = infoAsList[infoAsList.index("Numberofedges") + 1]
+        # avgDegree = infoAsList[infoAsList.index("Averagedegree") + 1]
 
     def save(self):
         """overwrites files at path with current graph"""
