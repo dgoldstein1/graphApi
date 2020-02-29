@@ -71,13 +71,12 @@ def postEdges():
 
 def getNeighbors():
     """adds neighbor nodes to graph. Returns {error: on error}"""
-    validatedNodes = validateInts([
-        request.args.get("node"),
-        request.args.get("limit") or server.DEFAULT_LIMIT
-    ])
+    validatedNodes = validateInts(
+        [request.args.get("limit") or server.DEFAULT_LIMIT])
     if validatedNodes.get('error') is not None:
         return _errOut(422, validatedNodes.get('error'))
-    [node, limit] = validatedNodes.get('validInts')
+    [limit] = validatedNodes.get('validInts')
+    node = str(request.args.get("node"))
     try:
         neighbors = server.g.getNeighbors(node, limit)
     except RuntimeError:

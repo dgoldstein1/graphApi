@@ -1,44 +1,45 @@
-# import unittest
+import unittest
 
-# from server import app
+from server import app
 
-# MAX_INT = 999999999.0
+MAX_INT = 999999999.0
 
-# class TestServer(unittest.TestCase):
 
-#     # executed prior to each test
-#     def setUp(self):
-#         app.config["GRAPH_SAVE_PATH"] = "../out/test1.graph"
-#         self.app = app.test_client()
-#         self.assertEqual(app.debug, False)
+class TestServer(unittest.TestCase):
 
-#     def test_getInfo(self):
-#         response = self.app.get("/info")
-#         self.assertEqual(response.status_code, 200)
-#         info = response.get_data(as_text=True)
-#         self.assertTrue("Number of nodes: 1005" in info)
-#         self.assertTrue("Number of edges: 1003" in info)
+    # executed prior to each test
+    def setUp(self):
+        app.config["GRAPH_SAVE_PATH"] = "../out/test1.graph"
+        self.app = app.test_client()
+        self.assertEqual(app.debug, False)
 
-#     def test_getNeighbors(self):
-#         # get node that doesn't exist
-#         response = self.app.get("/neighbors?node=1234234")
-#         self.assertEqual(response.status_code, 404)
-#         self.assertEqual(
-#             response.get_json(), {
-#                 u'code': 404,
-#                 u'error': u"Node '1234234' was not found or does not exist"
-#             })
-#         # get normal node
-#         response = self.app.get("/neighbors?node=1")
-#         self.assertEqual(response.status_code, 200)
-#         self.assertEqual(response.get_json(), [
-#             335, 190, 315, 275, 83, 398, 26, 20, 22, 0, 41, 704, 4, 185, 423,
-#             285, 203, 442, 228, 222, 104, 901, 841, 56, 471, 825, 239
-#         ])
-#         # does not get more than limit
-#         response = self.app.get("/neighbors?node=2&limit=2")
-#         self.assertEqual(response.status_code, 200)
-#         self.assertEqual(response.get_json(), [883, 66])
+    def test_getInfo(self):
+        response = self.app.get("/info")
+        self.assertEqual(response.status_code, 200)
+        info = response.get_data(as_text=True)
+        self.assertTrue("Number of nodes: 1005" in info)
+        self.assertTrue("Number of edges: 1003" in info)
+
+    def test_getNeighbors(self):
+        # get node that doesn't exist
+        response = self.app.get("/neighbors?node=1234234")
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(
+            response.get_json(), {
+                u'code': 404,
+                u'error': u"Node '1234234' was not found or does not exist"
+            })
+        # get normal node
+        response = self.app.get("/neighbors?node=1")
+        self.assertEqual(response.status_code, 200)
+        print response.get_json()
+        self.assertGreater(len(response.get_json()), 0)
+        self.assertEqual(type(response.get_json()[0]), unicode)
+        # does not get more than limit
+        response = self.app.get("/neighbors?node=2&limit=2")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.get_json(), [u'883', u'66'])
+
 
 # def test_addEdges(self):
 #     # try to add normal neighbor
