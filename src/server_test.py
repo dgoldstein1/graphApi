@@ -38,7 +38,7 @@ class TestServer(unittest.TestCase):
         # does not get more than limit
         response = self.app.get("/neighbors?node=2&limit=2")
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.get_json(), [u'883', u'66'])
+        self.assertEqual(response.get_json(), [u'152', u'603'])
 
     def test_addEdges(self):
         # try to add normal neighbor

@@ -18,18 +18,15 @@ class TestGraphMethods(unittest.TestCase):
     def test_info(self):
         # bad graph
         g = graph.Graph("../out/slkjlk jsdflkjsdft.gv we wWraph")
-        output = g.info()
-        print output
-        self.assertTrue("Number of nodes: 0" in output)
-        self.assertTrue("Number of edges: 0" in output)
+        info = g.info()
+        self.assertEqual(info, {'avgDegree': 0, 'nNodes': 0, 'nEdges': 0})
         g = graph.Graph("../out/doesntexist.graph")
 
         g.getGraph().add_edge("1", "2")
         g.getGraph().add_edge("1", "3")
         g.getGraph().add_edge("3", "4")
-        output = g.info()
-        self.assertTrue("Number of nodes: 4" in output)
-        self.assertTrue("Number of edges: 3" in output)
+        info = g.info()
+        self.assertEqual(info, {'avgDegree': 1, 'nNodes': 4, 'nEdges': 3})
 
     def test_getNeighbors(self):
         g = graph.Graph("../out/doesntexist.graph")

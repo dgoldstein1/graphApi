@@ -19,8 +19,10 @@ number_of_nodes {}
 # HELP Number of edges
 # TYPE number_of_edges counter
 number_of_edges {}
-average_degree {}
-    """.format(info['nNodes'], info['nEdges'], info['avgDegree'])
+average_in_degree {}
+average_out_degree {}
+    """.format(info['nNodes'], info['nEdges'], info['avgInDegree'],
+               info['avgOutDegree'])
     return metrics
 
 

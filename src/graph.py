@@ -1,6 +1,7 @@
 import logging
 import signal
 import networkx as nx
+import re
 
 
 class Graph:
@@ -14,7 +15,7 @@ class Graph:
         # long-compute time values can be saved in class
         self.pageRank = None
         try:
-            self.g = nx.read_edgelist(path)
+            self.g = nx.read_edgelist(path, create_using=nx.DiGraph)
             logging.debug("Loaded graph '{}' successfully".format(path))
         except IOError as e:
             self.g = nx.DiGraph()
@@ -31,18 +32,17 @@ class Graph:
             returns string info on success
             raises IOError error on failure
         """
-        # return nx.info(self.g)
-
+        info = nx.info(self.g).replace(" ", "")
+        infoAsList = re.split('\n|:', info)
+        # if is empty will not have in / out degrees
         return {
-            'nNodes': 0,
-            'nEdges': 0,
-            'avgDegree': 0,
+            'nNodes': self.g.number_of_nodes(),
+            'nEdges': self.g.number_of_edges(),
+            'avgOutDegree':
+            infoAsList[infoAsList.index("Averageindegree") + 1],
+            'avgInDegree':
+            infoAsList[infoAsList.index("Averageoutdegree") + 1],
         }
-        # info = server.g.info().replace(" ", "")
-        # infoAsList = re.split('\n|:', info)
-        # nNodes = infoAsList[infoAsList.index("Numberofnodes") + 1]
-        # nEdges = infoAsList[infoAsList.index("Numberofedges") + 1]
-        # avgDegree = infoAsList[infoAsList.index("Averagedegree") + 1]
 
     def save(self):
         """overwrites files at path with current graph"""
