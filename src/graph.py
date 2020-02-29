@@ -80,6 +80,8 @@ class Graph:
             - gets shortest path(s) between two nodes
             - return array of nodes or failure
         """
+        if type(a) is not str or type(b) is not str:
+            raise TypeError("nodes {} and {} must be strings".format(a, b))
         paths = []
         try:
             allPaths = nx.all_shortest_paths(self.g, a, b)
