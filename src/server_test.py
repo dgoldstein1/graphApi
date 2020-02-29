@@ -40,13 +40,20 @@ class TestServer(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.get_json(), [u'883', u'66'])
 
+        def test_addEdges(self):
+            # try to add normal neighbor
+            response = self.app.post(
+                "/edges?node=1001",
+                json={"neighbors": [1002, 1003, 1004, 1006]})
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(response.get_json(), {"neighborsAdded": []})
 
-# def test_addEdges(self):
-#     # try to add normal neighbor
-#     response = self.app.post("/edges?node=1001",
-#                              json={"neighbors": [1002, 1003, 1004, 1006]})
-#     self.assertEqual(response.status_code, 200)
-#     self.assertEqual(response.get_json(), {"neighborsAdded": []})
+            response = self.app.post("/edges?node=1001",
+                                     json={"neighbors": [9999999]})
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(response.get_json(),
+                             {"neighborsAdded": [9999999]})
+
 
 # def test_getShortestPath(self):
 #     # no end given

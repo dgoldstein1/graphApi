@@ -49,15 +49,9 @@ def save():
 
 # CORE API
 def postEdges():
-    validatedNodes = validateInts([request.args.get("node")])
-    validatedNeighbors = validateInts(request.get_json().get("neighbors"))
-    error = validatedNodes.get('error') or validatedNeighbors.get('error')
-    if error is not None:
-        return _errOut(422, error)
-
     # deconstruct validated arrays
-    [node] = validatedNodes.get('validInts')
-    neighborsToAdd = validatedNeighbors.get('validInts')
+    node = str(request.args.get("node"))
+    neighborsToAdd = [str(n) for n in request.get_json().get("neighbors")]
 
     # get or add nodes
     newNodes = []
