@@ -45,7 +45,7 @@ class Graph:
             - returns all edges from that node
         """
         if type(node) is not str:
-            raise TypeError("node {} is not a string".format(node))
+            raise TypeError("node {} must be a string".format(node))
         neighbors = []
         try:
             i = 0
@@ -63,9 +63,13 @@ class Graph:
             - adds an array of nodes to given node
             - returns [new nodes added]
         """
+        if type(node) is not str:
+            raise TypeError("node {} must be a string".format(node))
         # add node if does not exist
         added = []
         for n in neighbors:
+            if type(n) is not str:
+                raise TypeError("node {} must be a string".format(node))
             if n not in self.g:
                 self.g.add_edge(node, n)
                 added.append(n)
