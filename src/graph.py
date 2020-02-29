@@ -39,11 +39,13 @@ class Graph:
         nx.write_edgelist(self.g, self.path)
         return self.path
 
-    def getNeighbors(self, node=0, limit=10000):
+    def getNeighbors(self, node="0", limit=10000):
         """
             - finds node
             - returns all edges from that node
         """
+        if type(node) is not str:
+            raise TypeError("node {} is not a string".format(node))
         neighbors = []
         try:
             i = 0
