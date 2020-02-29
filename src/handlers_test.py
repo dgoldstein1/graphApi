@@ -1,6 +1,5 @@
 import unittest
 import graph
-import snap
 import server
 import handlers
 

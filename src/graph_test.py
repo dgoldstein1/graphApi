@@ -1,7 +1,6 @@
 import unittest
 import graph
 import logging
-import snap
 import os
 import time
 

@@ -1,4 +1,3 @@
-import snap
 import logging
 import signal
 import networkx as nx
@@ -114,12 +113,6 @@ class Graph:
                 - if slow is true, will run through each node in
                   graph, getting highest nodeCentrality()
         """
-        # if self.nxg is None:
-        #     logging.debug("loading nx graph into memory")
-        #     snap.SaveEdgeList(self.g, "temp.edges")
-        #     self.nxg = nx.read_edgelist("temp.edges")
-        #     os.remove("temp.edges")
-
         if self.pageRank is None:
             pr = nx.pagerank(self.g)
             self.pageRank = self._extractTopN(pr, nResults)
