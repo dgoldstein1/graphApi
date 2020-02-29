@@ -1,4 +1,5 @@
 import unittest
+from HTMLParser import HTMLParser
 
 from server import app
 
@@ -46,11 +47,6 @@ class TestServer(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.get_json(), {"neighborsAdded": []})
 
-        response = self.app.post("/edges?node=1001",
-                                 json={"neighbors": [9999999]})
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.get_json(), {"neighborsAdded": ["9999999"]})
-
     def test_getShortestPath(self):
         # no end given
         response = self.app.get("/shortestPath?start=3&n=j2j2oj3")
@@ -91,21 +87,18 @@ class TestServer(unittest.TestCase):
             "/shortestPath?start=3&end=35&n=5&directed=true")
         self.assertEqual(response.status_code, 200)
 
+    def test_serve_docs(self):
+        response = self.app.get('/', follow_redirects=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertIsNotNone(response.data)
+        HTMLParser().feed(response.data)
 
-# def test_serve_docs(self):
-#     response = self.app.get('/', follow_redirects=True)
-#     self.assertEqual(response.status_code, 200)
-#     self.assertIsNotNone(response.data)
-#     try:
-#         HTMLParser().feed(response.data)
-#     except:
-#         self.fail("Could not parse docs")
+    def test_save_positive(self):
+        """attempt to save when already exists"""
+        response = self.app.get('/save', follow_redirects=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertIsNotNone(response.data)
 
-# def test_save_positive(self):
-#     """attempt to save when already exists"""
-#     response = self.app.get('/save', follow_redirects=True)
-#     self.assertEqual(response.status_code, 200)
-#     self.assertIsNotNone(response.data)
 
 # def test_metrics(self):
 #     # assert that it redirects
