@@ -99,20 +99,19 @@ class TestServer(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIsNotNone(response.data)
 
-        # def test_metrics(self):
-        #     # assert that it redirects
-        #     response = self.app.get('/metrics', follow_redirects=True)
-        #     self.assertEqual(response.status_code, 200)
-        #     # assert contains normal prom metrics
-        #     self.assertTrue(
-        #         "HELP python_info Python platform information" in response.data)
-        #     # assert that contains mix in
-        #     self.assertTrue("Number of nodes" in response.data)
+    def test_metrics(self):
+        # assert that it redirects
+        response = self.app.get('/metrics', follow_redirects=True)
+        self.assertEqual(response.status_code, 200)
+        # assert contains normal prom metrics
+        self.assertTrue(
+            "HELP python_info Python platform information" in response.data)
+        # assert that contains mix in
+        self.assertTrue("Number of nodes" in response.data)
 
     def test_centrality(self):
         # bad json
         response = self.app.post("/centrality", json={'test': 'test'})
-        print response.get_json()
         self.assertEqual(response.status_code, 200)
         self.assertEqual(
             response.get_json(),
