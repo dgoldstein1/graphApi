@@ -17,8 +17,8 @@ class TestServer(unittest.TestCase):
         response = self.app.get("/info")
         self.assertEqual(response.status_code, 200)
         info = response.get_data(as_text=True)
-        self.assertTrue("Number of nodes: 1005" in info)
-        self.assertTrue("Number of edges: 1003" in info)
+        self.assertTrue("Number of nodes" in info)
+        self.assertTrue("Number of edges" in info)
 
     def test_getNeighbors(self):
         # get node that doesn't exist
@@ -32,7 +32,6 @@ class TestServer(unittest.TestCase):
         # get normal node
         response = self.app.get("/neighbors?node=1")
         self.assertEqual(response.status_code, 200)
-        print response.get_json()
         self.assertGreater(len(response.get_json()), 0)
         self.assertEqual(type(response.get_json()[0]), unicode)
         # does not get more than limit
@@ -40,62 +39,58 @@ class TestServer(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.get_json(), [u'883', u'66'])
 
-        def test_addEdges(self):
-            # try to add normal neighbor
-            response = self.app.post(
-                "/edges?node=1001",
-                json={"neighbors": [1002, 1003, 1004, 1006]})
-            self.assertEqual(response.status_code, 200)
-            self.assertEqual(response.get_json(), {"neighborsAdded": []})
+    def test_addEdges(self):
+        # try to add normal neighbor
+        response = self.app.post("/edges?node=1001",
+                                 json={"neighbors": [1002, 1003, 1004, 1006]})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.get_json(), {"neighborsAdded": []})
 
-            response = self.app.post("/edges?node=1001",
-                                     json={"neighbors": [9999999]})
-            self.assertEqual(response.status_code, 200)
-            self.assertEqual(response.get_json(),
-                             {"neighborsAdded": [9999999]})
+        response = self.app.post("/edges?node=1001",
+                                 json={"neighbors": [9999999]})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.get_json(), {"neighborsAdded": ["9999999"]})
 
+    def test_getShortestPath(self):
+        # no end given
+        response = self.app.get("/shortestPath?start=3&n=j2j2oj3")
+        self.assertEqual(response.status_code, 422)
+        self.assertEqual(
+            response.get_json(), {
+                u'code': 422,
+                u'error': u"could not convert [u'j2j2oj3', 3000] to an integer"
+            })
+        # end node doesn't exist
+        response = self.app.get("/shortestPath?start=3&end=350000")
+        self.assertEqual(response.status_code, 500)
+        self.assertEqual(
+            response.get_json(), {
+                u'code': 500,
+                u'error': u'Target 350000 cannot be reachedfrom Source 3'
+            })
 
-# def test_getShortestPath(self):
-#     # no end given
-#     response = self.app.get("/shortestPath?start=3")
-#     self.assertEqual(response.status_code, 422)
-#     self.assertEqual(
-#         response.get_json(), {
-#             u'code': 422,
-#             u'error':
-#             u"could not convert [u'3', None, 1, 3000] to an integer"
-#         })
-#     # end node doesn't exist
-#     response = self.app.get("/shortestPath?start=3&end=350000")
-#     self.assertEqual(response.status_code, 500)
-#     self.assertEqual(response.get_json(), {
-#         u'code': 500,
-#         u'error': u'No such path from 3 to 350000'
-#     })
+        # normal path
+        response = self.app.get("/shortestPath?start=3&end=35")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.get_json(), [[u'3', u'0', u'35']])
+        # multiple paths
+        response = self.app.get("/shortestPath?start=3&end=35&n=3")
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(len(response.get_json()), 3)
 
-#     # normal path
-#     response = self.app.get("/shortestPath?start=3&end=35")
-#     self.assertEqual(response.status_code, 200)
-#     self.assertEqual(response.get_json(), [[3, 31, 35]])
-#     # multiple paths
-#     response = self.app.get("/shortestPath?start=3&end=35&n=3")
-#     self.assertEqual(response.status_code, 200)
-#     self.assertTrue(len(response.get_json()), 3)
+        # nodes dont exist
+        response = self.app.get("/shortestPath?start=23524234&end=324345")
+        self.assertEqual(response.status_code, 500)
+        expectedResponse = {
+            u'code': 500,
+            u'error': u'Source 23524234 not in G'
+        }
+        self.assertEqual(response.get_json(), expectedResponse)
+        # parses args correctly
+        response = self.app.get(
+            "/shortestPath?start=3&end=35&n=5&directed=true")
+        self.assertEqual(response.status_code, 200)
 
-#     # nodes dont exist
-#     response = self.app.get("/shortestPath?start=23524234&end=324345")
-#     self.assertEqual(response.status_code, 500)
-#     expectedResponse = {
-#         u'code':
-#         500,
-#         u'error':
-#         u'Could not find given start and end values: Execution stopped: Graph->IsNode(StartNId), file ../../snap/snap-core/bfsdfs.h, line 104'
-#     }
-#     self.assertEqual(response.get_json(), expectedResponse)
-#     # parses args correctly
-#     response = self.app.get(
-#         "/shortestPath?start=3&end=35&n=5&directed=true")
-#     self.assertEqual(response.status_code, 200)
 
 # def test_serve_docs(self):
 #     response = self.app.get('/', follow_redirects=True)

@@ -82,6 +82,7 @@ class Graph:
         """
         if type(a) is not str or type(b) is not str:
             raise TypeError("nodes {} and {} must be strings".format(a, b))
+
         paths = []
         try:
             allPaths = nx.all_shortest_paths(self.g, a, b)
@@ -90,7 +91,7 @@ class Graph:
                 if i > n: break
                 paths.append(p)
                 i = i + 1
-        except nx.exception.NetworkXNoPath as e:
+        except (nx.exception.NetworkXNoPath, nx.NodeNotFound) as e:
             raise IndexError(e)
         return paths
 

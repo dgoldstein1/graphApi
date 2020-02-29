@@ -3,7 +3,6 @@ import requests
 import re
 from flask import send_file, request, jsonify
 import logging
-import sys
 
 
 def serveMetrics():
@@ -82,14 +81,15 @@ def getNeighbors():
 def shortestPath():
     """gets shortest path between two nodes"""
     validatedNodes = validateInts([
-        request.args.get("start"),
-        request.args.get("end"),
         request.args.get("n") or 1,
         request.args.get("timeout") or 3000,
     ])
     if validatedNodes.get('error') is not None:
         return _errOut(422, validatedNodes.get('error'))
-    [start, end, n, timeout] = validatedNodes.get('validInts')
+    [n, timeout] = validatedNodes.get('validInts')
+    start = str(request.args.get("start"))
+    end = str(request.args.get("end"))
+
     # get shortest path
     try:
         path = server.g.shortestPath(
@@ -106,9 +106,6 @@ def shortestPath():
         # nodes do not exist
         return _errOut(500,
                        "Could not find given start and end values: " + str(e))
-    except:
-        logging.error(sys.exc_info()[0])
-        return _errOut(500, "Unexpected error occured, see logs")
     return jsonify(path)
 
 
