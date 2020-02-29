@@ -99,31 +99,36 @@ class TestServer(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIsNotNone(response.data)
 
+        # def test_metrics(self):
+        #     # assert that it redirects
+        #     response = self.app.get('/metrics', follow_redirects=True)
+        #     self.assertEqual(response.status_code, 200)
+        #     # assert contains normal prom metrics
+        #     self.assertTrue(
+        #         "HELP python_info Python platform information" in response.data)
+        #     # assert that contains mix in
+        #     self.assertTrue("Number of nodes" in response.data)
 
-# def test_metrics(self):
-#     # assert that it redirects
-#     response = self.app.get('/metrics', follow_redirects=True)
-#     self.assertEqual(response.status_code, 200)
-#     # assert contains normal prom metrics
-#     self.assertTrue(
-#         "HELP python_info Python platform information" in response.data)
-#     # assert that contains mix in
-#     self.assertTrue("Number of nodes" in response.data)
+    def test_centrality(self):
+        # bad json
+        response = self.app.post("/centrality", json={'test': 'test'})
+        print response.get_json()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            response.get_json(),
+            {u'test': {
+                u'error': u'node test was not found in graph'
+            }})
+        # get centrality for a bunch existing / non-existing edges
+        response = self.app.post("/centrality", json=[9, 19, 30, 99999])
+        self.assertEqual(response.status_code, 200)
+        self.assertIsNotNone(response.get_json())
 
-# def test_centrality(self):
-#     # bad json
-#     response = self.app.post("/centrality", json={'test': 'test'})
-#     self.assertEqual(response.status_code, 422)
-#     # get centrality for a bunch existing / non-existing edges
-#     response = self.app.post("/centrality", json=[9, 19, 30, 99999])
-#     self.assertEqual(response.status_code, 200)
-#     self.assertIsNotNone(response.get_json())
-
-# def test_topn(self):
-#     # bad node
-#     response = self.app.get("/top?n=sdfdfsdsdfsdfsd")
-#     self.assertEqual(response.status_code, 422)
-#     # positive test
-#     response = self.app.get("/top?n=1")
-#     self.assertEqual(response.status_code, 200)
-#     self.assertEqual(len(response.get_json()['pageRank']), 1)
+    def test_topn(self):
+        # bad node
+        response = self.app.get("/top?n=sdfdfsdsdfsdfsd")
+        self.assertEqual(response.status_code, 422)
+        # positive test
+        response = self.app.get("/top?n=1")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.get_json()['pageRank']), 1)

@@ -110,12 +110,12 @@ def shortestPath():
 
 
 def centrality():
-    r = validateInts(request.get_json())
-    if r.get("error") is not None:
-        return _errOut(422, r.get("error"))
     resp = {}
-    for n in r.get("validInts"):
-        resp[n] = server.g.nodeCentrality(n)
+    try:
+        for n in request.get_json():
+            resp[n] = server.g.nodeCentrality(str(n))
+    except TypeError as e:
+        return _errOut(500, str(e))
     return jsonify(resp)
 
 
