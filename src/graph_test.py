@@ -140,40 +140,43 @@ class TestGraphMethods(unittest.TestCase):
         p = g.shortestPath("1", "5", n=1, directed=True)
         self.assertEqual(p, [["1", "3", "4", "5"]])
 
-    # def test_node_centrality(self):
-    #     file = "{}/out/test1SavedGraph.edges".format(os.getcwd())
-    #     g = graph.Graph(file)
-    #     c = g.nodeCentrality(2)
-    #     expectedResult = {'closeness': 0.6923076923076923, 'degree': 5}
-    #     self.assertEqual(c, expectedResult)
+    def test_node_centrality(self):
+        file = "{}/out/test1SavedGraph.edges".format(os.getcwd())
+        g = graph.Graph(file)
+        with self.assertRaises(TypeError):
+            g.nodeCentrality(2)
 
-    # def test_centrality(self):
-    #     g = graph.Graph("../out/doesntexist.graph")
-    #     g.getGraph().add_edge("1", "2")
-    #     g.getGraph().add_edge("1", "3")
-    #     g.getGraph().add_edge("3", "4")
-    #     g.getGraph().add_edge("4", "5")
+        c = g.nodeCentrality("2")
+        expectedResult = {'closeness': 0.6923076923076923, 'degree': 5}
+        self.assertEqual(c, expectedResult)
 
-    #     start = time.time()
-    #     c = g.centrality()
-    #     execTime = (time.time() - start) * 1000
-    #     self.assertLess(execTime, 15000)
-    #     self.assertEqual(
-    #         c, {
-    #             "pageRank": [{
-    #                 'id': 1,
-    #                 'val': 0.11184682438205981
-    #             }, {
-    #                 'id': 2,
-    #                 'val': 0.15938145155157013
-    #             }, {
-    #                 'id': 3,
-    #                 'val': 0.15938145155157013
-    #             }, {
-    #                 'id': 4,
-    #                 'val': 0.247320578151483
-    #             }, {
-    #                 'id': 5,
-    #                 'val': 0.322069694363317
-    #             }]
-    #         })
+    def test_centrality(self):
+        g = graph.Graph("../out/doesntexist.graph")
+        g.getGraph().add_edge("1", "2")
+        g.getGraph().add_edge("1", "3")
+        g.getGraph().add_edge("3", "4")
+        g.getGraph().add_edge("4", "5")
+
+        start = time.time()
+        c = g.centrality()
+        execTime = (time.time() - start) * 1000
+        self.assertLess(execTime, 15000)
+        self.assertEqual(
+            c, {
+                "pageRank": [{
+                    'id': "1",
+                    'val': 0.11184682438205981
+                }, {
+                    'id': "2",
+                    'val': 0.15938145155157013
+                }, {
+                    'id': "3",
+                    'val': 0.15938145155157013
+                }, {
+                    'id': "4",
+                    'val': 0.247320578151483
+                }, {
+                    'id': "5",
+                    'val': 0.322069694363317
+                }]
+            })

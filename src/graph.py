@@ -98,7 +98,8 @@ class Graph:
         """
             gets centrality measures for individual node returns as dict
         """
-        n = unicode(n)
+        if type(n) is not str:
+            raise TypeError("node {} must be a string".format(n))
         if n not in self.g.nodes:
             return {'error': 'node {} was not found in graph'.format(n)}
         return {
@@ -135,5 +136,5 @@ class Graph:
         d = sorted(d.items(), key=lambda kv: (kv[1], kv[0]))[:n]
         # convert to good format
         for i in range(0, len(d)):
-            d[i] = {"id": int(d[i][0]), "val": d[i][1]}
+            d[i] = {"id": d[i][0], "val": d[i][1]}
         return d
