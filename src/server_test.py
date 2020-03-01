@@ -41,6 +41,12 @@ class TestServer(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertGreater(len(response.get_json()), 0)
         self.assertEqual(type(response.get_json()[0]), unicode)
+
+        response = self.app.get("/neighbors?node=1001")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.get_json(),
+                         [u'1002', u'1003', u'1004', u'1006'])
+
         # does not get more than limit
         response = self.app.get("/neighbors?node=2&limit=2")
         self.assertEqual(response.status_code, 200)
