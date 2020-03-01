@@ -2,6 +2,7 @@ import unittest
 from HTMLParser import HTMLParser
 
 from server import app
+import shutil
 
 MAX_INT = 999999999.0
 
@@ -13,6 +14,9 @@ class TestServer(unittest.TestCase):
         app.config["GRAPH_SAVE_PATH"] = "../out/test1.graph"
         self.app = app.test_client()
         self.assertEqual(app.debug, False)
+
+    def tearDown(self):
+        shutil.copyfile("./out/test1-COPY.graph", "./out/test1.graph")
 
     def test_getInfo(self):
         response = self.app.get("/info")
