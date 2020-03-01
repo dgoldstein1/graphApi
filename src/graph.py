@@ -34,14 +34,18 @@ class Graph:
         """
         info = nx.info(self.g).replace(" ", "")
         infoAsList = re.split('\n|:', info)
+        avgInDegree = 0
+        avgOutDegree = 0
+        if "Averageindegree" in info and "Averageoutdegree" in info:
+            avgInDegree = infoAsList[infoAsList.index("Averageindegree") + 1]
+            avgOutDegree = infoAsList[infoAsList.index("Averageoutdegree") + 1]
+
         # if is empty will not have in / out degrees
         return {
             'nNodes': self.g.number_of_nodes(),
             'nEdges': self.g.number_of_edges(),
-            'avgOutDegree':
-            infoAsList[infoAsList.index("Averageindegree") + 1],
-            'avgInDegree':
-            infoAsList[infoAsList.index("Averageoutdegree") + 1],
+            'avgOutDegree': float(avgOutDegree),
+            'avgInDegree': float(avgInDegree),
         }
 
     def save(self):

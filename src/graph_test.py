@@ -19,14 +19,25 @@ class TestGraphMethods(unittest.TestCase):
         # bad graph
         g = graph.Graph("../out/slkjlk jsdflkjsdft.gv we wWraph")
         info = g.info()
-        self.assertEqual(info, {'avgDegree': 0, 'nNodes': 0, 'nEdges': 0})
+        self.assertEqual(info, {
+            'avgOutDegree': 0,
+            'avgInDegree': 0,
+            'nNodes': 0,
+            'nEdges': 0
+        })
         g = graph.Graph("../out/doesntexist.graph")
 
         g.getGraph().add_edge("1", "2")
         g.getGraph().add_edge("1", "3")
         g.getGraph().add_edge("3", "4")
         info = g.info()
-        self.assertEqual(info, {'avgDegree': 1, 'nNodes': 4, 'nEdges': 3})
+        self.assertEqual(
+            info, {
+                'avgOutDegree': 0.7500,
+                'avgInDegree': 0.7500,
+                'nNodes': 4,
+                'nEdges': 3
+            })
 
     def test_getNeighbors(self):
         g = graph.Graph("../out/doesntexist.graph")
@@ -143,7 +154,7 @@ class TestGraphMethods(unittest.TestCase):
             g.nodeCentrality(2)
 
         c = g.nodeCentrality("2")
-        expectedResult = {'closeness': 0.6923076923076923, 'degree': 5}
+        expectedResult = {'closeness': 0.1111111111111111, 'degree': 4}
         self.assertEqual(c, expectedResult)
 
     def test_centrality(self):

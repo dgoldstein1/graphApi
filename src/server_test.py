@@ -17,9 +17,15 @@ class TestServer(unittest.TestCase):
     def test_getInfo(self):
         response = self.app.get("/info")
         self.assertEqual(response.status_code, 200)
-        info = response.get_data(as_text=True)
-        self.assertTrue("Number of nodes" in info)
-        self.assertTrue("Number of edges" in info)
+        info = response.get_json()
+        print info
+        self.assertEqual(
+            info, {
+                u'avgOutDegree': 0.9980,
+                u'avgInDegree': 0.9980,
+                u'nNodes': 1006,
+                u'nEdges': 1004
+            })
 
     def test_getNeighbors(self):
         # get node that doesn't exist
@@ -66,13 +72,9 @@ class TestServer(unittest.TestCase):
             })
 
         # normal path
-        response = self.app.get("/shortestPath?start=3&end=35")
+        response = self.app.get("/shortestPath?start=0&end=918")
+        self.assertEqual(response.get_json(), [[u'0', u'918']])
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.get_json(), [[u'3', u'0', u'35']])
-        # multiple paths
-        response = self.app.get("/shortestPath?start=3&end=35&n=3")
-        self.assertEqual(response.status_code, 200)
-        self.assertTrue(len(response.get_json()), 3)
 
         # nodes dont exist
         response = self.app.get("/shortestPath?start=23524234&end=324345")
@@ -84,7 +86,7 @@ class TestServer(unittest.TestCase):
         self.assertEqual(response.get_json(), expectedResponse)
         # parses args correctly
         response = self.app.get(
-            "/shortestPath?start=3&end=35&n=5&directed=true")
+            "/shortestPath?start=0&end=918&n=5&directed=true")
         self.assertEqual(response.status_code, 200)
 
     def test_serve_docs(self):
