@@ -18,14 +18,10 @@ class TestServer(unittest.TestCase):
         response = self.app.get("/info")
         self.assertEqual(response.status_code, 200)
         info = response.get_json()
-        print info
-        self.assertEqual(
-            info, {
-                u'avgOutDegree': 0.9980,
-                u'avgInDegree': 0.9980,
-                u'nNodes': 1006,
-                u'nEdges': 1004
-            })
+        for n in ['avgOutDegree', 'avgInDegree']:
+            self.assertEqual(type(info[n]), float)
+        for n in ['nNodes', 'nEdges']:
+            self.assertEqual(type(info[n]), int)
 
     def test_getNeighbors(self):
         # get node that doesn't exist
@@ -44,8 +40,7 @@ class TestServer(unittest.TestCase):
 
         response = self.app.get("/neighbors?node=1001")
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.get_json(),
-                         [u'1002', u'1003', u'1004', u'1006'])
+        self.assertEqual(len(response.get_json()), 4)
 
         # does not get more than limit
         response = self.app.get("/neighbors?node=2&limit=2")

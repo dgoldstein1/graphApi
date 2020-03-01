@@ -84,9 +84,10 @@ class Graph:
         for n in neighbors:
             if type(n) is not str:
                 raise TypeError("node {} must be a string".format(node))
+
             if n not in self.g:
-                self.g.add_edge(node, n)
                 added.append(n)
+            self.g.add_edge(n, node)
         return added
 
     def shortestPath(self, a, b, n=1, timeout=3000, directed=False):
