@@ -2,6 +2,8 @@
 defaults: &defaults
   docker:
     - image: circleci/python:2.7.15
+  environment:
+    HEROKU_APP_NAMES: "links-biggraph,enigmatic-cliffs-85597,protected-spire-34682,still-crag-72302"
 
 version: 2
 jobs:
@@ -42,8 +44,24 @@ jobs:
               docker push dgoldstein1/biggraph:latest
 
               docker login --username=$EMAIL --password=$HEROKU_API_KEY registry.heroku.com
-              docker tag dgoldstein1/biggraph:$VERSION registry.heroku.com/$HEROKU_APP_NAME/web
-              docker push registry.heroku.com/$HEROKU_APP_NAME/web
+
+              echo "pushing links-biggraph"
+              docker tag dgoldstein1/biggraph:$VERSION registry.heroku.com/links-biggraph/web
+              docker push registry.heroku.com/links-biggraph/web
+
+              echo "pushing enigmatic-cliffs-85597"
+              docker tag dgoldstein1/biggraph:$VERSION registry.heroku.com/enigmatic-cliffs-85597/web
+              docker push registry.heroku.com/enigmatic-cliffs-85597/web
+
+              echo "pushing protected-spire-34682"
+              docker tag dgoldstein1/biggraph:$VERSION registry.heroku.com/protected-spire-34682/web
+              docker push registry.heroku.com/protected-spire-34682/web
+
+              echo "pushing still-crag-72302"
+              docker tag dgoldstein1/biggraph:$VERSION registry.heroku.com/still-crag-72302/web
+              docker push registry.heroku.com/still-crag-72302/web
+
+
   heroku:
     docker:
       - image: buildpack-deps:trusty
@@ -53,7 +71,11 @@ jobs:
           command: |
               wget -qO- https://cli-assets.heroku.com/install-ubuntu.sh | sh
               heroku version
-              heroku container:release web --app $HEROKU_APP_NAME
+              heroku container:release web --app links-biggraph
+              heroku container:release web --app enigmatic-cliffs-85597
+              heroku container:release web --app protected-spire-34682
+              heroku container:release web --app still-crag-72302
+
   # publish github release with binary
   publish-github-release:
     docker:

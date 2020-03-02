@@ -1,7 +1,8 @@
 import unittest
+from HTMLParser import HTMLParser
 
 from server import app
-from HTMLParser import HTMLParser
+import shutil
 
 MAX_INT = 999999999.0
 
@@ -14,13 +15,17 @@ class TestServer(unittest.TestCase):
         self.app = app.test_client()
         self.assertEqual(app.debug, False)
 
+    def tearDown(self):
+        shutil.copyfile("./out/test1-COPY.graph", "./out/test1.graph")
+
     def test_getInfo(self):
         response = self.app.get("/info")
         self.assertEqual(response.status_code, 200)
-        info = response.get_data(as_text=True)
-        print info
-        self.assertTrue("Nodes:                    14499" in info)
-        self.assertTrue("Edges:                    18238" in info)
+        info = response.get_json()
+        for n in ['avgOutDegree', 'avgInDegree']:
+            self.assertEqual(type(info[n]), float)
+        for n in ['nNodes', 'nEdges']:
+            self.assertEqual(type(info[n]), int)
 
     def test_getNeighbors(self):
         # get node that doesn't exist
@@ -34,16 +39,17 @@ class TestServer(unittest.TestCase):
         # get normal node
         response = self.app.get("/neighbors?node=1")
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.get_json(),
-                         [9, 19, 30, 34, 53, 56, 59, 94, 97])
-        # get normal node
-        response = self.app.get("/neighbors?node=2")
+        self.assertGreater(len(response.get_json()), 0)
+        self.assertEqual(type(response.get_json()[0]), unicode)
+
+        response = self.app.get("/neighbors?node=1001")
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.get_json(), [17, 33, 89, 95])
+        self.assertEqual(len(response.get_json()), 4)
+
         # does not get more than limit
         response = self.app.get("/neighbors?node=2&limit=2")
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.get_json(), [17, 33])
+        self.assertEqual(response.get_json(), [u'152', u'603'])
 
     def test_addEdges(self):
         # try to add normal neighbor
@@ -54,54 +60,45 @@ class TestServer(unittest.TestCase):
 
     def test_getShortestPath(self):
         # no end given
-        response = self.app.get("/shortestPath?start=3")
+        response = self.app.get("/shortestPath?start=3&n=j2j2oj3")
         self.assertEqual(response.status_code, 422)
         self.assertEqual(
             response.get_json(), {
                 u'code': 422,
-                u'error':
-                u"could not convert [u'3', None, 1, 3000] to an integer"
+                u'error': u"could not convert [u'j2j2oj3', 3000] to an integer"
             })
         # end node doesn't exist
         response = self.app.get("/shortestPath?start=3&end=350000")
         self.assertEqual(response.status_code, 500)
-        self.assertEqual(response.get_json(), {
-            u'code': 500,
-            u'error': u'No such path from 3 to 350000'
-        })
+        self.assertEqual(
+            response.get_json(), {
+                u'code': 500,
+                u'error': u'Target 350000 cannot be reachedfrom Source 3'
+            })
 
         # normal path
-        response = self.app.get("/shortestPath?start=3&end=35")
+        response = self.app.get("/shortestPath?start=0&end=918")
+        self.assertEqual(response.get_json(), [[u'0', u'918']])
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.get_json(), [[3, 31, 35]])
-        # multiple paths
-        response = self.app.get("/shortestPath?start=3&end=35&n=3")
-        self.assertEqual(response.status_code, 200)
-        self.assertTrue(len(response.get_json()), 3)
 
         # nodes dont exist
         response = self.app.get("/shortestPath?start=23524234&end=324345")
         self.assertEqual(response.status_code, 500)
         expectedResponse = {
-            u'code':
-            500,
-            u'error':
-            u'Could not find given start and end values: Execution stopped: Graph->IsNode(StartNId), file ../../snap/snap-core/bfsdfs.h, line 104'
+            u'code': 500,
+            u'error': u'Source 23524234 not in G'
         }
         self.assertEqual(response.get_json(), expectedResponse)
         # parses args correctly
         response = self.app.get(
-            "/shortestPath?start=3&end=35&n=5&directed=true")
+            "/shortestPath?start=0&end=918&n=5&directed=true")
         self.assertEqual(response.status_code, 200)
 
     def test_serve_docs(self):
         response = self.app.get('/', follow_redirects=True)
         self.assertEqual(response.status_code, 200)
         self.assertIsNotNone(response.data)
-        try:
-            HTMLParser().feed(response.data)
-        except:
-            self.fail("Could not parse docs")
+        HTMLParser().feed(response.data)
 
     def test_save_positive(self):
         """attempt to save when already exists"""
@@ -122,7 +119,12 @@ class TestServer(unittest.TestCase):
     def test_centrality(self):
         # bad json
         response = self.app.post("/centrality", json={'test': 'test'})
-        self.assertEqual(response.status_code, 422)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            response.get_json(),
+            {u'test': {
+                u'error': u'node test was not found in graph'
+            }})
         # get centrality for a bunch existing / non-existing edges
         response = self.app.post("/centrality", json=[9, 19, 30, 99999])
         self.assertEqual(response.status_code, 200)

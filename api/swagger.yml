@@ -2,11 +2,10 @@ openapi: 3.0.0
 info:
   title: Simple Big Graph
   description: |
-    RESTful graph API exposing the Stanford Network Analysis Platform (SNAP)
+    RESTful graph API
 
     - [Source Code](https://github.com/dgoldstein1/graphApi)
-    - [SNAP](https://snap.stanford.edu/index.html)
-  version: "1.3.0"
+  version: "2.0.0"
 servers:
   - url: https://links-biggraph.herokuapp.com/
     description: heroku deployment
@@ -29,7 +28,7 @@ paths:
                 neighbors:
                   type: array
                   items:
-                    type: number
+                    type: string
       parameters:
         - in: query
           name: node
@@ -65,7 +64,7 @@ paths:
         - in: query
           name: node
           schema:
-            type: number
+            type: string
           required: true
           description: Name of node to retrieve neighbors
         - in: query
@@ -82,7 +81,7 @@ paths:
               schema:
                 type: array
                 items:
-                  type: number
+                  type: string
         '500':
           description: An error message.
           content:
@@ -94,19 +93,19 @@ paths:
 
   /shortestPath:
     get:
-      summary: Returns path between two nodes, if exists.
+      summary: Returns all shortest paths between two nodes, if exists.
 
       parameters:
         - in: query
           name: start
           schema:
-            type: number
+            type: string
           required: true
           description: Name of the starting node.
         - in: query
           name: end
           schema:
-            type: number
+            type: string
           required: true
           description: Name of the ending node.
         - in: query
@@ -121,12 +120,6 @@ paths:
             type: number
           required: false
           description: Max execution time in milliseconds. Defaults to 3000ms
-        - in: query
-          name: directed
-          schema:
-            type: boolean
-          required: false
-          description: consider the data directed?          
 
       responses:
         '200':
@@ -138,7 +131,7 @@ paths:
                 items:
                   type: array
                   items:
-                    type: integer
+                    type: string
         '500':
           description: An error message.
           content:
@@ -182,7 +175,7 @@ paths:
               description: array of ids to fetch centrality for
               type: array
               items:
-                type: number
+                type: string
 
       responses:
         '200':
@@ -288,23 +281,10 @@ components:
         closeness:
           description: mean shortest path across all nodes in graph
           type: number
-        eccentricity:
-          description: maximum distance from n to any node in graph
-          type: number
 
     TopInfo:
       type: object
       properties:
-        betweenessNodes:
-          description: top N nodes with greatest number of paths through node node
-          type: array
-          items:
-            $ref: '#/components/schemas/TopNNode'
-        betweenessEdges:
-          description: top N edges with greatest number of paths through edge edge
-          type: array
-          items:
-            $ref: '#/components/schemas/TopNEdge'
         pageRank:
           description: top N nodes ranked on degree centrality + influence of neighbors
           type: array
@@ -316,23 +296,11 @@ components:
       properties:
         id:
           description: node id
-          type: number
+          type: string
         val:
           description: value of metric
           type: number
 
-    TopNEdge:
-      type: object
-      properties:
-        startId:
-          description: starting node id
-          type: number
-        endId:
-          description: ending node id
-          type: number
-        val:
-          description: value of metric
-          type: number
 
     EdgesResponse:
       type: object

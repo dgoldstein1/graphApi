@@ -36,7 +36,7 @@ app.add_url_rule("/centrality",
 app.add_url_rule('/', "swagger docs", handlers.serveDocs)
 # metrics
 app.add_url_rule('/metrics', 'prometheus metrics', handlers.serveMetrics)
-app.add_url_rule('/info', 'SNAP graph info', handlers.info)
+app.add_url_rule('/info', 'graph info', handlers.info)
 # configuration
 app.add_url_rule('/save', 'export graph to file', handlers.save)
 
