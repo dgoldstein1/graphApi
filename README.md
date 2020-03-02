@@ -13,7 +13,6 @@ RESTful graph API to handle analysis on billions of nodes through the Stanford N
 - Install dependencies
 ```sh
 sudo pip install pipenv
-
 ```
 
 ## Test

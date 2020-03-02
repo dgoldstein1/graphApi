@@ -1,14 +1,7 @@
-import snap
 import logging
 import signal
-import random
-import datetime
-import os
-import random
-import sys
-import time
-import copy
 import networkx as nx
+import re
 
 
 class Graph:
@@ -20,19 +13,17 @@ class Graph:
         """
         self.path = path
         # long-compute time values can be saved in class
-        self.nxg = None
         self.pageRank = None
         try:
-            FIn = snap.TFIn(path)
-            self.g = snap.TNGraph.Load(FIn)
+            self.g = nx.read_edgelist(path, create_using=nx.DiGraph)
             logging.debug("Loaded graph '{}' successfully".format(path))
-        except RuntimeError as e:
-            self.g = snap.TNGraph.New()
+        except IOError as e:
+            self.g = nx.DiGraph()
             logging.warn(
                 "Exception loading graph '{}' at path '{}'. Creating new graph."
                 .format(e, path))
 
-    def g(self):
+    def getGraph(self):
         return self.g
 
     def info(self):
@@ -41,37 +32,44 @@ class Graph:
             returns string info on success
             raises IOError error on failure
         """
-        file = "graph-info-{}.txt".format(random.randint(0, 100000))
-        # write to file
-        description = "Information for {} at {}.".format(
-            self.path, datetime.datetime.now())
-        snap.PrintInfo(self.g, "Python type PNGraph", file, True)
-        # read back file to string
-        info = open(file, 'r').read()
-        # remove temp file
-        os.remove(file)
-        return info
+        info = nx.info(self.g).replace(" ", "")
+        infoAsList = re.split('\n|:', info)
+        avgInDegree = 0
+        avgOutDegree = 0
+        if "Averageindegree" in info and "Averageoutdegree" in info:
+            avgInDegree = infoAsList[infoAsList.index("Averageindegree") + 1]
+            avgOutDegree = infoAsList[infoAsList.index("Averageoutdegree") + 1]
+
+        # if is empty will not have in / out degrees
+        return {
+            'nNodes': self.g.number_of_nodes(),
+            'nEdges': self.g.number_of_edges(),
+            'avgOutDegree': float(avgOutDegree),
+            'avgInDegree': float(avgInDegree),
+        }
 
     def save(self):
         """overwrites files at path with current graph"""
-        FOut = snap.TFOut(self.path)
-        self.g.Save(FOut)
-        FOut.Flush()
+        nx.write_edgelist(self.g, self.path)
         return self.path
 
-    def getNeighbors(self, node=0, limit=10000):
+    def getNeighbors(self, node="0", limit=10000):
         """
             - finds node
             - returns all edges from that node
         """
-        nodes = []
-        i = 0
-        for n in self.g.GetNI(node).GetOutEdges():
-            if i >= limit:
-                return nodes
-            nodes.append(n)
-            i = i + 1
-        return nodes
+        if type(node) is not str:
+            raise TypeError("node {} must be a string".format(node))
+        neighbors = []
+        try:
+            i = 0
+            for n in self.g.neighbors(node):
+                if i >= limit: break
+                neighbors.append(n)
+                i = i + 1
+        except nx.exception.NetworkXError as e:
+            raise RuntimeError(e)
+        return neighbors
 
     def addNeighbors(self, node, neighbors=[]):
         """
@@ -79,155 +77,50 @@ class Graph:
             - adds an array of nodes to given node
             - returns [new nodes added]
         """
+        if type(node) is not str:
+            raise TypeError("node {} must be a string".format(node))
         # add node if does not exist
-        if (self.g.IsNode(node) == False):
-            self.g.AddNode(node)
-
-        newNodes = []
-        # add neighbor nodes with edge to this node
+        added = []
         for n in neighbors:
-            # add node if does not exist
-            if (self.g.IsNode(n) == False):
-                self.g.AddNode(n)
-                newNodes.append(n)
-            # add edge
-            self.g.AddEdge(node, n)
-        return newNodes
+            if type(n) is not str:
+                raise TypeError("node {} must be a string".format(node))
+
+            if n not in self.g:
+                added.append(n)
+            self.g.add_edge(n, node)
+        return added
 
     def shortestPath(self, a, b, n=1, timeout=3000, directed=False):
         """
             - gets shortest path(s) between two nodes
             - return array of nodes or failure
         """
-        shortestPathLen = snap.GetShortPath(self.g, a, b, True)
-        # make sure that there is a path before going on
-        if (shortestPathLen == -1):
-            raise IndexError("No such path from {} to {}".format(a, b))
+        if type(a) is not str or type(b) is not str:
+            raise TypeError("nodes {} and {} must be strings".format(a, b))
 
         paths = []
-        dpf = False
-        execTime = 0
-        g = snap.GetBfsTree(self.g, a, True, False)
-        for x in range(0, n):
-            p, pTime = ([], 0)
-            if directed:
-                (p, pTime) = self.shortestPathDir(a, b, dpf,
-                                                  timeout - execTime, g)
-            else:
-                (p, pTime) = self.shortestPathUndir(a, b, dpf,
-                                                    timeout - execTime, g)
-            # stopping condition, no more paths
-            if p == []: return paths
-            # direct path found. Edge condition since do
-            # not add destination node to excluded node
-            if len(p) == 2: dpf = True
-            # add to list of paths
-            paths.append(copy.copy(p))
-            # accumulate exec time
-            execTime = execTime + pTime
-            if (execTime * 1000) > timeout: return paths
-            # removes nodes currently in use in path
-            [g.DelNode(n) for n in p[1:len(p) - 1]]
+        try:
+            allPaths = nx.all_shortest_paths(self.g, a, b)
+            i = 0
+            for p in allPaths:
+                if i > n: break
+                paths.append(p)
+                i = i + 1
+        except (nx.exception.NetworkXNoPath, nx.NodeNotFound) as e:
+            raise IndexError(e)
         return paths
-
-    def _hasStoppingCondition(self, a, b, shortestDist, dpf, i):
-        """
-        helper for determing stopping condition. If there is one, returns
-        expected path at that point
-        returns (Bool,path)
-        """
-        if shortestDist == -1: return (True, [])
-        if shortestDist == 0: return (True, [a])
-        if shortestDist == 1:
-            if dpf and i == 0: return (True, [])
-            return (True, [a, b])
-        return (False, [])
-
-    def shortestPathDir(self, a, b, dpf, t, g, i=0):
-        """
-        shortest path in directed graph
-        returns (path, execution time ms)
-        """
-        start = time.time()
-        shortestDist = snap.GetShortPath(g, a, b, True)
-        # stopping conditions
-        shouldStop, p = self._hasStoppingCondition(a, b, shortestDist, dpf, i)
-        if shouldStop: return (p, time.time() - start)
-
-        # get nodes at middle hop
-        nodeVec = snap.TIntV()
-        midDist = int(round(shortestDist / 2))
-        snap.GetNodesAtHop(g, a, midDist, nodeVec, True)
-        # if odd mid distance needs to be once less
-        if shortestDist % 2 is not 0: midDist = midDist + 1
-        for n in nodeVec:
-            # check if less or middle node
-            d = snap.GetShortPath(g, n, b, True)
-            if d == midDist:
-                # recurse from paths of middle nodes
-                (aToMid, t1) = self.shortestPathDir(a, n, dpf, t, g, i + 1)
-                (midToB, t2) = self.shortestPathDir(n, b, dpf, t, g, i + 1)
-                aToMid.extend(midToB[1:])
-                return (aToMid, (time.time() - start) + t1 + t2)
-
-        # unreachable code
-        raise IndexError(
-            "ERROR: unreachable code: a={}b={}dist={}midDist={}".format(
-                a, b, shortestDist, midDist))
-
-    def shortestPathUndir(self, a, b, dpf, t, g, i=0):
-        """
-        finds shortest path between two new nodes
-            a: source
-            b: destination
-            dpf: direct path already found?
-            t: timeout
-        """
-        start = time.time()
-        shortestDist = snap.GetShortPath(g, a, b, False)
-        # stopping conditions
-        # stopping conditions
-        shouldStop, p = self._hasStoppingCondition(a, b, shortestDist, dpf, i)
-        if shouldStop: return (p, time.time() - start)
-
-        # get lengths from n->b and n->a
-        lentoB, lentoA = snap.TIntH(), snap.TIntH()
-        snap.GetShortPath(g, b, lentoB, False, shortestDist * 5)
-        snap.GetShortPath(g, a, lentoA, False, shortestDist * 5)
-        lentoB.SortByDat()
-        # find shortest middle between the two
-        s = sys.maxint
-        middleNode = None
-        # stopping condition: no nodes left
-        if len(lentoB) == 0 or len(lentoA) == 0:
-            return ([], time.time() - start)
-        for n in lentoB:
-            if not lentoB.IsKey(n) or not lentoA.IsKey(n): continue
-            if lentoB[n] < 1 or lentoA[n] < 1: continue
-            l = lentoB[n] + lentoA[n]
-            if l < s:
-                s = l
-                middleNode = n
-        if middleNode is None: return ([], time.time() - start)
-        # else recurse from paths of middle nodes
-        (aToMid, t1) = self.shortestPathUndir(a, middleNode, dpf, t, g, i + 1)
-        (midToB, t2) = self.shortestPathUndir(middleNode, b, dpf, t, g, i + 1)
-        aToMid.extend(midToB[1:])
-        return (aToMid, (time.time() - start) + t1 + t2)
 
     def nodeCentrality(self, n):
         """
             gets centrality measures for individual node returns as dict
         """
-        if not self.g.IsNode(n):
+        if type(n) is not str:
+            raise TypeError("node {} must be a string".format(n))
+        if n not in self.g.nodes:
             return {'error': 'node {} was not found in graph'.format(n)}
-        # get degree centrality
-        nNodes = float(self.g.GetNodes())
-        nEdges = float(self.g.GetNI(n).GetOutDeg())
         return {
-            "degree": nEdges / (nNodes - 1),
-            "closeness": snap.GetClosenessCentr(self.g, n, True, True),
-            "eccentricity": snap.GetNodeEcc(self.g, n, True),
+            "degree": len(list(self.g.neighbors(n))),
+            "closeness": nx.closeness_centrality(self.g, n),
         }
 
     def centrality(self, nResults=10):
@@ -236,14 +129,8 @@ class Graph:
                 - if slow is true, will run through each node in
                   graph, getting highest nodeCentrality()
         """
-        if self.nxg is None:
-            logging.debug("loading nx graph into memory")
-            snap.SaveEdgeList(self.g, "temp.edges")
-            self.nxg = nx.read_edgelist("temp.edges")
-            os.remove("temp.edges")
-
         if self.pageRank is None:
-            pr = nx.pagerank(self.nxg)
+            pr = nx.pagerank(self.g)
             self.pageRank = self._extractTopN(pr, nResults)
 
         return {
@@ -259,5 +146,5 @@ class Graph:
         d = sorted(d.items(), key=lambda kv: (kv[1], kv[0]))[:n]
         # convert to good format
         for i in range(0, len(d)):
-            d[i] = {"id": int(d[i][0]), "val": d[i][1]}
+            d[i] = {"id": d[i][0], "val": d[i][1]}
         return d
