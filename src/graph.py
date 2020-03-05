@@ -161,4 +161,5 @@ class Graph:
             })
             backIndex = backIndex - 1
             i = i + 1
-        return data
+
+        return sorted(data, key=lambda n: n['rank'])
