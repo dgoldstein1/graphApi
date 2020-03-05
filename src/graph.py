@@ -143,6 +143,7 @@ class Graph:
         ascending: lowest values first?
         """
         # sort
+        print d
         d = sorted(d.items(), key=lambda kv: (kv[1], kv[0]))[:n]
         # convert to good format
         for i in range(0, len(d)):
