@@ -1,5 +1,5 @@
 # graphApi
-RESTful graph API to handle analysis on billions of nodes through the Stanford Network Analysis Platform (SNAP)
+RESTful graph API to handle analysis on millions of nodes
 
 [![Maintainability](https://api.codeclimate.com/v1/badges/59f598369253217244bc/maintainability)](https://codeclimate.com/github/dgoldstein1/graphApi/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/59f598369253217244bc/test_coverage)](https://codeclimate.com/github/dgoldstein1/graphApi/test_coverage)
@@ -8,7 +8,6 @@ RESTful graph API to handle analysis on billions of nodes through the Stanford N
 ## Setup
 
 - Set the python version to `2.7`
-- Install the (Snap python package manually)[https://snap.stanford.edu/snappy/index.html#download]
 - Install [Flask v1](http://flask.pocoo.org/docs/1.0/installation/)
 - Install dependencies
 ```sh
