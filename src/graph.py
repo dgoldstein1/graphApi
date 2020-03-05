@@ -139,12 +139,26 @@ class Graph:
 
     def _extractTopN(self, d, n=10, asc=False):
         """
-        utility for extracting top n results from a hash table in format {nodeId : value}
-        ascending: lowest values first?
+        extracts top and bottom N nodes from list of k:v tuples 
         """
-        # sort
-        d = sorted(d.items(), key=lambda kv: kv[1], reverse=True)[:n]
-        # convert to good format
-        for i in range(0, len(d)):
-            d[i] = {"id": d[i][0], "val": d[i][1]}
-        return d
+        data = []
+        # rank in descending order
+        sortedNodes = sorted(d.items(), key=lambda kv: kv[1], reverse=True)
+        # get top
+        frontIndex = 1
+        for node in sortedNodes[:n]:
+            data.append({'id': node[0], 'val': node[1], 'rank': frontIndex})
+            frontIndex = frontIndex + 1
+
+        # get bottom
+        backIndex = len(d) - 1
+        i = 0
+        while i < n and backIndex > frontIndex:
+            data.append({
+                'id': sortedNodes[backIndex][0],
+                'val': sortedNodes[backIndex][1],
+                'rank': backIndex
+            })
+            backIndex = backIndex - 1
+            i = i + 1
+        return data

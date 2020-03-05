@@ -286,7 +286,7 @@ components:
       type: object
       properties:
         pageRank:
-          description: top N nodes ranked on degree centrality + influence of neighbors
+          description: top and bottom N nodes ranked on degree centrality + influence of neighbors
           type: array
           items:
             $ref: '#/components/schemas/TopNNode'
@@ -297,6 +297,10 @@ components:
         id:
           description: node id
           type: string
+        rank:
+          description: rank of node
+          type: number
+
         val:
           description: value of metric
           type: number
