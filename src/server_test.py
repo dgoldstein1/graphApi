@@ -137,4 +137,4 @@ class TestServer(unittest.TestCase):
         # positive test
         response = self.app.get("/top?n=1")
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.get_json()['pageRank']), 1)
+        self.assertEqual(len(response.get_json()['pageRank']), 2)
